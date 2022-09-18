@@ -1,10 +1,6 @@
-import Storage from '../../libs/supabase/index'
 import nextConnect from 'next-connect';
-import multer from 'multer';
 
-const upload = multer();
-const clg = console.log;
-const storage = new Storage;
+
 const apiRoute = nextConnect({
   onError(error, req, res: any) {
     res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
@@ -14,10 +10,9 @@ const apiRoute = nextConnect({
   },
 });
 
-apiRoute.use(upload.single('file'));
+apiRoute.use();
 
 apiRoute.post(async (req: any, res) => {
-    await storage.uploadFile(req.file).then(() => clg("Succses")).catch((err: any) => clg(err));
   res.status(200).json({ data: 'success' });
 });
 
