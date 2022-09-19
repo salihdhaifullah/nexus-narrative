@@ -11,13 +11,13 @@ const initialState = {};
 const middleware = [thunk];
 
 // creating store
-export const store = createStore(
+export const Store = createStore(
   rootReducer,
   initialState,
   composeWithDevTools(applyMiddleware(...middleware))
 );
 
 // assigning store to next wrapper
-const makeStore = () => store;
+const makeStore = () => Store;
 
 export const wrapper = createWrapper(makeStore);

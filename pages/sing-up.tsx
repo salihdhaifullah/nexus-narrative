@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -9,18 +9,37 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress';
 import { NextPage } from 'next';
+import { useDispatch, useSelector } from 'react-redux';
+import * as actions from "../context/actionsTypes";
+import { ISingUp } from '../types/user';
+import {singUp} from '../context/actions/userReducer'
+import State from '../types/state';
 
 
+const initValues = {name: "", password: "", email: ""}
 
 const SingUp: NextPage = () => {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const dispatch = useDispatch();
+  const {user, error, massage, loading} = useSelector((state: State) => state);
+  const clg = console.log;
+  clg(user)
+  clg(error)
+  clg(massage)
+  clg(loading)
+  const [userData, setUserData] = useState<ISingUp>(initValues);
+  
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    await singUp(userData)(dispatch);
+
+    clg(user)
+    clg(error)
+    clg(massage)
+    clg(loading)
+    // dispatch({type: actions.SING_UP_USER, payload: userData })
+    setUserData(initValues)
   };
 
   return (
@@ -44,6 +63,8 @@ const SingUp: NextPage = () => {
             name="email"
             autoComplete="email"
             autoFocus
+            value={userData.email}
+            onChange={(event) => setUserData({...userData, email: event.target.value})}
           />
           <TextField
             margin="normal"
@@ -54,6 +75,8 @@ const SingUp: NextPage = () => {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={userData.password}
+            onChange={(event) => setUserData({...userData, password: event.target.value})}
           />
           <TextField
             margin="normal"
@@ -64,15 +87,19 @@ const SingUp: NextPage = () => {
             type="name"
             id="name"
             autoComplete="current-name"
+            value={userData.name}
+            onChange={(event) => setUserData({...userData, name: event.target.value})}
           />
           <Button
             type="submit"
             fullWidth
+            disabled={loading}
             variant="contained"
             className='mt-3 mb-4 bg-[#1976d2] hover:bg-[#1d81e6]'
           >
-            Sing up
+            {loading ? <CircularProgress /> : "Sing up"}
           </Button>
+          
           <Grid container>
             <Grid item>
                 <Link href='login'>
