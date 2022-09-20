@@ -1,46 +1,30 @@
-import { IUser } from "../../types/user";
-import * as actions from "../actionsTypes";
+import * as api from '../../api'
+import { ILogin, ISingUp } from "../../types/user";
+import { Dispatch } from '@reduxjs/toolkit'
+import { SING_UP_USER, LOGIN_USER, LOGOUT_USER, ERROR } from '../slices/userSlice'
 
-interface Action<T, P> {
-    readonly type: T;
-    readonly payload?: P;
-}
-
-const initialState = { user: null, loading: true, error: null, massage: null };
-
-const userReducer = (state = initialState, action: Action<string, IUser | string>) => {
-    switch (action.type) {
-        case actions.SING_UP_USER:
-            return {
-                ...state,
-                user: action.payload,
-                loading: false,
-            };
-
-        case actions.LOGIN_USER:
-            return {
-                ...state,
-                user: action.payload,
-                loading: false,
-            };
-
-        case actions.LOGOUT_USER:
-            return {
-                ...state,
-                massage: action.payload,
-                loading: false,
-            };
-
-        case actions.ERROR:
-            return {
-                loading: false,
-                error: action.payload,
-            };
-
-        default:
-            return state;
-    }
-
+export const singUp = (data: ISingUp) => async (dispatch: Dispatch) => {
+  try {
+    await api.singUp(data).then(({ data }) => dispatch(SING_UP_USER(data))).catch((err: any) => dispatch(ERROR(err.error)));
+  } catch (err: any) {
+    dispatch(ERROR(err.massage));
+  }
 };
 
-export default userReducer;
+
+export const login = (data: ILogin) => async (dispatch: Dispatch) => {
+  try {
+    await api.Login(data).then(({ data }) => dispatch(LOGIN_USER(data))).catch((err: any) => dispatch(ERROR(err.error)));
+  } catch (err: any) {
+    dispatch(ERROR(err.massage));
+  }
+};
+
+export const logout = () => async (dispatch: Dispatch) => {
+  try {
+    await api.Logout().then(({ data }) => dispatch(LOGOUT_USER(data))).catch((err: any) => dispatch(ERROR(err.error)));
+  } catch (err: any) {
+    dispatch(ERROR(err.massage));
+  }
+};
+

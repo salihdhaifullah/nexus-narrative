@@ -1,15 +1,15 @@
 import "../styles/globals.css";
-import { wrapper, Store } from "../context/store"
+import store from "../context/store"
 import { Provider } from "react-redux";
 import type { AppProps } from 'next/app';
 import Header from '../components/Header'
 import Copyright from '../components/Copyright'
 
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <>
-      <Provider store={Store}>
+      <Provider store={store}>
         <Header />
         <Component {...pageProps} />
         <Copyright sx={{ mt: 8, mb: 4 }} />
@@ -18,4 +18,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;

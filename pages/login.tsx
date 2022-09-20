@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,17 +10,41 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { NextPage } from 'next';
-
+import { ILogin } from '../types/user';
+import Swal from 'sweetalert2';
+import {login} from '../api';
+import CircularProgress from '@mui/material/CircularProgress'
 
 
 const Login: NextPage = () => {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+
+    await login({email: email, password: password} as ILogin).then(({data}) => {
+      Swal.fire({
+        title: 'Sing Up Success',
+        html: `<h2>${data.massage}</h2>`,
+        color: '#716add',
+        background: '#222222',
+        position: 'top-end',
+        icon: 'success',
+        timer: 1500
+      })
+      sessionStorage.setItem("user", JSON.stringify(data.data))
+    }).catch(({response}) =>  {
+      console.log(response.data.error)
+      Swal.fire("something want wrong", response.data.error, 'error')
+    })
+
+    setPassword("")
+    setEmail("")
+    setIsLoading(false)
   };
 
   return (
@@ -36,6 +60,9 @@ const Login: NextPage = () => {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             margin="normal"
             required
             fullWidth
@@ -49,6 +76,8 @@ const Login: NextPage = () => {
             margin="normal"
             required
             fullWidth
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
             name="password"
             label="Password"
             type="password"
@@ -56,12 +85,14 @@ const Login: NextPage = () => {
             autoComplete="current-password"
           />
           <Button
-            type="submit"
+            type={(isLoading) ? "reset" : "submit"}
             fullWidth
             variant="contained"
-            className='mt-3 mb-4 bg-[#1976d2] hover:bg-[#1d81e6]'
+            className='mt-3 mb-4 bg-[#1976d2] hover:bg-[#1d81e6] text-white'
           >
-            Login
+            {(isLoading) ? (
+            <CircularProgress size={28} className='text-white '/>
+            ) : "Login"}
           </Button>
           <Grid container>
             <Grid item>
@@ -76,4 +107,4 @@ const Login: NextPage = () => {
   );
 }
 
-export default Login
+export default Login;

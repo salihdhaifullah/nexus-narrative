@@ -1,23 +1,17 @@
-import { createStore, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
-import { composeWithDevTools } from "redux-devtools-extension";
-import { createWrapper } from "next-redux-wrapper";
-import rootReducer from "./reducers";
+import { configureStore } from '@reduxjs/toolkit'
+import { useDispatch } from 'react-redux';
+import userSlice from './slices/userSlice';
 
-// initial states here
-const initialState = {};
+// create a slice 
 
-// middleware
-const middleware = [thunk];
+// config the store 
+const store= configureStore({
+   reducer: {
+      user: userSlice.reducer
+   }
+})
 
-// creating store
-export const Store = createStore(
-  rootReducer,
-  initialState,
-  composeWithDevTools(applyMiddleware(...middleware))
-);
-
-// assigning store to next wrapper
-const makeStore = () => Store;
-
-export const wrapper = createWrapper(makeStore);
+export default store;
+export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>
+export const useAppDispatch: () => AppDispatch = useDispatch

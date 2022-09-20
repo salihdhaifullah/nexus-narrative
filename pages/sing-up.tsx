@@ -11,35 +11,42 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress';
 import { NextPage } from 'next';
-import { useDispatch, useSelector } from 'react-redux';
-import * as actions from "../context/actionsTypes";
+import { useDispatch } from 'react-redux';
 import { ISingUp } from '../types/user';
-import {singUp} from '../context/actions/userReducer'
-import State from '../types/state';
+import Swal from 'sweetalert2';
+import {singUp} from '../api'
 
-
-const initValues = {name: "", password: "", email: ""}
 
 const SingUp: NextPage = () => {
   const dispatch = useDispatch();
-  const {user, error, massage, loading} = useSelector((state: State) => state);
-  const clg = console.log;
-  clg(user)
-  clg(error)
-  clg(massage)
-  clg(loading)
-  const [userData, setUserData] = useState<ISingUp>(initValues);
+  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("")
+  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("")
   
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     event.preventDefault();
-    await singUp(userData)(dispatch);
 
-    clg(user)
-    clg(error)
-    clg(massage)
-    clg(loading)
-    // dispatch({type: actions.SING_UP_USER, payload: userData })
-    setUserData(initValues)
+    await singUp({password: password, name: name, email: email} as ISingUp).then(({data}) => {
+      Swal.fire({
+        title: 'Sing Up Success',
+        html: `<h2>${data.massage}</h2>`,
+        color: '#716add',
+        background: '#222222',
+        position: 'top-end',
+        icon: 'success',
+        timer: 1500
+      })
+      sessionStorage.setItem("user", JSON.stringify(data.data))
+    }).catch(({response}) =>  {
+      Swal.fire("something want wrong", response.data.error, 'error')
+    })
+    
+    setIsLoading(false)
+    setName("")
+    setPassword("")
+    setEmail("")
   };
 
   return (
@@ -53,18 +60,19 @@ const SingUp: NextPage = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
+            type="email"
             fullWidth
             id="email"
             label="Email Address"
             name="email"
             autoComplete="email"
             autoFocus
-            value={userData.email}
-            onChange={(event) => setUserData({...userData, email: event.target.value})}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
           />
           <TextField
             margin="normal"
@@ -75,8 +83,8 @@ const SingUp: NextPage = () => {
             type="password"
             id="password"
             autoComplete="current-password"
-            value={userData.password}
-            onChange={(event) => setUserData({...userData, password: event.target.value})}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
           />
           <TextField
             margin="normal"
@@ -87,23 +95,24 @@ const SingUp: NextPage = () => {
             type="name"
             id="name"
             autoComplete="current-name"
-            value={userData.name}
-            onChange={(event) => setUserData({...userData, name: event.target.value})}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
           />
           <Button
-            type="submit"
+            type={(isLoading) ? "reset" : "submit"}
             fullWidth
-            disabled={loading}
             variant="contained"
-            className='mt-3 mb-4 bg-[#1976d2] hover:bg-[#1d81e6]'
+            className='mt-3 mb-4 bg-[#1976d2] hover:bg-[#1d81e6] text-white'
           >
-            {loading ? <CircularProgress /> : "Sing up"}
+            {(isLoading) ? (
+            <CircularProgress size={28} className='text-white '/>
+            ) : "Sing up"}
           </Button>
           
           <Grid container>
             <Grid item>
                 <Link href='login'>
-                  <a className='link'>Don&apos;t have an account? Login</a>
+                  <a className='link'>already have an account? Login</a>
                 </Link>
             </Grid>
           </Grid>

@@ -50,8 +50,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                         req,
                         res
                     })
+                    const data = { 
+                        id: UserData.id, 
+                        createdAt: UserData.createdAt, 
+                        email: UserData.email, 
+                        name: UserData.name, 
+                        role: UserData.role, 
+                        token
+                     } 
 
-                    return res.status(200).json({ user: { UserData, token }, massage: "sing up success" })
+                    return res.status(200).json({ data, massage: "sing up success" })
                 }
                 else return res.status(400).json({ error: 'you must fill all fields' })
             }
