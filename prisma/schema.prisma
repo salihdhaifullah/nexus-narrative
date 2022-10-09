@@ -1,27 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_CONECTION_STRING")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
+  Post Post[]
 }
 
+model Tag {
+  id   String @id @default(uuid())
+  name String @unique
+  Post Post[]
+}
+
+model Iamge {
+  id      String @id @default(uuid())
+  name    String
+  fileUrl String @unique
+  Post    Post   @relation(fields: [postId], references: [id])
+  postId  String
+}
+
+model Avter {
+  id      String @id @default(uuid())
+  name    String
+  fileUrl String @unique
+  User    User   @relation(fields: [userId], references: [id])
+  userId  String @unique
+}
 
 model Post {
   id         String    @id @default(uuid())
   title      String
   content    String
-  imageUrl   String
+  images     Iamge[]
+  tags       Tag[]
+  author     User      @relation(fields: [authorId], references: [id])
+  comments   Comment[]
+  slug       String    @unique
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId String
+  authorId   String
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-  author     User      @relation(fields: [authorId], references: [id])
-  authorId   String
-  tags       String[]
-  slug       String    @unique
-  catgory    String
-  comments   Comment[]
-  imagesUrls String[]
 }
 
 model User {
@@ -31,9 +58,9 @@ model User {
   name      String
   role      Role      @default(USER)
   password  String
-  posts     Post[]
   comments  Comment[]
-  avterUrl     String?
+  posts     Post[]
+  Avter     Avter?
 }
 
 model Comment {
@@ -41,10 +68,10 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
   authorId  String
-  post      Post     @relation(fields: [postId], references: [id])
   postId    String
+  author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
 }
 
 enum Role {

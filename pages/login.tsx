@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import React from 'react'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,21 +13,28 @@ import Container from '@mui/material/Container';
 import { NextPage } from 'next';
 import { ILogin } from '../types/user';
 import Swal from 'sweetalert2';
-import {login} from '../api';
+import { login } from '../api';
 import CircularProgress from '@mui/material/CircularProgress'
-
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from '@mui/icons-material/Visibility';
+import FormControl from '@mui/material/FormControl';
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     event.preventDefault();
 
 
-    await login({email: email, password: password} as ILogin).then(({data}) => {
+    await login({ email: email, password: password } as ILogin).then(({ data }) => {
       Swal.fire({
         title: 'Sing Up Success',
         html: `<h2>${data.massage}</h2>`,
@@ -37,7 +45,7 @@ const Login: NextPage = () => {
         timer: 1500
       })
       sessionStorage.setItem("user", JSON.stringify(data.data))
-    }).catch(({response}) =>  {
+    }).catch(({ response }) => {
       console.log(response.data.error)
       Swal.fire("something want wrong", response.data.error, 'error')
     })
@@ -45,6 +53,15 @@ const Login: NextPage = () => {
     setPassword("")
     setEmail("")
     setIsLoading(false)
+  };
+
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
   };
 
   return (
@@ -72,18 +89,34 @@ const Login: NextPage = () => {
             autoComplete="email"
             autoFocus
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
+
+          <FormControl className='w-full' variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              required
+              fullWidth
+              name="password"
+              autoComplete="current-password"
+              onChange={(event) => setPassword(event.target.value)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
+            />
+          </FormControl>
+
           <Button
             type={(isLoading) ? "reset" : "submit"}
             fullWidth
@@ -91,7 +124,7 @@ const Login: NextPage = () => {
             className='mt-3 mb-4 bg-[#1976d2] hover:bg-[#1d81e6] text-white'
           >
             {(isLoading) ? (
-            <CircularProgress size={28} className='text-white '/>
+              <CircularProgress size={28} className='text-white ' />
             ) : "Login"}
           </Button>
           <Grid container>

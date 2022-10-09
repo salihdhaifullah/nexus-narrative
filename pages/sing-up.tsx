@@ -14,7 +14,14 @@ import { NextPage } from 'next';
 import { useDispatch } from 'react-redux';
 import { ISingUp } from '../types/user';
 import Swal from 'sweetalert2';
-import {singUp} from '../api'
+import { singUp } from '../api'
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from '@mui/icons-material/Visibility';
+import FormControl from '@mui/material/FormControl';
 
 
 const SingUp: NextPage = () => {
@@ -23,12 +30,14 @@ const SingUp: NextPage = () => {
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
-  
+  const [showPassword, setShowPassword] = useState(false)
+
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     event.preventDefault();
 
-    await singUp({password: password, name: name, email: email} as ISingUp).then(({data}) => {
+    await singUp({ password: password, name: name, email: email } as ISingUp).then(({ data }) => {
       Swal.fire({
         title: 'Sing Up Success',
         html: `<h2>${data.massage}</h2>`,
@@ -39,14 +48,22 @@ const SingUp: NextPage = () => {
         timer: 1500
       })
       sessionStorage.setItem("user", JSON.stringify(data.data))
-    }).catch(({response}) =>  {
+    }).catch(({ response }) => {
       Swal.fire("something want wrong", response.data.error, 'error')
     })
-    
+
     setIsLoading(false)
     setName("")
     setPassword("")
     setEmail("")
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
   };
 
   return (
@@ -74,18 +91,34 @@ const SingUp: NextPage = () => {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
+
+          <FormControl className='w-full' variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              required
+              fullWidth
+              name="password"
+              autoComplete="current-password"
+              onChange={(event) => setPassword(event.target.value)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
+            />
+          </FormControl>
+
           <TextField
             margin="normal"
             required
@@ -105,15 +138,15 @@ const SingUp: NextPage = () => {
             className='mt-3 mb-4 bg-[#1976d2] hover:bg-[#1d81e6] text-white'
           >
             {(isLoading) ? (
-            <CircularProgress size={28} className='text-white '/>
+              <CircularProgress size={28} className='text-white ' />
             ) : "Sing up"}
           </Button>
-          
+
           <Grid container>
             <Grid item>
-                <Link href='login'>
-                  <a className='link'>already have an account? Login</a>
-                </Link>
+              <Link href='login'>
+                <a className='link'>already have an account? Login</a>
+              </Link>
             </Grid>
           </Grid>
         </Box>

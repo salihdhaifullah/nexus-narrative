@@ -26,8 +26,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     const hashPassword = hashSync(password, salt)
                     const UserData = await prisma.user.create({
                         data: {
-                            name,
-                            email,
+                            name: name,
+                            email: email,
                             role: isAdmin ? "ADMIN" : "USER",
                             password: hashPassword
                         }

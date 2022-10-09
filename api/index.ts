@@ -24,3 +24,7 @@ export const login = async (data: ILogin) => await API.post("/auth/login", data)
 
 export const Logout = async () => await API.get("/auth/logout")
 
+export const GetTagsAndCategories = async () => await API.get("post")
+
+export const createPost = async () => await API.post("post", {})
+
