@@ -46,7 +46,7 @@ const MdEditorCom = () => {
   const [text, setText] = useState<string>("");
   const [previewsUrl, setPreviewsUrl] = useState<string[]>([]);
   const [data, setData] = useState<Files[]>([])
-  const [title, setTitle] = useState("")
+  const [title, setTitle] = useState("") 
   const [slug, setSlug] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [category, setCategory] = useState<FilmOptionType | null>(null)
@@ -96,7 +96,7 @@ const MdEditorCom = () => {
   }
 
   const HandelSubmit = async () => {
-    if (category) {
+    if (category && slug && text && title) {
       const files = [];
       for (let i = 0; i < data.length; i++) {
   
@@ -121,15 +121,17 @@ const MdEditorCom = () => {
           tags,
           category: category.name
         }
-    
-  
+
         await createPost(endData).then((res: any) => {
           console.log(res)
         }).catch((err: any) => {
           console.log(err)
         })
   
-      console.log(endData);
+      setTitle("") 
+      setSlug("")
+      setTags([]) 
+      setCategory({name: ""})
       mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
       mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
       setText("")
@@ -180,7 +182,7 @@ const MdEditorCom = () => {
               id="tags-filled"
               options={tagsOptions.map((option) => option.name)}
               freeSolo
-              
+              value={tags}
               onChange={(event, value) => {
                 setTags(value)
                 console.log(tags)
