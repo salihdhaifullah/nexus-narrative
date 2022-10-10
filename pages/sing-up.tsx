@@ -47,7 +47,7 @@ const SingUp: NextPage = () => {
         icon: 'success',
         timer: 1500
       })
-      sessionStorage.setItem("user", JSON.stringify(data.data))
+      localStorage.setItem("user", JSON.stringify(data.data))
     }).catch(({ response }) => {
       Swal.fire("something want wrong", response.data.error, 'error')
     })

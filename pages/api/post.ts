@@ -1,71 +1,59 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server'
 import prisma from '../../libs/prisma'
+import { ICreatePostData } from '../../types/post'
+import { GetUserIdMiddleware } from '../../middleware';
 
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
-        const data = await prisma.post.findMany({
+        const { error, id } = GetUserIdMiddleware(req)
+
+        const tags = await prisma.tag.findMany({
             select: {
-                tags: true,
-                category: true
+                name: true
             }
         })
-        res.status(200).json(data)
+        const categories = await prisma.category.findMany({
+            select: {
+                name: true
+            }
+        })
+        res.status(200).json({ tags, categories })
 
     } else if (req.method === "POST") {
-
+        const { title, content, slug, images, tags, category }: ICreatePostData = req.body
 
         const data = await prisma.post.create({
             data: {
                 tags: {
                     connectOrCreate: [{
                         where: {
-                            name: 'Seegwvdgwe',
-                          },
-                          create: {
-                            name: "Seegwvdgwe"
-                          }
-                    }, {
-                        where: {
-                            name: 'Wegweewg',
-                          },
-                          create: {
-                            name: "Wegweewg"
-                          }
-                    }, {
-                        where: {
-                            name: 'wfe',
-                          },
-                          create: {
-                            name: "wfe"
-                          }
-                    }],
-                },
-                title: "dddsfswe",
-                content: "dsesdfsfsf",
-                images: {
-                    connectOrCreate: [{
-                        where: {
-                            fileUrl: "fegwegweg",
+                            name: "tags",
                         },
                         create: {
-                            fileUrl: "fegwegwegUrl",
-                            name: "Hello"
+                            name: "tags"
                         }
-                    }]
+                    }],
+                    // connectOrCreate: tags,
+                },
+                title: title,
+                content: content,
+                images: {
+                    create: images
                 },
                 category: {
                     connectOrCreate: {
                         where: {
-                            name: "dddddd"
+                            name: category
                         },
                         create: {
-                            name: "dddddd"
+                            name: category
                         }
                     },
                 },
-                slug: "weggwegwegeweg",
+                slug: slug,
                 author: {
                     connect: { id: "3c747b75-460d-4fae-aeac-93f243f33a20" },
                 },
@@ -77,6 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
         })
 
-        return res.status(200).json({ data, massage: "" });
+        return res.status(200).json({ massage: "Get the Fuck" });
     } else return res.status(404).json({ massage: `this method ${req.method} is not allowed` });
 }

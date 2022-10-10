@@ -11,6 +11,7 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { createPost, GetTagsAndCategories } from '../api';
+import { ICreatePostData } from '../types/post';
 
 interface Files {
   name: string
@@ -26,98 +27,40 @@ interface HandleEditorChangeProps {
 
 interface FilmOptionType {
   inputValue?: string;
-  title: string;
-  year?: number;
+  name: string;
+}
+
+interface IOptions {
+  name: string
+  inputValue?: string
 }
 
 const filter = createFilterOptions<FilmOptionType>();
-
-
-const top100Films: readonly FilmOptionType[] = [
-  { title: 'The Shawshank Redemption', year: 1994 },
-  { title: 'The Godfather', year: 1972 },
-  { title: 'The Godfather: Part II', year: 1974 },
-  { title: 'The Dark Knight', year: 2008 },
-  { title: '12 Angry Men', year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: 'Pulp Fiction', year: 1994 },
-  { title: 'The Lord of the Rings: The Return of the King', year: 2003 },
-  { title: 'The Good, the Bad and the Ugly', year: 1966 },
-  { title: 'Fight Club', year: 1999 },
-  { title: 'The Lord of the Rings: The Fellowship of the Ring', year: 2001 },
-  { title: 'Star Wars: Episode V - The Empire Strikes Back', year: 1980 },
-  { title: 'Forrest Gump', year: 1994 },
-  { title: 'Inception', year: 2010 },
-  { title: 'The Lord of the Rings: The Two Towers', year: 2002 },
-  { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { title: 'Goodfellas', year: 1990 },
-  { title: 'The Matrix', year: 1999 },
-  { title: 'Seven Samurai', year: 1954 },
-  { title: 'Star Wars: Episode IV - A New Hope', year: 1977 },
-  { title: 'City of God', year: 2002 },
-  { title: 'Se7en', year: 1995 },
-  { title: 'The Silence of the Lambs', year: 1991 },
-  { title: "It's a Wonderful Life", year: 1946 },
-  { title: 'Life Is Beautiful', year: 1997 },
-  { title: 'The Usual Suspects', year: 1995 },
-  { title: 'Léon: The Professional', year: 1994 },
-  { title: 'Spirited Away', year: 2001 },
-];
-
-const top100Films2 = [
-  { label: 'The Shawshank Redemption', year: 1994 },
-  { label: 'The Godfather', year: 1972 },
-  { label: 'The Godfather: Part II', year: 1974 },
-  { label: 'The Dark Knight', year: 2008 },
-  { label: '12 Angry Men', year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: 'Pulp Fiction', year: 1994 },
-  { label: 'The Lord of the Rings: The Return of the King', year: 2003 },
-  { label: 'The Good, the Bad and the Ugly', year: 1966 },
-  { label: 'Fight Club', year: 1999 },
-  { label: 'The Lord of the Rings: The Fellowship of the Ring', year: 2001 },
-  { label: 'Star Wars: Episode V - The Empire Strikes Back', year: 1980 },
-  { label: 'Forrest Gump', year: 1994 },
-  { label: 'Inception', year: 2010 },
-  { label: 'The Lord of the Rings: The Two Towers', year: 2002 },
-  { label: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { label: 'Goodfellas', year: 1990 },
-  { label: 'The Matrix', year: 1999 },
-  { label: 'Seven Samurai', year: 1954 },
-  { label: 'Star Wars: Episode IV - A New Hope', year: 1977 },
-  { label: 'City of God', year: 2002 },
-  { label: 'Se7en', year: 1995 },
-  { label: 'The Silence of the Lambs', year: 1991 },
-  { label: "It's a Wonderful Life", year: 1946 },
-  { label: 'Life Is Beautiful', year: 1997 },
-  { label: 'The Usual Suspects', year: 1995 },
-  { label: 'Léon: The Professional', year: 1994 },
-  { label: 'Spirited Away', year: 2001 },
-];
 
 const MdEditorCom = () => {
   const mdParser = new MarkdownIt();
   const mdEditorRef: any = useRef();
 
+  const [tagsOptions, setTagsOptions] = useState<IOptions[]>([])
+  const [categoriesOptions, setCategoriesOptions] = useState<IOptions[]>([])
   const [text, setText] = useState<string>("");
   const [previewsUrl, setPreviewsUrl] = useState<string[]>([]);
   const [data, setData] = useState<Files[]>([])
   const [title, setTitle] = useState("")
   const [slug, setSlug] = useState("")
   const [tags, setTags] = useState<string[]>([])
-  const [category, setCategory] = useState<any>()
-  const [value, setValue] = useState<FilmOptionType | null>(null);
+  const [category, setCategory] = useState<FilmOptionType | null>(null)
 
   const handleEditorChange = ({ html, text }: HandleEditorChangeProps) => {
     setText(text)
   }
 
   const init = async () => {
-    await createPost().then(data => {
-      console.log(data);
-    })
-    await GetTagsAndCategories().then(data => {
-      console.log(data)
+    await GetTagsAndCategories().then(({data}: any) => {
+      if (data.categories.length) {
+        setCategoriesOptions(data.categories)
+        setTagsOptions(data.tags)
+      }
     })
   }
   
@@ -152,33 +95,46 @@ const MdEditorCom = () => {
 
   }
 
-  // todo 
-  //   1- title = input ✔
-  //   2- content = text ✔
-  //   3- tags = input ✔ & get tags from server ❌
-  //   4- slug = input ✔
-  //   5- category = input ✔ & get categories from server ❌ 
-  //   6- images = dataArray ✔ 
-
-
   const HandelSubmit = async () => {
-    for (let i = 0; i < data.length; i++) {
-
-      if (text.includes(data[i].previewUrl)) {
-
-        const { data: success, error } = await supabase.storage.from("public").upload(data[i].name, data[i].file)
-        if (error) Swal.fire('some think want wrong', 'place check internet connection', 'error')
-        else setText(text.replace(previewsUrl[i], data[i].fileUrl));
-
-
+    if (category) {
+      const files = [];
+      for (let i = 0; i < data.length; i++) {
+  
+        if (text.includes(data[i].previewUrl)) {
+  
+          files.push({ name: data[i].name, fileUrl: data[i].fileUrl });
+  
+          const { data: success, error } = await supabase.storage.from("public").upload(data[i].name, data[i].file)
+          if (error) Swal.fire('some think want wrong', 'place check internet connection', 'error')
+          else setText(text.replace(previewsUrl[i], data[i].fileUrl));
+  
+  
+        }
+        URL.revokeObjectURL(previewsUrl[i])
       }
-      URL.revokeObjectURL(previewsUrl[i])
+  
+        const endData: ICreatePostData = {
+          title,
+          content: text,
+          slug,
+          images: files,
+          tags,
+          category: category.name
+        }
+    
+  
+        await createPost(endData).then((res: any) => {
+          console.log(res)
+        }).catch((err: any) => {
+          console.log(err)
+        })
+  
+      console.log(endData);
+      mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
+      mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
+      setText("")
+      setPreviewsUrl([])
     }
-
-    console.log(text);
-    mdEditorRef.current.nodeMdText.current.value = ""; // this is the textarea input from MdEditor component
-    setText("")
-    setPreviewsUrl([])
   }
 
 
@@ -190,12 +146,12 @@ const MdEditorCom = () => {
         </button>
       </div>
       <Container>
-        <Box className='px-6 my-2 rounded-md shadow-md bg-white'>
-          <Box className="inline-flex w-full">
+        <Box className='px-6 my-2 py-2 rounded-md shadow-md bg-white'>
+          <Box className="flex flex-col sm:flex-row flex-wrap w-full sm:mb-2">
             <TextField
+              className='w-full sm:w-auto flex-1 mb-2 sm:mb-0'
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              margin="normal"
               required
               fullWidth
               id="title"
@@ -205,10 +161,9 @@ const MdEditorCom = () => {
             />
 
             <TextField
-            className="ml-2"
+            className="w-full flex-1 sm:ml-2 mb-2 sm:mb-0"
               value={slug}
               onChange={(event) => setSlug(event.target.value)}
-              margin="normal"
               required
               fullWidth
               id="slug"
@@ -217,15 +172,19 @@ const MdEditorCom = () => {
             />
           </Box>
 
-          <Stack className="inline-flex w-full flex-row mb-4">
+          <Stack className="flex flex-col sm:flex-row w-full flex-wrap mb-4">
 
             <Autocomplete
-              className='flex-1 flex'
+              className='w-full sm:w-auto flex-[2] flex mb-2 sm:mb-0'
               multiple
               id="tags-filled"
-              options={top100Films.map((option) => option.title)}
+              options={tagsOptions.map((option) => option.name)}
               freeSolo
-              onChange={(event, value) => setTags(value)}
+              
+              onChange={(event, value) => {
+                setTags(value)
+                console.log(tags)
+              }}
               renderTags={(value: readonly string[], getTagProps) =>
                 value.map((option: string, index: number) => (
                   // eslint-disable-next-line react/jsx-key
@@ -243,31 +202,31 @@ const MdEditorCom = () => {
 
 
             <Autocomplete
-              className='ml-2'
-              value={value}
+              className='w-full sm:w-auto flex-1 sm:ml-2'
+              value={category}
               onChange={(event, newValue) => {
-                if (typeof newValue === 'string') setValue({title: newValue});
-                else if (newValue && newValue.inputValue) setValue({title: newValue.inputValue}); 
-                else setValue(newValue);  
+                if (typeof newValue === 'string') setCategory({name: newValue});
+                else if (newValue && newValue.inputValue) setCategory({name: newValue.inputValue}); 
+                else setCategory(newValue);  
               }}
               filterOptions={(options, params) => {
                 const filtered = filter(options, params);
                 const { inputValue } = params;
-                const isExisting = options.some((option) => inputValue === option.title);
-                if (inputValue !== '' && !isExisting) filtered.push({inputValue, title: `Add "${inputValue}"`});
+                const isExisting = options.some((option) => inputValue === option.name);
+                if (inputValue !== '' && !isExisting) filtered.push({inputValue, name: `Add "${inputValue}"`});
                 return filtered;
               }}
               selectOnFocus
               clearOnBlur
               handleHomeEndKeys
               id="free-solo-with-text-demo"
-              options={top100Films}
+              options={categoriesOptions}
               getOptionLabel={(option) => {
                 if (typeof option === 'string') return option;
                 if (option.inputValue) return option.inputValue;
-                return option.title;
+                return option.name;
               }}
-              renderOption={(props, option) => <li {...props}>{option.title}</li>}
+              renderOption={(props, option) => <li {...props}>{option.name}</li>}
               sx={{ width: 300 }}
               freeSolo
               renderInput={(params) => (

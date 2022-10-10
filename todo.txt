@@ -1,6 +1,6 @@
 Todo: 
-    1-setup project and dependency, database
+    1-setup project and dependency, database ✔
     2-setup super user and admin panel
-    3-form for markdown  
-    4-store markdown in db
+    3-form for markdown  ✔
+    4-store markdown in db ✔
     5-show markdown in component
