@@ -30,3 +30,5 @@ export const GetToken = async () => await API.get("/auth/refresh-token");
 export const GetTagsAndCategories = async () => await API.get("post")
 
 export const createPost = async (data: ICreatePostData) => await API.post("post", data)
+
+export const GetPostData = async (slug: string) => await API.get(`get-post-data?slug=${slug}`);

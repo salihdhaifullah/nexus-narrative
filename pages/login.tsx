@@ -46,7 +46,6 @@ const Login: NextPage = () => {
       })
       localStorage.setItem("user", JSON.stringify(data.data))
     }).catch(({ response }) => {
-      console.log(response.data.error)
       Swal.fire("something want wrong", response.data.error, 'error')
     })
 

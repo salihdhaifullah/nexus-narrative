@@ -68,9 +68,7 @@ const MdEditorCom = () => {
     init()
   }, [])
   
-  useEffect(() => {
-    console.log(category);
-  }, [category])
+
 
 
 
@@ -122,11 +120,7 @@ const MdEditorCom = () => {
           category: category.name
         }
 
-        await createPost(endData).then((res: any) => {
-          console.log(res)
-        }).catch((err: any) => {
-          console.log(err)
-        })
+        await createPost(endData).then((res: any) => {}).catch((err: any) => {})
   
       setTitle("") 
       setSlug("")
@@ -183,10 +177,7 @@ const MdEditorCom = () => {
               options={tagsOptions.map((option) => option.name)}
               freeSolo
               value={tags}
-              onChange={(event, value) => {
-                setTags(value)
-                console.log(tags)
-              }}
+              onChange={(event, value) => setTags(value)}
               renderTags={(value: readonly string[], getTagProps) =>
                 value.map((option: string, index: number) => (
                   // eslint-disable-next-line react/jsx-key
