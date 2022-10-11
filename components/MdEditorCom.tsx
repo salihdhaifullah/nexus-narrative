@@ -68,7 +68,9 @@ const MdEditorCom = () => {
     init()
   }, [])
   
-
+useEffect(() => {
+  console.log(text)
+}, [text])
 
 
 
@@ -95,6 +97,7 @@ const MdEditorCom = () => {
 
   const HandelSubmit = async () => {
     if (category && slug && text && title) {
+      let replace = text;
       const files = [];
       for (let i = 0; i < data.length; i++) {
   
@@ -103,22 +106,23 @@ const MdEditorCom = () => {
           files.push({ name: data[i].name, fileUrl: data[i].fileUrl });
   
           const { data: success, error } = await supabase.storage.from("public").upload(data[i].name, data[i].file)
-          if (error) Swal.fire('some think want wrong', 'place check internet connection', 'error')
-          else setText(text.replace(previewsUrl[i], data[i].fileUrl));
+          if (error) return Swal.fire('some think want wrong', 'place check internet connection', 'error');
   
-  
+          replace = replace.replace(data[i].previewUrl, data[i].fileUrl)
         }
         URL.revokeObjectURL(previewsUrl[i])
       }
   
         const endData: ICreatePostData = {
           title,
-          content: text,
+          content: replace,
           slug,
           images: files,
           tags,
           category: category.name
         }
+
+        console.log(endData);
 
         await createPost(endData).then((res: any) => {}).catch((err: any) => {})
   

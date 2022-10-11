@@ -1,8 +1,5 @@
 import prisma from '../libs/prisma/index'
-import matter from 'gray-matter';
 import { GetPostData } from '../api';
-import { remark } from 'remark';
-import html from 'remark-html';
 
 interface ISlugItem {
     params: {
@@ -32,19 +29,11 @@ export const getPostData = async (slug: string) => {
 
     if (!dataItem) throw new Error('data error');
 
-    const matterResult = matter(dataItem.content);
 
-    const processedContent = await remark()
-    .use(html)
-    .process(matterResult.content);
-  const contentHtml = processedContent.toString();
-
-    console.log(contentHtml)
     return {
         slug,
         dataItem,
-        contentHtml,
-        ...matterResult.data,
+        content: dataItem.content,
     };
 }
 
