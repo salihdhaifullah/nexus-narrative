@@ -14,13 +14,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 id: id
             },
             select: {
-                role: true
+                id: true
             }
         });
 
         if (!user) return res.status(404).json({ massage: "user Not Found" });
 
-        const token = jwt.sign({ id: id, role: user.role }, process.env.SECRET_KEY as string, { expiresIn: '2h' })
+        const token = jwt.sign({ id: id }, process.env.SECRET_KEY as string, { expiresIn: '2h' })
         
         return res.status(200).json({token})
 

@@ -11,7 +11,18 @@ import { useEffect, useState } from "react";
 import { IUser } from "../types/user";
 import { checkExpirationDateJwt } from "../static";
 
-
+const sections = [
+  { title: 'Technology', url: '#' },
+  { title: 'Design', url: '#' },
+  { title: 'Culture', url: '#' },
+  { title: 'Business', url: '#' },
+  { title: 'Politics', url: '#' },
+  { title: 'Opinion', url: '#' },
+  { title: 'Science', url: '#' },
+  { title: 'Health', url: '#' },
+  { title: 'Style', url: '#' },
+  { title: 'Travel', url: '#' },
+];
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -40,29 +51,29 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     })
   }
 
-  useEffect(() => {
-    if (user) getToken();
-  }, [])
+  // useEffect(() => {
+  //   if (user) getToken();
+  // }, [])
 
-  useEffect(() => {
-    if (user) {
-      const interval = setInterval(() => {
-        setIsExpired(checkExpirationDateJwt(user?.token));
-        if (user && isExpired) getToken();
-        setCheck(check + 1)
-      }, 1000 * 60 * 2); // every 2 minutes
-      return () => clearInterval(interval); 
-    }
-  }, [check])
+  // useEffect(() => {
+  //   if (user) {
+  //     const interval = setInterval(() => {
+  //       setIsExpired(checkExpirationDateJwt(user?.token));
+  //       if (user && isExpired) getToken();
+  //       setCheck(check + 1)
+  //     }, 1000 * 60 * 2); // every 2 minutes
+  //     return () => clearInterval(interval); 
+  //   }
+  // }, [check])
 
   return (
-    <>
+    <div className="flex flex-col min-h-[100vh]">
       <Provider store={store}>
-        <Header />
-        <Component {...pageProps} />
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+          <Header title="Blog" sections={sections} />
+          <Component {...pageProps} />
+          <Copyright />
       </Provider>
-    </>
+    </div>
   );
 }
 

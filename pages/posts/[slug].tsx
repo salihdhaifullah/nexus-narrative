@@ -13,7 +13,7 @@ export default function Post({ postData }: any) {
       </Head>
       <ReactMarkdown remarkPlugins={[[remarkGfm, { singleTilde: false }]]}>
         {postData.content}
-      </ReactMarkdown>,
+      </ReactMarkdown>
     </Layout>
   );
 }

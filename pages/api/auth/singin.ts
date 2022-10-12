@@ -13,9 +13,7 @@ interface ISingUp {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === "POST") {
-        let isAdmin = false;
         const { password, email, name }: ISingUp = req.body
-        if (password === process.env.PASSWARD && email === process.env.EMAIL) isAdmin = true;
         const user = await prisma.user.findUnique({ where: { email: email } })
         try {
 
@@ -28,7 +26,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                         data: {
                             name: name,
                             email: email,
-                            role: isAdmin ? "ADMIN" : "USER",
                             password: hashPassword
                         }
                     })
@@ -55,7 +52,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                         createdAt: UserData.createdAt, 
                         email: UserData.email, 
                         name: UserData.name, 
-                        role: UserData.role, 
                         token
                      } 
 

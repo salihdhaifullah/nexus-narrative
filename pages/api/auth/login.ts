@@ -45,7 +45,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             createdAt: UserData.createdAt, 
                             email: UserData.email, 
                             name: UserData.name, 
-                            role: UserData.role, 
                             token
                          } 
                         return res.status(200).json({data, massage: "login success" })
