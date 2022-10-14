@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ICreatePostData } from '../types/post';
+import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
 const API = axios.create({ baseURL: 'http://localhost:3000/api' })
@@ -32,3 +33,13 @@ export const GetTagsAndCategories = async () => await API.get("post")
 export const createPost = async (data: ICreatePostData) => await API.post("post", data)
 
 export const GetPostData = async (slug: string) => await API.get(`get-post-data?slug=${slug}`);
+
+export const GetProfileData = async () => await API.get("/admin/profile");
+
+export const UpdateProfileGeneralInformation = async (data: IUpdateProfileGeneralInformation) => await API.patch("/admin/profile", data)
+
+export const ChangeBlogName = async (data: IChangeBlogName) => await API.put("/admin/profile?blogName=true", data)
+
+export const ChangePassword = async (data: IChangePassword) => await API.put("/admin/profile?password=true", data)
+
+export const CreateSocial = async (data: ISocil) => await API.post("/admin/profile", data)

@@ -80,9 +80,9 @@ const Profile = () => {
       <div className="m-4">
 
       <h1 className='text-3xl text-gray-800 font-bold mb-4'>User settings</h1>
-      <div className=' gap-6 grid-flow-dense grid-cols-10 grid-rows-6 grid'>
+      <div className=' gap-6 grid-flow-dense grid-cols-10 flex-wrap flex flex-col grid-rows-6 lg:grid'>
 
-        <div className='flex justify-start col-span-3 row-span-2 bg-white rounded-md shadow-md p-6'>
+        <div className='flex justify-start lg:w-full col-span-3 row-span-2 bg-white rounded-md shadow-md p-6'>
           <div>
             <span className='rounded-md'>
               <Image
@@ -103,10 +103,10 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="flex col-span-7 row-span-4 flex-col bg-white rounded-md shadow-md p-6">
+        <div className="flex col-span-7 lg:w-full row-span-4 flex-col  bg-white rounded-md shadow-md p-6">
           <h1 className='text-xl text-start text-gray-800 font-bold mb-4'>General information</h1>
 
-          <div className='grid grid-cols-1 w-full sm:grid-cols-2 gap-4'>
+          <div className='grid w-full md:grid-cols-2 grid-cols-1 gap-4'>
             {/* about */}
             <TextField id="outlined-basic" label="Outlined" variant="outlined" />
 
@@ -163,11 +163,11 @@ const Profile = () => {
             <TextField id="outlined-basic" label="Outlined" variant="outlined" type="email" />
           </div>
           <div className="flex w-full items-start">
-            <Button size="small" className='w-fit bg-blue-600 text-white' variant='contained'>Save</Button>
+            <Button size="small" className='w-fit mt-2 bg-blue-600 text-white' variant='contained'>Save</Button>
           </div>
         </div>
 
-        <div className='flex flex-col col-span-3 row-span-4 bg-white rounded-md shadow-md p-6'>
+        <div className='flex flex-col lg:w-full col-span-3 row-span-4 bg-white rounded-md shadow-md p-6'>
           <h1 className='text-xl text-start text-gray-800 font-bold mb-4'>Social accounts</h1>
           {/* show all Social update and delete */}
           <div className="grid grid-cols-1 gap-3">
@@ -186,9 +186,9 @@ const Profile = () => {
                     )}
                   </div>
                   {item.url ? (
-                    <Button size="small" className='w-fit h-fit  text-blue-600 bg-white' variant='contained'>Connected</Button>
+                    <Button size="small" className='w-fit lowercase h-fit  text-blue-600 bg-white' variant='contained'>Connected</Button>
                   ) : (
-                    <Button size="small" className='w-fit h-fit  bg-blue-600 text-white' variant='contained'>Disconnected</Button>
+                    <Button size="small" className='w-fit h-fit lowercase bg-blue-600 text-white' variant='contained'>Disconnected</Button>
                   )}
                 </div>
                 <hr />
@@ -200,7 +200,7 @@ const Profile = () => {
           </div>
         </div>
         
-        <div className="flex flex-col col-span-7 row-span-2 bg-white rounded-md shadow-md p-6">
+        <div className="flex flex-col lg:w-full col-span-7 row-span-2 bg-white rounded-md shadow-md p-6">
           <h1 className='text-xl text-start text-gray-800 font-bold mb-4'>Password information</h1>
           {/* to change password */}
 

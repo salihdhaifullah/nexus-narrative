@@ -14,6 +14,7 @@ export interface ILogin {
 
 export interface ISingUp {
     password: string
-    name: string
+    firstName: string
+    lastName: string
     email: string
 }

@@ -1,36 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '../../../libs/prisma/index'
 import { genSaltSync, hashSync } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { setCookie } from 'cookies-next';
+import { ISingUp } from '../../../types/user';
+import prisma from '../../../libs/prisma/index';
 
 
-interface ISingUp {
-    password: string
-    email: string
-    name: string
-}
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === "POST") {
-        const { password, email, name }: ISingUp = req.body
+        const { password, email, firstName, lastName }: ISingUp = req.body
         const user = await prisma.user.findUnique({ where: { email: email } })
         try {
 
             if (!user) {
 
-                if (password && name && email) {
+                if (password && lastName && firstName && email) {
                     const salt = genSaltSync(10);
                     const hashPassword = hashSync(password, salt)
                     const UserData = await prisma.user.create({
                         data: {
-                            name: name,
+                            firstName: firstName,
+                            lastName: lastName,
                             email: email,
                             password: hashPassword
                         }
                     })
 
-                    const token = jwt.sign({ id: UserData.id, role: UserData.role }, process.env.SECRET_KEY as string, { expiresIn: '2h' })
+                    const token = jwt.sign({ id: UserData.id }, process.env.SECRET_KEY as string, { expiresIn: '2h' })
                     
                     const fullYear = 1000 * 60 * 60 * 24 * 365;
                     
@@ -51,7 +48,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                         id: UserData.id, 
                         createdAt: UserData.createdAt, 
                         email: UserData.email, 
-                        name: UserData.name, 
+                        lastName: UserData.lastName, 
+                        firstName: UserData.firstName, 
                         token
                      } 
 

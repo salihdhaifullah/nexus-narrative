@@ -27,7 +27,8 @@ import FormControl from '@mui/material/FormControl';
 const SingUp: NextPage = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -37,7 +38,7 @@ const SingUp: NextPage = () => {
     setIsLoading(true);
     event.preventDefault();
 
-    await singUp({ password: password, name: name, email: email } as ISingUp).then(({ data }) => {
+    await singUp({ password: password, firstName: firstName, lastName: lastName, email: email } as ISingUp).then(({ data }) => {
       Swal.fire({
         title: 'Sing Up Success',
         html: `<h2>${data.massage}</h2>`,
@@ -53,7 +54,8 @@ const SingUp: NextPage = () => {
     })
 
     setIsLoading(false)
-    setName("")
+    setLastName("")
+    setFirstName("")
     setPassword("")
     setEmail("")
   };
@@ -119,18 +121,35 @@ const SingUp: NextPage = () => {
             />
           </FormControl>
 
+            <div className="inline-flex">
+            <TextField
+            margin="normal"
+            required
+            fullWidth
+            className="mr-3"
+            name="First-Name"
+            label="First-Name"
+            type="First-Name"
+            id="First-Name"
+            autoComplete="currentFirst-Name"
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
+          />
+
           <TextField
             margin="normal"
             required
             fullWidth
-            name="name"
-            label="name"
-            type="name"
-            id="name"
-            autoComplete="current-name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
+            name="Last-Name"
+            label="Last-Name"
+            type="Last-Name"
+            id="Last-Name"
+            autoComplete="currentLast-Name"
+            value={lastName}
+            onChange={(event) => setLastName(event.target.value)}
           />
+            </div>
+
           <Button
             type={(isLoading) ? "reset" : "submit"}
             fullWidth

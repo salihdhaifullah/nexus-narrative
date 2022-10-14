@@ -23,7 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     const isMatch = compareSync(password, UserData.password)
                     if (!isMatch) return res.status(400).json({ error: `password is incorrect` })
                     else {
-                        const token = jwt.sign({ id: UserData.id, role: UserData.role }, process.env.SECRET_KEY as string, { expiresIn: '2h' })
+                        const token = jwt.sign({ id: UserData.id }, process.env.SECRET_KEY as string, { expiresIn: '2h' })
 
                         const fullYear = 1000 * 60 * 60 * 24 * 365;
 
@@ -44,7 +44,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             id: UserData.id, 
                             createdAt: UserData.createdAt, 
                             email: UserData.email, 
-                            name: UserData.name, 
+                            lastName: UserData.lastName, 
+                            firstName: UserData.firstName, 
                             token
                          } 
                         return res.status(200).json({data, massage: "login success" })

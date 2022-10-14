@@ -1,3 +1,10 @@
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import GitHubIcon from '@mui/icons-material/GitHub';
+
 export const checkExpirationDateJwt = (token: string): boolean => {
     // get the object part that content the expiration Date from token
     const base64Url = token.split('.')[1]
@@ -33,6 +40,45 @@ export const checkExpirationDateJwt = (token: string): boolean => {
                                 else return false;
 };
 
+export interface ISocial {
+  icon: any
+  url?: string
+  name: string
+  color: string
+}
+
+export const Social: ISocial[] = [
+  {
+    icon: LinkedInIcon,
+    name: "Linkedin account",
+    color: "text-[#0072b1]"
+  },
+  {
+    icon: TwitterIcon,
+    name: "Twitter account",
+    color: "text-[#00acee]"
+  },
+  {
+    icon: YouTubeIcon,
+    name: "Youtube account",
+    color: "text-[#FF0000]"
+  },
+  {
+    icon: FacebookIcon,
+    name: "Facebook account",
+    color: "text-[#3b5998]"
+  },
+  {
+    icon: InstagramIcon,
+    name: "Instagram account",
+    color: "text-[#8a3ab9]"
+  },
+  {
+    icon: GitHubIcon,
+    name: "Github account",
+    color: "text-[#171515]"
+  },
+]
 
 interface CountryType {
     code: string;
