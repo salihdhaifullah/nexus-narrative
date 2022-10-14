@@ -15,9 +15,6 @@ interface IProps {
 export default function DialogInputs({ name, setOpen, open, setValue, value, handel }: IProps) {
     const [item, setItem] = useState("")
     let apiData: ISocil |  undefined = undefined;
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
 
     const handleClose = () => {
         setOpen(false);
@@ -42,9 +39,6 @@ export default function DialogInputs({ name, setOpen, open, setValue, value, han
 
     return (
         <div>
-            <Button variant="outlined" onClick={handleClickOpen}>
-
-            </Button>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle className='px-10'>add social account</DialogTitle>
                 <DialogContent className='px-20'>

@@ -1,4 +1,5 @@
 import { SocilTypes } from '@prisma/client';
+import { ISocial } from '../static';
 
 export interface IUserProfileData {
     Avter?: {
@@ -47,3 +48,17 @@ export interface IUploadAvatar {
     fileUrl: string
     name: string
 }
+
+export interface IUserProfileProps {
+    userImage: string | null
+    about: string | null
+    blogName: string | null
+    country: string | null
+    city: string | null
+    phoneNumber: string | null
+    title: string | null
+    firstName: string
+    lastName: string
+    email: string
+    social: ISocil[] | null
+  }

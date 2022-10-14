@@ -34,7 +34,7 @@ export const createPost = async (data: ICreatePostData) => await API.post("post"
 
 export const GetPostData = async (slug: string) => await API.get(`get-post-data?slug=${slug}`);
 
-export const GetProfileData = async () => await API.get("/admin/profile");
+export const GetProfileData = async (userId?: string) => await API.get(`/admin/profile?userId=${userId || ""}`);
 
 export const UpdateProfileGeneralInformation = async (data: IUpdateProfileGeneralInformation) => await API.patch("/admin/profile", data)
 

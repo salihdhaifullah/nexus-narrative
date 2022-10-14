@@ -8,11 +8,17 @@ import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformat
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
         try {
+            let UserId = undefined
             const { error, id } = await GetUserIdMiddleware(req)
-            if (error) return res.status(400).json({ massage: error });
+            if (req.query["userId"]) UserId = Number(req.query["userId"]);
+            else UserId = id;
+
+
+            if (error && !UserId) return res.status(400).json({ massage: error });
+
             const user = await prisma.user.findFirst({
                 where: {
-                    id: id
+                    id: UserId
                 },
                 select: {
                     Avter: {
