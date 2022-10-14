@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import { ISocial } from '../static';
 import { ISocil } from '../types/profile';
+import { SocilTypes } from '@prisma/client';
 interface IProps {
-    name: string
+    name: SocilTypes
     setOpen: (state: boolean) => void
     open: boolean
     setValue: (state: ISocial[]) => void
-    handel: (data: ISocil) => void
+    handel: (data: ISocil) => Promise<void>
     value: ISocial[]
 }
 
@@ -22,6 +23,10 @@ export default function DialogInputs({ name, setOpen, open, setValue, value, han
         setOpen(false);
     };
 
+    useEffect(() => {
+        setItem(value.filter((i: any) => i.name.split(" ")[0] === name)[0]?.url || "")
+    }, [name, value])
+
     const handelSetValue = () => {
         if (item) {
             const data: ISocial[] = value.filter((i: any) => i.name.split(" ")[0] !== name);
@@ -31,6 +36,7 @@ export default function DialogInputs({ name, setOpen, open, setValue, value, han
             setValue(endData)
             apiData = { name: name, link: item}
             handel(apiData)
+            setItem("")
         }
     }
 

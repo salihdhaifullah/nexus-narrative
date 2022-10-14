@@ -12,13 +12,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { createPost, GetTagsAndCategories } from '../api';
 import { ICreatePostData } from '../types/post';
-
-interface Files {
-  name: string
-  fileUrl: string
-  file: File
-  previewUrl: string
-}
+import { Files } from '../types/file';
 
 interface HandleEditorChangeProps {
   html: string

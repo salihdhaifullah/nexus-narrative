@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { countries, ISocial, Social } from '../../static'
@@ -7,10 +7,14 @@ import BackupIcon from '@mui/icons-material/Backup';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
-import { ChangeBlogName, ChangePassword, GetProfileData, UpdateProfileGeneralInformation } from '../../api';
+import { ChangeBlogName, ChangePassword, CreateSocial, GetProfileData, UpdateProfileGeneralInformation, uploadAvatar } from '../../api';
 import userPlaceholder from "../../public/images/user-profile.jpg";
-import { IUserProfileData, ISocil, IUpdateProfileGeneralInformation } from '../../types/profile'
+import { IUserProfileData, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../../types/profile'
 import DialogInputs from '../../components/DialogInputs';
+import { SocilTypes } from '@prisma/client';
+import supabase from '../../libs/supabase/config';
+import Swal from 'sweetalert2';
+import { Files } from '../../types/file';
 
 const myLoader = (url: string) => url;
 
@@ -22,7 +26,7 @@ const sortByIsUrlNull = (data: ISocial[], links: ISocil[]): ISocial[] => {
     let data2: ISocial[] = []
 
     for (let socil of data) {
-      const item = links.find((item) => item.name === socil.name.split("")[0])
+      const item = links.find((item) => item.name === socil.name.split(" ")[0])
       if (item) data1.push({ color: socil.color, name: socil.name, url: item.link, icon: socil.icon })
       else data2.push({ color: socil.color, name: socil.name, icon: socil.icon })
     }
@@ -47,12 +51,13 @@ const Profile = () => {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [socialToCreate, setSocialToCreate] = useState("")
+  const [previewUrl, setPreviewUrl] = useState("")
   const [socialName, setSocialName] = useState("")
   const [openDialogInputs, setOpenDialogInputs] = useState(false)
   const [countryDefault, setCountryDefault] = useState<any>(null)
   const [social, setSocial] = useState<ISocial[]>([])
   let profile: IUserProfileData | null = null;
-  
+
 
   const init = async () => {
     await GetProfileData().then((data) => {
@@ -70,7 +75,6 @@ const Profile = () => {
         setFirstName(profile.firstName);
         setLastName(profile.lastName)
         setEmail(profile.email)
-        console.log(countries.find((item) => item.label === country))
         setCountryDefault(countries.find((item) => item.label === country))
         setSocial(sortByIsUrlNull(Social, socil));
       }
@@ -80,6 +84,10 @@ const Profile = () => {
   useEffect(() => {
     init()
   }, [])
+
+  useEffect(() => {
+    setSocial(sortByIsUrlNull(Social, socil));
+  }, [socil])
 
   const HandelUpdateProfileGeneralInformation = async () => {
     let phoneNumber1: number | undefined = undefined;
@@ -107,14 +115,19 @@ const Profile = () => {
     setSocialName(SocialName)
   }
 
-  const handelCreateSocil = (data: ISocil): void => {
+  const handelCreateSocil = async (data: ISocil): Promise<void> => {
     setOpenDialogInputs(false);
     console.log(data);
+    await CreateSocial(data).then((data: any) => {
+      console.log(data)
+    }).catch((err: any) => {
+      console.log(err)
+    })
   }
 
   const handelChangeBlogName = async () => {
     if (blogName) {
-      await ChangeBlogName({blogName: blogName}).then((data: any) => {
+      await ChangeBlogName({ blogName: blogName }).then((data: any) => {
         console.log(data)
       }).catch((err: any) => {
         console.log(err)
@@ -124,7 +137,31 @@ const Profile = () => {
 
   const HandelChangePassword = async () => {
     if (currentPassword && newPassword) {
-      await ChangePassword({currentPassword, newPassword}).then((data) => {
+      await ChangePassword({ currentPassword, newPassword }).then((data) => {
+        console.log(data)
+      }).catch((err: any) => {
+        console.log(err)
+      })
+    }
+  }
+
+  const handelUploadAvatar = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target?.files && event.target.files[0]
+    if (!file) return;
+    if (file.size > 52428800) Swal.fire('some think want wrong', 'file size is to big', 'error');
+
+    else {
+      setPreviewUrl(URL.createObjectURL(file))
+
+      const name: string = Date.now().toString() + file?.name;
+
+      const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
+
+      const NewObjectFile: IUploadAvatar = { name, fileUrl };
+
+      const { data: success, error } = await supabase.storage.from("public").upload(NewObjectFile.name, file)
+      if (error) return Swal.fire('some think want wrong', 'place check internet connection', 'error');
+      await uploadAvatar(NewObjectFile).then((data) => {
         console.log(data)
       }).catch((err: any) => {
         console.log(err)
@@ -139,7 +176,7 @@ const Profile = () => {
         setOpen={setOpenDialogInputs}
         setValue={setSocial}
         value={social}
-        name={socialName}
+        name={socialName as SocilTypes}
         handel={handelCreateSocil}
       />
       <div className="m-4">
@@ -149,25 +186,24 @@ const Profile = () => {
 
           <div className='flex justify-start lg:w-full col-span-3 row-span-2 bg-white rounded-md shadow-md p-6'>
             <div>
-              <span className='rounded-md'>
-                {userImage ? (
+                {previewUrl || userImage ? (
                   <Image
-                    loader={() => myLoader(userImage)}
+                    className='rounded-md'
+                    loader={() => myLoader(previewUrl || userImage)}
                     src={"me.png"}
                     alt="Picture of the author"
-                    width={100}
+                    width={120}
                     height={100}
                   />
                 ) : (
                   <Image
+                    className='rounded-md'
                     src={userPlaceholder}
                     alt="user-placeholder"
-                    width={100}
+                    width={120}
                     height={100}
                   />
                 )}
-
-              </span>
 
               <h1 className='text-2xl text-gray-800 font-bold'>{firstName + " " + lastName}</h1>
               {title && (
@@ -175,7 +211,7 @@ const Profile = () => {
               )}
               <Button size='small' startIcon={<BackupIcon />} className="text-sm mt-4 lowercase" variant="contained" component="label">
                 {userImage ? "Change picture" : "Upload picture"}
-                <input hidden accept="image/*" multiple type="file" />
+                <input onChange={(event) => handelUploadAvatar(event)} hidden accept="image/*" multiple type="file" />
               </Button>
             </div>
           </div>
@@ -259,7 +295,7 @@ const Profile = () => {
                       </div>
                     </div>
                     {item.url ? (
-                      <Button className='flex lowercase text-sm px-4 h-fit text-blue-600 bg-white' variant='contained'>Connected</Button>
+                      <Button onClick={() => handelConnected(item.name.split(" ")[0])} className='flex lowercase text-sm px-4 h-fit text-blue-600 bg-white' variant='contained'>Connected</Button>
                     ) : (
                       <Button onClick={() => handelConnected(item.name.split(" ")[0])} className='flex lowercase text-sm px-4 h-fit bg-blue-600 text-white' variant='contained'>Disconnected</Button>
                     )}

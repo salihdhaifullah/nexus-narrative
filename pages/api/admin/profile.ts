@@ -1,8 +1,9 @@
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../../libs/prisma'
+import supabase from '../../../libs/supabase/config';
 import { GetUserIdMiddleware } from '../../../middleware'
-import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation } from '../../../types/profile';
+import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../../../types/profile';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
@@ -106,7 +107,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 if (!user) return res.status(404).json({ massage: "user Not Found" });
 
                 const isMatch = compareSync(data.currentPassword, user.password)
-                
+
                 if (!isMatch) return res.status(400).json({ error: `password is incorrect` })
 
                 const salt = genSaltSync(10);
@@ -170,6 +171,65 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(500).json({ error });
             }
         }
+
+        if (req.query["uploadAvatar"] === "true") {
+            try {
+                const { error, id } = await GetUserIdMiddleware(req);
+                if (error) return res.status(400).json({ massage: error });
+
+                const user = await prisma.user.findFirst({
+                    where: {
+                        id: id,
+                    },
+                    select: {
+                        id: true,
+                        Avter: {
+                            select: {
+                                id: true,
+                                fileUrl: true,
+                            },
+                        },
+                    },
+                })
+
+                if (!user) return res.status(404).json({ massage: "user Not Found" });
+                const data: IUploadAvatar = req.body
+                if (user.Avter?.id && user.Avter?.fileUrl) {
+                    const {data: Success, error} = await supabase.storage.from("public").remove([user.Avter.fileUrl]);
+
+                    if (error) return res.status(400).json({ massage: error });
+                    console.log(Success);
+                    await prisma.avter.update({ 
+                        where: {
+                            id: user.Avter.id
+                        },
+                        data: {
+                            fileUrl: data.fileUrl,
+                            name: data.name,
+                        }
+                    })
+
+                } else {
+                    await prisma.user.update({
+                        where: {
+                            id: id,
+                        },
+                        data: {
+                            Avter: {
+                                create: {
+                                    fileUrl: data.fileUrl,
+                                    name: data.name,
+                                },
+                            },
+                        }
+                    })
+                }
+
+            } catch (error) {
+                console.log(error);
+                return res.status(500).json({ error });
+            }
+        }
     }
 
     if (req.method === "POST") {
@@ -191,25 +251,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (!user) return res.status(404).json({ massage: "user Not Found" });
 
             const data: ISocil = req.body;
-            const isFound = await prisma.user.findFirst({
+            const isFound = await prisma.socil.findFirst({
                 where: {
-                    id: id
+                    name: data.name,
+                    userId: id
                 },
                 select: {
-                    socil: {
-                        where: {
-                            name: data.name,
-                            userId: id,
-                        },
-                        select: {
-                            name: true,
-                            id: true,
-                        },
-                    },
+                    id: true,
                 },
             })
 
-            if (isFound?.socil) {
+            if (!isFound?.id) {
                 await prisma.user.update({
                     where: {
                         id: id
@@ -223,6 +275,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         },
                     },
                 })
+                console.log("from create");
             } else {
                 await prisma.user.update({
                     where: {
@@ -232,7 +285,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         socil: {
                             update: {
                                 where: {
-                                    name: data.name,
+                                    id: isFound.id,
                                 },
                                 data: {
                                     link: data.link,
@@ -240,7 +293,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             },
                         },
                     },
-                })
+                });
+                console.log("from update");
             }
 
             return res.status(200).json({ massage: 'Success' })

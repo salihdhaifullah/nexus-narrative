@@ -42,3 +42,8 @@ export interface IChangePassword {
     currentPassword: string
     newPassword: string
 }
+
+export interface IUploadAvatar {
+    fileUrl: string
+    name: string
+}

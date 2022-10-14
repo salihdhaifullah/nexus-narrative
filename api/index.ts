@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ICreatePostData } from '../types/post';
-import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation } from '../types/profile';
+import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
 const API = axios.create({ baseURL: 'http://localhost:3000/api' })
@@ -41,5 +41,7 @@ export const UpdateProfileGeneralInformation = async (data: IUpdateProfileGenera
 export const ChangeBlogName = async (data: IChangeBlogName) => await API.put("/admin/profile?blogName=true", data)
 
 export const ChangePassword = async (data: IChangePassword) => await API.put("/admin/profile?password=true", data)
+
+export const uploadAvatar = async (data: IUploadAvatar) => await API.put("/admin/profile?uploadAvatar=true", data)
 
 export const CreateSocial = async (data: ISocil) => await API.post("/admin/profile", data)
