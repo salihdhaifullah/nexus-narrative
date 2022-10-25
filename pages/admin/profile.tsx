@@ -282,7 +282,7 @@ const Profile = () => {
                 <div key={index}>
                   <div className="flex w-full mt-2 justify-evenly">
                     <div className="flex w-full">
-                      <item.icon className={`${item.color} mr-4`} />
+                      <item.icon className={`${item.color && item.color + " "} mr-4`} />
                       <div className='mr-4'>
                         <h2 className='text-lg text-start text-gray-800 font-medium'>{item.name}</h2>
                         {item.url ? (

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import userPlaceholder from "../../public/images/user-profile.jpg";
-import { ISocil, IUserProfileProps } from '../../types/profile';
-import { getAllUsersIds, GetUserProfileData } from '../../controllers';
-import { ISocial, Social } from '../../static';
+import userPlaceholder from "../../../public/images/user-profile.jpg";
+import { ISocil, IUserProfileProps } from '../../../types/profile';
+import { getAllUsersIds, GetUserProfileData } from '../../../controllers';
+import { ISocial, Social } from '../../../static';
 import { useEffect, useState } from 'react';
 
 const myLoader = (url: string) => url;
@@ -11,17 +11,20 @@ const myLoader = (url: string) => url;
 const RemoveSocialWithOutLink = (data: ISocial[], links: ISocil[]): ISocial[] => {
   let sorted: ISocial[] = []
   if (links.length) {
-      let data1: ISocial[] = []
+    let data1: ISocial[] = []
 
-      for (let socil of data) {
-          const item = links.find((item) => item.name === socil.name.split(" ")[0])
-          if (item) data1.push({ color: socil.color, name: socil.name, url: item.link, icon: socil.icon })
-      }
-      sorted = data1;
+    for (let socil of data) {
+      const item = links.find((item) => item.name === socil.name.split(" ")[0])
+      if (item) data1.push({ color: socil.color, name: socil.name, url: item.link, icon: socil.icon })
+    }
+    sorted = data1;
 
   } else sorted = data;
   return sorted
 }
+
+const HandelElement = ({item}: any) => <item.icon className={item.color + " mr-4"}/>  
+
 
 const Profile = (props: IUserProfileProps) => {
   const [social, setSocial] = useState<ISocial[]>([])
@@ -31,7 +34,7 @@ const Profile = (props: IUserProfileProps) => {
       setSocial(RemoveSocialWithOutLink(Social, props.social))
     }
   }, [props.social])
-  
+
   return (
     <div className='max-w-[100vw] min-h-[100vh]'>
       <div className="m-4">
@@ -70,11 +73,11 @@ const Profile = (props: IUserProfileProps) => {
 
             <div className='grid w-full md:grid-cols-2 mt-8 grid-cols-1 gap-4'>
 
-              <h2 className='text-gray-700 text-lg mt-1'>firstName: <strong>{props.firstName}</strong>
+              <h2 className='text-gray-700 text-lg mt-1'>first Name: <strong>{props.firstName}</strong>
                 <hr className='my-2' />
               </h2>
 
-              <h2 className='text-gray-700 text-lg mt-1'>lastName: <strong>{props.lastName}</strong>
+              <h2 className='text-gray-700 text-lg mt-1'>last Name: <strong>{props.lastName}</strong>
                 <hr className='my-2' />
               </h2>
 
@@ -86,7 +89,7 @@ const Profile = (props: IUserProfileProps) => {
                 <hr className='my-2' />
               </h2>
 
-              <h2 className='text-gray-700 text-lg mt-1'>phoneNumber: <strong>{props.phoneNumber || "Not Found"}</strong>
+              <h2 className='text-gray-700 text-lg mt-1'>phone Number: <strong>{props.phoneNumber || "Not Found"}</strong>
                 <hr className='my-2' />
               </h2>
 
@@ -109,7 +112,7 @@ const Profile = (props: IUserProfileProps) => {
                 <div key={index}>
                   <div className="flex w-full mt-2 justify-evenly">
                     <div className="flex w-full">
-                      <item.icon className={`${item.color} mr-4`} />
+                      <HandelElement item={item}/>
                       <div className='mr-4'>
                         <h2 className='text-lg text-start text-gray-800 font-medium'>{item.name}</h2>
                         {item.url ? (

@@ -51,32 +51,32 @@ export const Social: ISocial[] = [
   {
     icon: LinkedInIcon,
     name: "Linkedin account",
-    color: "text-[#0072b1]"
+    color: " text-[#0072b1] "
   },
   {
     icon: TwitterIcon,
     name: "Twitter account",
-    color: "text-[#00acee]"
+    color: " text-[#00acee] "
   },
   {
     icon: YouTubeIcon,
     name: "Youtube account",
-    color: "text-[#FF0000]"
+    color: " text-[#FF0000] "
   },
   {
     icon: FacebookIcon,
     name: "Facebook account",
-    color: "text-[#3b5998]"
+    color: " text-[#3b5998] "
   },
   {
     icon: InstagramIcon,
     name: "Instagram account",
-    color: "text-[#8a3ab9]"
+    color: " text-[#8a3ab9] "
   },
   {
     icon: GitHubIcon,
     name: "Github account",
-    color: "text-[#171515]"
+    color: " text-[#171515] "
   },
 ]
 
