@@ -10,6 +10,10 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import Avatar from '@mui/material/Avatar';
+import Image from 'next/image'
+
+const myLoader = (url: string) => url;
 
 interface SidebarProps {
   description: string;
@@ -19,13 +23,26 @@ interface SidebarProps {
   }>;
   title: string;
   email: string;
+  name: string;
+  AvatarUrl: string;
 }
 
 export default function Sidebar(props: SidebarProps) {
-  const { description, social, title, email } = props;
+  const { description, social, title, email, name, AvatarUrl } = props;
 
   return (
     <Grid item xs={12} md={4}>
+      <Paper className='inline-flex mb-2 items-center justify-evenly w-full p-2'>
+        <Image
+          className='rounded-full '
+          loader={() => myLoader(AvatarUrl)}
+          src={"me.png"}
+          alt="Picture of the author"
+          width={80}
+          height={80}
+        />
+        <Typography className="text-xl">{name}</Typography>
+      </Paper>
       <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.200' }}>
         <Typography variant="h6" gutterBottom>
           {title}
@@ -45,23 +62,26 @@ export default function Sidebar(props: SidebarProps) {
         >
           <Stack direction="row" spacing={1} alignItems="center">
             {network.name === "Linkedin" && (
-              <LinkedInIcon className="text-[#0072b1]"/>
+              <LinkedInIcon className="text-[#0072b1]" />
             ) || network.name === "Twitter" && (
-              <TwitterIcon className="text-[#00acee]"/>
+              <TwitterIcon className="text-[#00acee]" />
             ) || network.name === "Youtube" && (
-              <YouTubeIcon className="text-[#FF0000]"/>
+              <YouTubeIcon className="text-[#FF0000]" />
             ) || network.name === "Facebook" && (
-              <FacebookIcon className="text-[#3b5998] "/>
+              <FacebookIcon className="text-[#3b5998] " />
             ) || network.name === "Instagram" && (
-              <InstagramIcon className="text-[#8a3ab9] "/>
+              <InstagramIcon className="text-[#8a3ab9] " />
             ) || network.name === "Github" && (
-              <GitHubIcon className="text-[#171515]"/>
+              <GitHubIcon className="text-[#171515]" />
             )}
             <span>{network.name}</span>
           </Stack>
         </Link>
       ))}
-      <Typography className="text-lg">{email}</Typography>
+      <Typography className="text-lg">
+        <div> connect to author |</div>
+
+        {email}</Typography>
     </Grid>
   );
 }

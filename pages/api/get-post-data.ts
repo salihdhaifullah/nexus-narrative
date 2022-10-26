@@ -12,11 +12,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
                 select: {
                     content: true,
-                    images: {
-                        select: {
-                            fileUrl: true
-                        },
-                    },
                     title: true,
                     author: {
                         select: {
@@ -68,7 +63,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         },
                     },
                     createdAt: true,
-                    updatedAt: true,
                     backgroundImageUrl: true,
                     likes: true,
                     dislikes: true,
