@@ -49,7 +49,6 @@ model Post {
   authorId           Int
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
-  isPublic           Boolean   @default(false)
   backgroundImageUrl String
   likes              String[]
   dislikes           String[]

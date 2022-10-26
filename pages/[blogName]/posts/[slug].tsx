@@ -1,5 +1,5 @@
-import Layout from '../../../../components/layout';
-import { getAllSlugs, getPostData } from '../../../../controllers';
+import Layout from '../../../components/layout';
+import { getAllSlugs, getPostData } from '../../../controllers';
 import Head from 'next/head';
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'

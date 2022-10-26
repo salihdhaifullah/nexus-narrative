@@ -14,10 +14,8 @@ import DialogInputs from '../../components/DialogInputs';
 import { SocilTypes } from '@prisma/client';
 import supabase from '../../libs/supabase/config';
 import Swal from 'sweetalert2';
-import { Files } from '../../types/file';
 
 const myLoader = (url: string) => url;
-
 
 const sortByIsUrlNull = (data: ISocial[], links: ISocil[]): ISocial[] => {
   let sorted: ISocial[] = []

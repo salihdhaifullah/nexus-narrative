@@ -8,4 +8,5 @@ export interface ICreatePostData {
         fileUrl: string
     }[]
     tags: string[]
+    backgroundImageUrl: string
 }

@@ -2,7 +2,7 @@ import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 import supabase from '../libs/supabase/config'
-import { useEffect, useState, useMemo, useRef } from 'react'
+import { useEffect, useState, useMemo, useRef, ChangeEvent } from 'react'
 import Swal from 'sweetalert2'
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
@@ -13,6 +13,9 @@ import Stack from '@mui/material/Stack';
 import { createPost, GetTagsAndCategories } from '../api';
 import { ICreatePostData } from '../types/post';
 import { Files } from '../types/file';
+import { Button } from '@mui/material';
+import BackupIcon from '@mui/icons-material/Backup';
+
 
 interface HandleEditorChangeProps {
   html: string
@@ -44,6 +47,7 @@ const MdEditorCom = () => {
   const [slug, setSlug] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [category, setCategory] = useState<FilmOptionType | null>(null)
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState("")
 
   const handleEditorChange = ({ html, text }: HandleEditorChangeProps) => {
     setText(text)
@@ -86,7 +90,26 @@ useEffect(() => {
       setData(data)
       return previewUrl
     }
+  }
 
+
+  const handelUploadImage = async (event: ChangeEvent<HTMLInputElement>): Promise<string | undefined> => {
+    const file = event.target?.files && event.target.files[0]
+    if (!file) return;
+    if (file.size > 52428800) Swal.fire('some think want wrong', 'file size is to big', 'error');
+    else {
+
+      const name: string = Date.now().toString() + file?.name;
+
+      const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
+
+      const { data: success, error } = await supabase.storage.from("public").upload(name, file)
+      if (error) {
+        Swal.fire('some think want wrong', 'place check internet connection', 'error');
+        return;
+      };
+      setBackgroundImageUrl(fileUrl)
+    }
   }
 
   const HandelSubmit = async () => {
@@ -113,7 +136,8 @@ useEffect(() => {
           slug,
           images: files,
           tags,
-          category: category.name
+          category: category.name,
+          backgroundImageUrl
         }
 
         console.log(endData);
@@ -130,6 +154,8 @@ useEffect(() => {
       setPreviewsUrl([])
     }
   }
+
+
 
 
   return (
@@ -225,7 +251,10 @@ useEffect(() => {
               )}
             />
           </Stack>
-
+          <Button size='small' startIcon={<BackupIcon />} className="text-sm mt-4 lowercase" variant="contained" component="label">
+                Upload background image
+                <input onChange={(event) => handelUploadImage(event)} hidden accept="image/*" multiple type="file" />
+              </Button>
         </Box>
         <MdEditor
           ref={mdEditorRef}

@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { NextResponse } from 'next/server'
 import prisma from '../../libs/prisma'
 import { ICreatePostData } from '../../types/post'
-import { GetUserIdMiddleware, GetUserRoleAndIdMiddleware } from '../../middleware';
+import { GetUserIdMiddleware } from '../../middleware';
 
 
 
@@ -25,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else if (req.method === "POST") {
         const TagsQuery = []
         
-        const { error, id, role } = GetUserRoleAndIdMiddleware(req)
+        const { error, id } = GetUserIdMiddleware(req)
         
         if (error) return res.status(400).json({massage: error});
 
@@ -34,15 +33,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 id: id
             },
             select: {
-                role: true
+                id: true
             }
         });
 
         if (!user) return res.status(400).json({massage: "User Not Found"})
-        if (user.role !== "ADMIN") return res.status(403).json({massage: "UnAuthorized"})
         
-
-        const { title, content, slug, images, tags, category }: ICreatePostData = req.body
+        const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body
 
         if (!title || !content || !slug || !category) return res.status(400).json({massage: "Bad Request"})
 
@@ -72,6 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const data = await prisma.post.create({
             data: {
+                backgroundImageUrl: backgroundImageUrl,
                 tags: {
                     connectOrCreate: TagsQuery,
                 },

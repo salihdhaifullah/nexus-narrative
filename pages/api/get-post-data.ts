@@ -21,7 +21,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     author: {
                         select: {
                             email: true,
-                            name: true,
+                            firstName: true,
+                            lastName: true,
                             Avter: {
                                 select: {
                                     fileUrl: true
@@ -37,7 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             authorId: true,
                             author: {
                                 select: {
-                                    name: true,
+                                    firstName: true,
+                                    lastName: true,
                                     Avter: {
                                         select: {
                                             fileUrl: true
@@ -58,7 +60,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         },
                     },
                     createdAt: true,
-                    updatedAt: true
+                    updatedAt: true,
+                    backgroundImageUrl: true,
+                    likes: true,
+                    dislikes: true,
                 }
             });
         

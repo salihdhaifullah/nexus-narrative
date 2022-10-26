@@ -6,36 +6,75 @@ import { ISocial, Social } from '../static';
 interface ISlugItem {
     params: {
         slug: string
+        blogName: string
     }
 }
 
-export const getAllSlugs = async (): Promise<ISlugItem[]> => {
+interface IBlogName {
+    params: {
+        blogName: string
+    }
+}
 
-    const slugs = []
-    const data = await prisma.post.findMany({
+export const getAllBlogsName = async (): Promise<IBlogName[] | any> => {
+    const blogName = [];
+
+    const data = await prisma.user.findMany({
+        where: {
+            NOT: [
+                {
+                    blogName: null,
+                },
+            ],
+        },
         select: {
-            slug: true
+            blogName: true
         }
     })
 
     for (let item of data) {
-        slugs.push({ params: item })
+        blogName.push({ params: item })
+    }
+    return blogName;
+}
+
+export const getAllSlugs = async (): Promise<ISlugItem[] | any> => {
+
+    const slugs = []
+    const data = await prisma.post.findMany({
+        select: {
+            slug: true,
+            author: {
+                select: {
+                    blogName: true,
+                },
+            },
+        }
+    })
+
+    for (let item of data) {
+        slugs.push({ params: { slug: item.slug, blogName: item.author.blogName } })
     }
 
-    return slugs
+    return slugs;
 }
 
 export const getPostData = async (slug: string) => {
     let dataItem: any = null
     await GetPostData(slug).then((data: any) => dataItem = data.data.dataItem)
-
-    if (!dataItem) throw new Error('data error');
-
-
+    console.log(dataItem)
     return {
         slug,
         dataItem,
         content: dataItem.content,
+    };
+}
+
+export const getBlogData = async (blogName: string) => {
+    const dataItem = {};
+    return {
+        blogName,
+        dataItem,
     };
 }
 
