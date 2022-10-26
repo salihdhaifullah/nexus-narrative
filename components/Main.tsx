@@ -5,12 +5,12 @@ import Divider from '@mui/material/Divider';
 import Markdown from './Markdown';
 
 interface MainProps {
-  posts: ReadonlyArray<string>;
+  post: string;
   title: string;
 }
 
 export default function Main(props: MainProps) {
-  const { posts, title } = props;
+  const { post, title } = props;
 
   return (
     <Grid
@@ -27,11 +27,9 @@ export default function Main(props: MainProps) {
         {title}
       </Typography>
       <Divider />
-      {posts.map((post) => (
         <Markdown className="markdown" key={post.substring(0, 40)}>
           {post}
         </Markdown>
-      ))}
     </Grid>
   );
 }

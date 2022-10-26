@@ -3,28 +3,29 @@ import ReactMarkdown from 'markdown-to-jsx';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
+import remarkGfm from 'remark-gfm';
 
 function MarkdownListItem(props: any) {
   return <Box component="li" sx={{ mt: 1, typography: 'body1' }} {...props} />;
 }
-
+const h1 = (): React.ReactComponentElement => {
+  return <h1 className="text-2xl"></h1>
+}
 const options = {
   overrides: {
     h1: {
-      component: Typography,
-      props: {
-        gutterBottom: true,
-        variant: 'h4',
-        component: 'h1',
-      },
+      component: h1,
     },
     h2: {
       component: Typography,
-      props: { gutterBottom: true, variant: 'h6', component: 'h2' },
+      props: {
+        gutterBottom: true, variant: 'h6', component: 'h2', className: 'text-2xl',
+      },
     },
     h3: {
       component: Typography,
-      props: { gutterBottom: true, variant: 'subtitle1' },
+      props: { gutterBottom: true, variant: 'subtitle1',         className: 'text-2xl',
+    },
     },
     h4: {
       component: Typography,
@@ -32,11 +33,15 @@ const options = {
         gutterBottom: true,
         variant: 'caption',
         paragraph: true,
+        className: 'text-2xl',
+
       },
     },
     p: {
       component: Typography,
-      props: { paragraph: true },
+      props: { paragraph: true,
+        className: 'text-2xl',
+      },
     },
     a: { component: Link },
     li: {

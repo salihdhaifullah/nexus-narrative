@@ -13,6 +13,7 @@ import Sidebar from './Sidebar';
 import post1 from './blog-post1';
 import post2 from './blog-post2';
 import post3 from './blog-post3';
+import { Typography } from '@mui/material';
 
 
 
@@ -44,56 +45,58 @@ const featuredPosts = [
   },
 ];
 
-const posts = [post1, post2, post3];
-
-const sidebar = {
-  title: 'About',
-  description:
-    'Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.',
-  archives: [
-    { title: 'March 2020', url: '#' },
-    { title: 'February 2020', url: '#' },
-    { title: 'January 2020', url: '#' },
-    { title: 'November 1999', url: '#' },
-    { title: 'October 1999', url: '#' },
-    { title: 'September 1999', url: '#' },
-    { title: 'August 1999', url: '#' },
-    { title: 'July 1999', url: '#' },
-    { title: 'June 1999', url: '#' },
-    { title: 'May 1999', url: '#' },
-    { title: 'April 1999', url: '#' },
-  ],
-  social: [
-    { name: 'GitHub', icon: GitHubIcon },
-    { name: 'Twitter', icon: TwitterIcon },
-    { name: 'Facebook', icon: FacebookIcon },
-  ],
-};
 
 const theme = createTheme();
 
-export default function Blog() {
+interface IBlogProps {
+  content: string;
+  about: string;
+  socil: {
+    name: string;
+    link: string;
+  }[]
+  email: string;
+  title: string;
+  blogName: string;
+  backgroundImageUrl: string;
+}
+
+export default function Blog({content, about, socil, email, title, blogName, backgroundImageUrl}: IBlogProps) {
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="lg">
         <main>
-          <MainFeaturedPost post={mainFeaturedPost} />
-          <Grid container spacing={4}>
-            {featuredPosts.map((post) => (
-              <FeaturedPost key={post.title} post={post} />
-            ))}
-          </Grid>
+          <MainFeaturedPost image={backgroundImageUrl} title={title}/>
           <Grid container spacing={5} sx={{ mt: 3 }}>
-            <Main title="From the firehose" posts={posts} />
+            <Main title={`From the ` + blogName} post={content} />
             <Sidebar
-              title={sidebar.title}
-              description={sidebar.description}
-              archives={sidebar.archives}
-              social={sidebar.social}
+              title="about"
+              description={about}
+              social={socil}
+              email={email}
             />
           </Grid>
+
+          <Container>
+            <Typography className="mb-4" variant='h5' component='h1'> Posts From The author </Typography>
+            <Grid container spacing={4}>
+              {featuredPosts.map((post) => (
+                <FeaturedPost key={post.title} post={post} />
+              ))}
+            </Grid>
+
+            <Typography variant='h5' className="my-4" component='h1'> Posts Related to the topic </Typography>
+            <Grid container spacing={4} >
+              {featuredPosts.map((post) => (
+                <FeaturedPost key={post.title} post={post} />
+              ))}
+            </Grid>
+          </Container>
+
         </main>
+
       </Container>
     </ThemeProvider>
   );

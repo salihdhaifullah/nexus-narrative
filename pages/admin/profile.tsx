@@ -14,6 +14,12 @@ import DialogInputs from '../../components/DialogInputs';
 import { SocilTypes } from '@prisma/client';
 import supabase from '../../libs/supabase/config';
 import Swal from 'sweetalert2';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 const myLoader = (url: string) => url;
 
@@ -280,7 +286,19 @@ const Profile = () => {
                 <div key={index}>
                   <div className="flex w-full mt-2 justify-evenly">
                     <div className="flex w-full">
-                      <item.icon className={`${item.color && item.color + " "} mr-4`} />
+                    {item.name.split(" ")[0] === "Linkedin" && (
+                        <LinkedInIcon className="mr-4 text-[#0072b1]" />
+                      ) || item.name.split(" ")[0] === "Twitter" && (
+                        <TwitterIcon className="mr-4 text-[#00acee]" />
+                      ) || item.name.split(" ")[0] === "Youtube" && (
+                        <YouTubeIcon className="mr-4 text-[#FF0000]" />
+                      ) || item.name.split(" ")[0] === "Facebook" && (
+                        <FacebookIcon className="mr-4 text-[#3b5998] " />
+                      ) || item.name.split(" ")[0] === "Instagram" && (
+                        <InstagramIcon className="mr-4 text-[#8a3ab9] " />
+                      ) || item.name.split(" ")[0] === "Github" && (
+                        <GitHubIcon className="mr-4 text-[#171515]" />
+                      )}
                       <div className='mr-4'>
                         <h2 className='text-lg text-start text-gray-800 font-medium'>{item.name}</h2>
                         {item.url ? (

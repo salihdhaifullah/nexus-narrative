@@ -4,8 +4,8 @@ import prisma from '../../libs/prisma';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
         const data = req.query;
-        const slug: string | undefined = data.slug;
-        if (slug) {
+        const slug = data.slug;
+        if (slug && typeof slug === 'string') {
             const dataItem = await prisma.post.findUnique({
                 where: {
                     slug: slug
@@ -23,9 +23,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             email: true,
                             firstName: true,
                             lastName: true,
+                            blogName: true,
                             Avter: {
                                 select: {
                                     fileUrl: true
+                                }
+                            },
+                            about: true,
+                            socil: {
+                                select: {
+                                    name: true,
+                                    link: true,
                                 }
                             }
                         },
@@ -44,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                         select: {
                                             fileUrl: true
                                         },
-                                    },
+                                    }
                                 },
                             },
                         },
@@ -66,10 +74,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     dislikes: true,
                 }
             });
-        
-            return res.status(200).json({dataItem})
 
-        } else return  res.status(400).json({ massage: "slug was not provide" })
+            return res.status(200).json({ dataItem })
+
+        } else return res.status(400).json({ massage: "slug was not provide" })
 
     }
 
