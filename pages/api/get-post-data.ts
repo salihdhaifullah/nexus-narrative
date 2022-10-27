@@ -1,10 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../libs/prisma';
+import { GetUserIdMiddleware } from '../../middleware';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
         const data = req.query;
         const slug = data.slug;
+
+        const { error, id } = GetUserIdMiddleware(req);
+
         if (slug && typeof slug === 'string') {
             const dataItem = await prisma.post.findUnique({
                 where: {
@@ -68,8 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     dislikes: true,
                 }
             });
-
-            return res.status(200).json({ dataItem })
+            return res.status(200).json({ dataItem, id })
 
         } else return res.status(400).json({ massage: "slug was not provide" })
 

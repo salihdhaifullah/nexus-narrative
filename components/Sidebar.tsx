@@ -10,7 +10,6 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import Avatar from '@mui/material/Avatar';
 import Image from 'next/image'
 
 const myLoader = (url: string) => url;
@@ -32,17 +31,21 @@ export default function Sidebar(props: SidebarProps) {
 
   return (
     <Grid item xs={12} md={4}>
-      <Paper className='inline-flex mb-2 items-center justify-evenly w-full p-2'>
-        <Image
-          className='rounded-full '
+
+      
+<div className='inline-flex items-center'>
+<Image
+          className='rounded-full'
           loader={() => myLoader(AvatarUrl)}
           src={"me.png"}
           alt="Picture of the author"
           width={80}
           height={80}
         />
-        <Typography className="text-xl">{name}</Typography>
-      </Paper>
+        
+      <Typography className="text-xl ml-2 text-center">{name}</Typography>
+</div>
+
       <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.200' }}>
         <Typography variant="h6" gutterBottom>
           {title}

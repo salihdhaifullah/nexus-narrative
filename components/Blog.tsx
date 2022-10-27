@@ -9,20 +9,11 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import moment from 'moment';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Button, Chip, Typography } from '@mui/material';
 import { IUser } from '../types/user';
-import { Avatar } from '@mui/material';
-
-
-
-const mainFeaturedPost = {
-  title: 'Title of a longer featured blog post',
-  description:
-    "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
-  image: 'https://source.unsplash.com/random',
-  imageText: 'main image description',
-  linkText: 'Continue reading…',
-};
+import Image from 'next/image';
+import plaseHolder from '../public/images/user-placeholder.png';
 
 const featuredPosts = [
   {
@@ -66,6 +57,8 @@ interface IBlogProps {
   category: string;
 }
 
+const myLoader = (url: string) => url;
+
 export default function Blog({ content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
   const comment = {
     createdAt: 1666800365141,
@@ -74,18 +67,15 @@ export default function Blog({ content, about, socil, email, title, blogName, ba
     userId: 2
   }
 
-  const isServer: boolean = typeof window !== 'undefined';
 
-  let isFound: null | string = null;
-  let user: IUser | null = null;
+  const [isServer, setIsServer] = React.useState<boolean>(typeof window === 'undefined');
+  const [isFound, setIsFound] = React.useState<any>(null);
+  const [user, setUser] = React.useState<IUser | null>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   useEffect(() => {
-    if (!isServer) isFound = localStorage.getItem("user")
-    if (isFound) {
-      user = JSON.parse(isFound)
-      console.log(user);
-    }
-
+    if (!isServer) setIsFound(localStorage.getItem("user"));
+    if (isFound) setUser(JSON.parse(isFound));
   }, [])
 
   return (
@@ -108,8 +98,8 @@ export default function Blog({ content, about, socil, email, title, blogName, ba
             />
           </Grid>
 
-          <Grid>
-            <div className="min-w-full rounded-lg shadow-lg bg-white p-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-lg shadow-lg bg-white p-6">
               <div className="mb-2">
                 <label htmlFor="comment" className="text-lg text-gray-600">Add a comment</label>
                 <textarea
@@ -123,25 +113,36 @@ export default function Blog({ content, about, socil, email, title, blogName, ba
                   Comment
                 </Button>
                 <Button
-                  className="px-3 py-2 text-sm hover:text-white hover:bg-blue-600 text-blue-600 border border-blue-500 rounded">
+                  className="px-3 py-2 text-sm hover:text-white border-blue-600 hover:bg-blue-600 text-blue-600 border rounded">
                   Cancel
                 </Button>
               </div>
             </div>
 
 
-            <div>
+            <div className="h-fit p-4 rounded-md bg-white shadow-md">
               <div className="mb-2 flex">
 
-                <span className="relative">
-                  <div className="absolute flex flex-col rounded-md bg-white transition-all shadow-md p-4">
-                    <span
-                      className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base  mb-2">Delete</span>
-                    <span
-                      className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base">Update</span>
-                  </div>
-                </span>
-                <Avatar className="object-fill max-w-8 max-h-8 sm:max-w-10 sm:max-h-10 lg:max-w-12 lg:max-h-12 rounded-full"></Avatar>
+                {isOpen && (
+                  <span className="relative z-10">
+                    <div className="absolute flex flex-col top-10 rounded-md bg-white transition-all shadow-md p-4">
+                      <span
+                        className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base  mb-2">Delete</span>
+                      <span
+                        className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base">Update</span>
+                    </div>
+                  </span>
+                )}
+                {/* need to work on Avatar commponnent and comment funcshnalty */}
+                <MoreVertIcon onClick={() => setIsOpen(!isOpen)} className="cursor-pointer" />
+
+                <Image
+                  className='rounded-full object-fill'
+                  src={plaseHolder}
+                  alt="Picture of the author"
+                  width={60}
+                  height={60}
+                />
                 <span className="text-base text-gray-700 mr-2 flex-1 ml-6">By {comment.userName}</span>
                 <span className="text-sm text-gray-500">{moment(comment.createdAt).format('ll')}</span>
               </div>
@@ -149,7 +150,8 @@ export default function Blog({ content, about, socil, email, title, blogName, ba
 
               <span className="text-base text-gray-700">{comment.content}</span>
             </div>
-          </Grid>
+
+          </div>
 
           <Container className="mt-20">
             <Grid container spacing={4} className="flex justify-center items-center my-4">

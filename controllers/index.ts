@@ -61,12 +61,13 @@ export const getAllSlugs = async (): Promise<ISlugItem[] | any> => {
 
 export const getPostData = async (slug: string) => {
     let dataItem: any = null
-    await GetPostData(slug).then((data: any) => dataItem = data.data.dataItem)
+    await GetPostData(slug).then((data: any) => dataItem = data.data)
     console.log(dataItem)
     return {
         slug,
-        dataItem,
-        content: dataItem.content,
+        dataItem: dataItem.dataItem,
+        id: dataItem.id || null,
+        content: dataItem.dataItem.content,
     };
 }
 
