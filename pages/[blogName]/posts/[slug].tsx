@@ -7,8 +7,9 @@ import Markdown from '../../../components/Markdown';
 import Blog from '../../../components/Blog';
 import moment from 'moment';
 
+
+
 export default function Post({ postData }: any) {
-  console.log(postData);
   return (
     <>
       <Head>
@@ -17,6 +18,7 @@ export default function Post({ postData }: any) {
       <Blog 
       content={postData.content} 
       about={postData.dataItem.author.about}
+      postId={postData.dataItem.id}
       socil={postData.dataItem.author.socil}
       email={postData.dataItem.author.email}
       title={postData.dataItem.title}
@@ -26,7 +28,8 @@ export default function Post({ postData }: any) {
       name={postData.dataItem.author.firstName + " " + postData.dataItem.author.lastName}
       createdAt={moment(postData.dataItem.createdAt).format("yyyy, MMM, d")}
       tags={postData.dataItem.tags}
-      category={postData.dataItem.category.name}/>
+      category={postData.dataItem.category.name}
+      comments={postData.dataItem.comments}/>
     </>
   );
 }

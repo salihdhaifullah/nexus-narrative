@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ICommentData } from '../types/comment';
 import { ICreatePostData } from '../types/post';
 import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
@@ -45,3 +46,9 @@ export const ChangePassword = async (data: IChangePassword) => await API.put("/a
 export const uploadAvatar = async (data: IUploadAvatar) => await API.put("/admin/profile?uploadAvatar=true", data)
 
 export const CreateSocial = async (data: ISocil) => await API.post("/admin/profile", data)
+
+export const CreateComment = async (data: ICommentData) => await API.post(`comment`, data);
+
+export const deleteComment = async (id: number) => await API.delete(`comment?id=${id}`)
+
+export const updateComment = async (id: number, content: string) => await API.patch(`comment?id=${id}`, {content: content})

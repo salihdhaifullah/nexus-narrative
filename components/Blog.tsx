@@ -8,12 +8,9 @@ import MainFeaturedPost from './MainFeaturedPost';
 import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
-import moment from 'moment';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Comment from './Comment';
 import { Button, Chip, Typography } from '@mui/material';
-import { IUser } from '../types/user';
-import Image from 'next/image';
-import plaseHolder from '../public/images/user-placeholder.png';
+import { CreateComment, updateComment } from '../api';
 
 const featuredPosts = [
   {
@@ -55,33 +52,67 @@ interface IBlogProps {
     name: string;
   }[];
   category: string;
+  postId: number;
+
+  comments: {
+    author: {
+      Avter: {
+        fileUrl: string;
+      }
+      firstName: string;
+      lastName: string;
+    }
+    authorId: number;
+    content: string;
+    createdAt: Date;
+    id: number;
+  }[]
+
 }
 
-const myLoader = (url: string) => url;
+export default function Blog({ comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
 
-export default function Blog({ content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
-  const comment = {
-    createdAt: 1666800365141,
-    userName: "salih Hassan",
-    content: "hello moomoo what are you doing",
-    userId: 2
+  const [commentState, setComment] = React.useState("");
+  const [idToUpdate, setIdToUpdate] = React.useState<number | null>(null)
+  const formRef = React.useRef<HTMLDivElement>();
+
+
+  const handelCreateOrUpdateComment = async () => {
+    if (!commentState) return;
+    if (idToUpdate === null) {
+      await CreateComment({ postId: Number(postId), comment: commentState }).then((res) => {
+        console.log(res)
+      }).catch((err: any) => {
+        console.log(err);
+      })
+    } else {
+      await updateComment(idToUpdate, commentState).then((res) => {
+        console.log(res);
+      }).catch((err: any) => {
+        console.log(err);
+      })
+    }
+    setComment("")
   }
 
-
-  const [isServer, setIsServer] = React.useState<boolean>(typeof window === 'undefined');
-  const [isFound, setIsFound] = React.useState<any>(null);
-  const [user, setUser] = React.useState<IUser | null>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
-
   useEffect(() => {
-    if (!isServer) setIsFound(localStorage.getItem("user"));
-    if (isFound) setUser(JSON.parse(isFound));
+    console.log(formRef)
   }, [])
+
+  const scrollToForm = () => {
+    if (formRef?.current && formRef.current?.offsetLeft && formRef.current?.offsetTop) {
+      scroll(formRef.current.offsetLeft, (formRef.current.offsetTop - 200));
+    }
+  }
+  const HandelCancel = () => {
+    setComment("")
+  }
+
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" >
         <main>
           <MainFeaturedPost image={backgroundImageUrl} title={title} />
           <Typography className="text-lg">published at: {createdAt}</Typography>
@@ -96,60 +127,41 @@ export default function Blog({ content, about, socil, email, title, blogName, ba
               name={name}
               AvatarUrl={AvatarUrl}
             />
+
           </Grid>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-lg shadow-lg bg-white p-6">
+          <hr className='mt-20 mb-40' />
+          <div className="grid lg:grid-cols-2 grid-cols-1  gap-4">
+
+            <div className="rounded-lg h-fit shadow-lg bg-white p-6" ref={formRef}>
               <div className="mb-2">
                 <label htmlFor="comment" className="text-lg text-gray-600">Add a comment</label>
                 <textarea
+                  value={commentState}
+                  onChange={(event) => setComment(event.target.value)}
                   id="comment"
                   className="min-h-[10rem] min-w-full p-2 border rounded focus:outline-none focus:ring-gray-300 focus:ring-1"
                   name="comment"
                   placeholder=""></textarea>
               </div>
               <div className="justify-evenly flex items-center">
-                <Button className="px-3 py-2 hover:text-blue-600 hover:border-blue-600 hover:border hover:bg-white text-sm text-white bg-blue-600 rounded">
+                <Button onClick={handelCreateOrUpdateComment} className="px-3 py-2 hover:text-blue-600 hover:border-blue-600 hover:border hover:bg-white text-sm text-white bg-blue-600 rounded">
                   Comment
                 </Button>
                 <Button
+                  onClick={HandelCancel}
                   className="px-3 py-2 text-sm hover:text-white border-blue-600 hover:bg-blue-600 text-blue-600 border rounded">
                   Cancel
                 </Button>
               </div>
             </div>
 
-
-            <div className="h-fit p-4 rounded-md bg-white shadow-md">
-              <div className="mb-2 flex">
-
-                {isOpen && (
-                  <span className="relative z-10">
-                    <div className="absolute flex flex-col top-10 rounded-md bg-white transition-all shadow-md p-4">
-                      <span
-                        className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base  mb-2">Delete</span>
-                      <span
-                        className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base">Update</span>
-                    </div>
-                  </span>
-                )}
-                {/* need to work on Avatar commponnent and comment funcshnalty */}
-                <MoreVertIcon onClick={() => setIsOpen(!isOpen)} className="cursor-pointer" />
-
-                <Image
-                  className='rounded-full object-fill'
-                  src={plaseHolder}
-                  alt="Picture of the author"
-                  width={60}
-                  height={60}
-                />
-                <span className="text-base text-gray-700 mr-2 flex-1 ml-6">By {comment.userName}</span>
-                <span className="text-sm text-gray-500">{moment(comment.createdAt).format('ll')}</span>
-              </div>
-              <hr className="mb-3" />
-
-              <span className="text-base text-gray-700">{comment.content}</span>
+            <div className="flex flex-col">
+              {comments.map((comment, index) => (
+                <Comment comment={comment} setIdToUpdate={setIdToUpdate} scrollToForm={scrollToForm} key={index} />
+              ))}
             </div>
+
 
           </div>
 
