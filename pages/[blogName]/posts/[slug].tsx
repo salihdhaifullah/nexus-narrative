@@ -10,6 +10,7 @@ import moment from 'moment';
 
 
 export default function Post({ postData }: any) {
+  console.log(postData)
   return (
     <>
       <Head>

@@ -21,6 +21,10 @@ a {
   @apply text-blue-600 hover:text-blue-500 cursor-pointer underline 
 }
 
+.underLine {
+  @apply  after:content-[""] flex-col flex  after:w-full after:h-[2px] after:rounded-lg after:bg-blue-600
+}
+
 
 
 @tailwind base;

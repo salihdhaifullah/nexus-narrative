@@ -65,10 +65,6 @@ const MdEditorCom = () => {
   useEffect(() => {
     init()
   }, [])
-  
-useEffect(() => {
-  console.log(text)
-}, [text])
 
 
 
@@ -139,8 +135,6 @@ useEffect(() => {
           category: category.name,
           backgroundImageUrl
         }
-
-        console.log(endData);
 
         await createPost(endData).then((res: any) => {}).catch((err: any) => {})
   

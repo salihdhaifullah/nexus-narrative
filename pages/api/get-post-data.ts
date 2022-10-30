@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { error, id } = GetUserIdMiddleware(req);
 
         if (slug && typeof slug === 'string') {
-            const dataItem = await prisma.post.findUnique({
+            const dataItem = await prisma.post.findFirst({
                 where: {
                     slug: slug
                 },
@@ -71,8 +71,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     backgroundImageUrl: true,
                     likes: true,
                     dislikes: true,
-                }
+                    views: true,
+                },
             });
+
+
+            if (dataItem?.id && `${dataItem.views}`) { // i do the validation like this cus view count matey be zero 
+                await prisma.post.update({
+                    where: {
+                        id: dataItem.id,
+                    },
+                    data: {
+                        views: (dataItem.views + 1),
+                    },
+                })
+                console.log(dataItem?.viewscount);
+            }
+
+
             return res.status(200).json({ dataItem, id })
 
         } else return res.status(400).json({ massage: "slug was not provide" })

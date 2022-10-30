@@ -54,7 +54,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 else return res.status(400).json({ error: 'you must fill all fields or sing up with google or github' })
             }
         } catch (error) {
-            console.log(error)
             return res.status(500).json({ massage: 'server error' });
         }
     } else return res.status(404).json({ massage: `this method ${req.method} is not allowed` });

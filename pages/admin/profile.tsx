@@ -65,7 +65,6 @@ const Profile = () => {
 
   const init = async () => {
     await GetProfileData().then((data) => {
-      console.log(data.data.user)
       profile = data.data.user
       if (profile) {
         if (profile.Avter) setUserImage(profile.Avter.fileUrl);
@@ -108,9 +107,7 @@ const Profile = () => {
       about,
     }
     await UpdateProfileGeneralInformation(data).then((data: any) => {
-      console.log(data.data.massage);
     }).catch((err: any) => {
-      console.log(err);
     })
   }
 
@@ -121,20 +118,15 @@ const Profile = () => {
 
   const handelCreateSocil = async (data: ISocil): Promise<void> => {
     setOpenDialogInputs(false);
-    console.log(data);
     await CreateSocial(data).then((data: any) => {
-      console.log(data)
     }).catch((err: any) => {
-      console.log(err)
     })
   }
 
   const handelChangeBlogName = async () => {
     if (blogName) {
       await ChangeBlogName({ blogName: blogName }).then((data: any) => {
-        console.log(data)
       }).catch((err: any) => {
-        console.log(err)
       })
     }
   }
@@ -142,9 +134,7 @@ const Profile = () => {
   const HandelChangePassword = async () => {
     if (currentPassword && newPassword) {
       await ChangePassword({ currentPassword, newPassword }).then((data) => {
-        console.log(data)
       }).catch((err: any) => {
-        console.log(err)
       })
     }
   }
@@ -166,9 +156,7 @@ const Profile = () => {
       const { data: success, error } = await supabase.storage.from("public").upload(NewObjectFile.name, file)
       if (error) return Swal.fire('some think want wrong', 'place check internet connection', 'error');
       await uploadAvatar(NewObjectFile).then((data) => {
-        console.log(data)
       }).catch((err: any) => {
-        console.log(err)
       })
     }
   }

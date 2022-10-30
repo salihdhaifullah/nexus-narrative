@@ -6,10 +6,9 @@ class Storage {
             if (!file) return "No file Selected"
             if (file.size > 52428800) return "size is to big";
             const imageUrl = `https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/iamges/${Date.now().toString()}${file.name}`
-            
+
             return await supabase.storage.from("images").upload(imageUrl, file)
         } catch (error) {
-            console.log(error)
             return error
         }
     }

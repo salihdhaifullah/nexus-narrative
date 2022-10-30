@@ -4,11 +4,11 @@ import { getAllBlogsName, getBlogData } from '../../controllers'
 
 const index = () => {
   return (
-    <div><Blog /></div>
+    <div></div>
   )
 }
 
-export default index
+export default index;
 
 export async function getStaticPaths() {
   const paths = await getAllBlogsName();

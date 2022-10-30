@@ -7,55 +7,53 @@ import moment from 'moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 interface ICommentProps {
-    comment: {
-        author: {
-          Avter: {
-            fileUrl: string;
-          }
-          firstName: string;
-          lastName: string;
-        }
-        authorId: number;
-        content: string;
-        createdAt: Date;
-        id: number;
+  comment: {
+    author: {
+      Avter: {
+        fileUrl: string;
       }
-      scrollToForm: () => void;
-      setIdToUpdate: (id: number) => void;
+      firstName: string;
+      lastName: string;
+    }
+    authorId: number;
+    content: string;
+    createdAt: Date;
+    id: number;
+  }
+  scrollToForm: () => void;
+  setIdToUpdate: (id: number) => void;
 }
 
 
-const Comment = ({comment, scrollToForm, setIdToUpdate}: ICommentProps) => {
-    
+const Comment = ({ comment, scrollToForm, setIdToUpdate }: ICommentProps) => {
+
   const isServer = typeof window === 'undefined';
   const [isFound, setIsFound] = useState<any>(null);
   const [user, setUser] = useState<IUser | null>(null);
   const [changeUi, setChangeUi] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        if (!isServer) setIsFound(localStorage.getItem("user"));
-        if (isFound) setUser(JSON.parse(isFound));
-        setChangeUi(!changeUi)
-      }, [isFound])
-    
-      useEffect(() => {
-        setChangeUi(!changeUi)
-      }, [user])
+  useEffect(() => {
+    if (!isServer) setIsFound(localStorage.getItem("user"));
+    if (isFound) setUser(JSON.parse(isFound));
+    setChangeUi(!changeUi)
+  }, [isFound])
+
+  useEffect(() => {
+    setChangeUi(!changeUi)
+  }, [user])
 
 
-    const handelDelete = async (id: number) => {
-        await deleteComment(id).then((res) => {
-          console.log(res)
-        }).catch((err: any) => {
-          console.log(err);
-        })
-      }
+  const handelDelete = async (id: number) => {
+    await deleteComment(id).then((res) => {
+    }).catch((err: any) => {
+    })
+  }
 
-      const handelUpdate = (id: number) => {
-        scrollToForm()
-        setIdToUpdate(id)
-      }
+  const handelUpdate = (id: number) => {
+    scrollToForm()
+    setIdToUpdate(id)
+  }
 
   return (
     <div className="h-fit p-4 mt-4 rounded-md bg-white shadow-md">
@@ -68,7 +66,7 @@ const Comment = ({comment, scrollToForm, setIdToUpdate}: ICommentProps) => {
                 onClick={() => handelDelete(comment.id)}
                 className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base  mb-2">Delete</span>
               <span
-              onClick={() => handelUpdate(comment.id)}
+                onClick={() => handelUpdate(comment.id)}
                 className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base">Update</span>
             </div>
           </span>

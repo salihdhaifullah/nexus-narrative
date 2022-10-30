@@ -11,6 +11,9 @@ import Sidebar from './Sidebar';
 import Comment from './Comment';
 import { Button, Chip, Typography } from '@mui/material';
 import { CreateComment, updateComment } from '../api';
+import Link from 'next/link';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 
 const featuredPosts = [
   {
@@ -81,23 +84,15 @@ export default function Blog({ comments, postId, content, about, socil, email, t
     if (!commentState) return;
     if (idToUpdate === null) {
       await CreateComment({ postId: Number(postId), comment: commentState }).then((res) => {
-        console.log(res)
       }).catch((err: any) => {
-        console.log(err);
       })
     } else {
       await updateComment(idToUpdate, commentState).then((res) => {
-        console.log(res);
       }).catch((err: any) => {
-        console.log(err);
       })
     }
     setComment("")
   }
-
-  useEffect(() => {
-    console.log(formRef)
-  }, [])
 
   const scrollToForm = () => {
     if (formRef?.current && formRef.current?.offsetLeft && formRef.current?.offsetTop) {
@@ -106,6 +101,9 @@ export default function Blog({ comments, postId, content, about, socil, email, t
   }
   const HandelCancel = () => {
     setComment("")
+  }
+  const handelSearchByTags = (tag: string) => {
+
   }
 
 
@@ -116,7 +114,13 @@ export default function Blog({ comments, postId, content, about, socil, email, t
         <main>
           <MainFeaturedPost image={backgroundImageUrl} title={title} />
           <Typography className="text-lg">published at: {createdAt}</Typography>
-          <Typography className="text-lg">category: {category}</Typography>
+          <Typography className="text-lg" component="div">
+            category:
+            <Link href={`/search?category=${category}`}>
+              <a className="text-lg ml-1 font-bold link">{category}</a>
+            </Link>
+          </Typography>
+
           <Grid container spacing={5} sx={{ mt: 3 }}>
             <Main title={`From the ` + blogName} post={content} />
             <Sidebar
@@ -130,7 +134,21 @@ export default function Blog({ comments, postId, content, about, socil, email, t
 
           </Grid>
 
-          <hr className='mt-20 mb-40' />
+
+          <Grid container spacing={5} sx={{ mt: 3 }} className="flex-col mt-10">
+            <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
+            <div className="mt-4">
+              <Button className="" startIcon={<ThumbUpIcon />}>like</Button>
+              <Button className="" startIcon={<ThumbDownAltIcon />}>disLike</Button>
+            </div>
+          </Grid>
+
+
+          <hr className='mt-20 mb-20' />
+          <div className='flex mb-20 justify-center items-center'>
+            <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
+            <hr />
+          </div>
           <div className="grid lg:grid-cols-2 grid-cols-1  gap-4">
 
             <div className="rounded-lg h-fit shadow-lg bg-white p-6" ref={formRef}>
@@ -168,17 +186,20 @@ export default function Blog({ comments, postId, content, about, socil, email, t
           <Container className="mt-20">
             <Grid container spacing={4} className="flex justify-center items-center my-4">
               {tags && tags.map((item, index) => (
-                <Chip key={index} label={item.name} className="mr-1" variant="outlined" />
+                <Chip key={index} label={item.name} className="mr-1 link" variant="outlined" onClick={() => handelSearchByTags(item.name)} />
               ))}
             </Grid>
-            <Typography className="mb-4" variant='h5' component='h1'> Posts From The author </Typography>
+            <div className='flex justify-center items-center mt-14 mb-8'>
+              <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
+            </div>
             <Grid container spacing={4}>
               {featuredPosts.map((post) => (
                 <FeaturedPost key={post.title} post={post} />
               ))}
             </Grid>
-
-            <Typography variant='h5' className="my-4" component='h1'> Posts Related to the topic </Typography>
+            <div className='flex justify-center items-center  my-8'>
+              <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
+            </div>
             <Grid container spacing={4} >
               {featuredPosts.map((post) => (
                 <FeaturedPost key={post.title} post={post} />

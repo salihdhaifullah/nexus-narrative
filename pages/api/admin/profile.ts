@@ -48,7 +48,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             return res.status(200).json({ user })
         } catch (error) {
-            console.log(error);
             return res.status(500).json({ error });
         }
     }
@@ -89,7 +88,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             return res.status(200).json({ massage: 'Success to update data' })
         } catch (error) {
-            console.log(error);
             return res.status(500).json({ error });
         }
     }
@@ -130,7 +128,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 return res.status(200).json({ massage: 'Success' });
             } catch (error) {
-                console.log(error);
                 return res.status(500).json({ error });
             }
         }
@@ -173,7 +170,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 })
                 return res.status(200).json({ massage: 'Success' })
             } catch (error) {
-                console.log(error);
                 return res.status(500).json({ error });
             }
         }
@@ -204,7 +200,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const {data: Success, error} = await supabase.storage.from("public").remove([user.Avter.fileUrl]);
 
                     if (error) return res.status(400).json({ massage: error });
-                    console.log(Success);
                     await prisma.avter.update({ 
                         where: {
                             id: user.Avter.id
@@ -232,7 +227,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
 
             } catch (error) {
-                console.log(error);
                 return res.status(500).json({ error });
             }
         }
@@ -281,7 +275,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         },
                     },
                 })
-                console.log("from create");
             } else {
                 await prisma.user.update({
                     where: {
@@ -300,12 +293,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         },
                     },
                 });
-                console.log("from update");
             }
 
             return res.status(200).json({ massage: 'Success' })
         } catch (error) {
-            console.log(error);
             return res.status(500).json({ error });
         }
     }
