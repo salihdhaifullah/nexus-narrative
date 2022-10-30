@@ -10,7 +10,7 @@ import Main from './Main';
 import Sidebar from './Sidebar';
 import Comment from './Comment';
 import { Button, Chip, Typography } from '@mui/material';
-import { CreateComment, updateComment } from '../api';
+import { CreateComment, dislikePost, likePost, updateComment } from '../api';
 import Link from 'next/link';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
@@ -70,10 +70,10 @@ interface IBlogProps {
     createdAt: Date;
     id: number;
   }[]
-
+  slug: string;
 }
 
-export default function Blog({ comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
+export default function Blog({ slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
 
   const [commentState, setComment] = React.useState("");
   const [idToUpdate, setIdToUpdate] = React.useState<number | null>(null)
@@ -104,6 +104,20 @@ export default function Blog({ comments, postId, content, about, socil, email, t
   }
   const handelSearchByTags = (tag: string) => {
 
+  }
+
+  const hnadelLike = async () => {
+    await likePost(slug).then((res) => {
+    }).catch((err: any) => {
+      console.log(err)
+    })
+  }
+
+  const hnadelDisLike = async () => {
+    await dislikePost(slug).then((res) => {
+    }).catch((err: any) => {
+      console.log(err)
+    })
   }
 
 
@@ -138,8 +152,8 @@ export default function Blog({ comments, postId, content, about, socil, email, t
           <Grid container spacing={5} sx={{ mt: 3 }} className="flex-col mt-10">
             <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
             <div className="mt-4">
-              <Button className="" startIcon={<ThumbUpIcon />}>like</Button>
-              <Button className="" startIcon={<ThumbDownAltIcon />}>disLike</Button>
+              <Button className="" onClick={hnadelLike} startIcon={<ThumbUpIcon />}>like</Button>
+              <Button className="" onClick={hnadelDisLike} startIcon={<ThumbDownAltIcon />}>disLike</Button>
             </div>
           </Grid>
 

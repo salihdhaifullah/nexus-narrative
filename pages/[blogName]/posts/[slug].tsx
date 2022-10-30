@@ -17,6 +17,7 @@ export default function Post({ postData }: any) {
         <title>hello-world</title>
       </Head>
       <Blog 
+      slug={postData.slug}
       content={postData.content} 
       about={postData.dataItem.author.about}
       postId={postData.dataItem.id}

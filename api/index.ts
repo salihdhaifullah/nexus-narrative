@@ -52,3 +52,8 @@ export const CreateComment = async (data: ICommentData) => await API.post(`comme
 export const deleteComment = async (id: number) => await API.delete(`comment?id=${id}`)
 
 export const updateComment = async (id: number, content: string) => await API.patch(`comment?id=${id}`, {content: content})
+
+
+export const likePost = async (slug: string) => await API.get(`handelPost?type=like&?slug=${slug}`)
+
+export const dislikePost = async (slug: string) => await API.get(`handelPost?type=dislike&?slug=${slug}`)
