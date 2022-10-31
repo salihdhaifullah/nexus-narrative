@@ -18,23 +18,18 @@ const Search: NextPage = () => {
 
     const handelSearch = async () => {
         setIsLoading(true)
-        console.log(tag);
-        console.log(category);
 
         if (search) await generalSearch(search).then((res) => {
-            console.log(res.data.posts)
             setPosts(res.data.posts);
             setIsLoading(false)
         }).catch((err) => { console.log(err) })
 
-        if (tag) await SearchByTag(tag).then((res) => {
-            console.log(res.data.posts.Post)
+        else if (tag) await SearchByTag(tag).then((res) => {
             setPosts(res.data.posts.Post);
             setIsLoading(false)
         }).catch((err) => { console.log(err) })
 
-        if (category) await SearchByCategory(category).then((res) => {
-            console.log(res.data.posts)
+        else if (category) await SearchByCategory(category).then((res) => {
             setPosts(res.data.posts);
             setIsLoading(false)
         }).catch((err) => { console.log(err) })
@@ -45,7 +40,6 @@ const Search: NextPage = () => {
             setSearch(window.location.href.split("?search=")[1])
             setTag(window.location.href.split("?tag=")[1])
             setCategory(window.location.href.split("?category=")[1])
-
         }
     }, [])
 

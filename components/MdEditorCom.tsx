@@ -75,7 +75,7 @@ const MdEditorCom = () => {
       previewsUrl.push(previewUrl)
       setPreviewsUrl(previewsUrl)
 
-      const name: string = Date.now().toString() + file?.name;
+      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g,'').replace("[", "").replace("]", "");
 
       const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
 
@@ -95,7 +95,7 @@ const MdEditorCom = () => {
     if (file.size > 52428800) Swal.fire('some think want wrong', 'file size is to big', 'error');
     else {
 
-      const name: string = Date.now().toString() + file?.name;
+      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g,'').replace("[", "").replace("]", "");
 
       const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
 
