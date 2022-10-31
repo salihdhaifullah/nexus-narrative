@@ -201,7 +201,9 @@ export default function Blog({ posts, slug, comments, postId, content, about, so
           <Container className="mt-20">
             <Grid container spacing={4} className="flex justify-center items-center my-4">
               {tags && tags.map((item, index) => (
-                <Chip key={index} label={item.name} className="mr-1 link" variant="outlined" onClick={() => handelSearchByTags(item.name)} />
+                <Link key={index} href={`/search/?tag=${item.name}`}>
+                  <Chip label={item.name} className="mr-1 link" variant="outlined" onClick={() => handelSearchByTags(item.name)} />
+                </Link>
               ))}
             </Grid>
             <div className='flex justify-center items-center mt-14 mb-8'>

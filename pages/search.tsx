@@ -4,7 +4,7 @@ import Head from 'next/head'
 import FeaturedPost from '../components/FeaturedPost'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid/Grid'
-import { generalSearch } from '../api'
+import { generalSearch, SearchByCategory, SearchByTag } from '../api'
 import { IFeaturedPostProps } from '../types/post'
 import { CircularProgress } from '@mui/material'
 
@@ -12,10 +12,28 @@ import { CircularProgress } from '@mui/material'
 const Search: NextPage = () => {
     const [posts, setPosts] = useState<IFeaturedPostProps[] | null>(null);
     const [search, setSearch] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [tag, setTag] = useState("")
+    const [category, setCategory] = useState("")
 
     const handelSearch = async () => {
+        setIsLoading(true)
+        console.log(tag);
+        console.log(category);
+
         if (search) await generalSearch(search).then((res) => {
+            console.log(res.data.posts)
+            setPosts(res.data.posts);
+            setIsLoading(false)
+        }).catch((err) => { console.log(err) })
+
+        if (tag) await SearchByTag(tag).then((res) => {
+            console.log(res.data.posts.Post)
+            setPosts(res.data.posts.Post);
+            setIsLoading(false)
+        }).catch((err) => { console.log(err) })
+
+        if (category) await SearchByCategory(category).then((res) => {
             console.log(res.data.posts)
             setPosts(res.data.posts);
             setIsLoading(false)
@@ -23,14 +41,18 @@ const Search: NextPage = () => {
     }
 
     useEffect(() => {
-        if (typeof window !== "undefined") setSearch(window.location.href.split("?search=")[1])
+        if (typeof window !== "undefined") {
+            setSearch(window.location.href.split("?search=")[1])
+            setTag(window.location.href.split("?tag=")[1])
+            setCategory(window.location.href.split("?category=")[1])
+
+        }
     }, [])
 
 
     useEffect(() => {
-        handelSearch()
-        setIsLoading(true)
-    }, [search])
+        if (tag || search || category) handelSearch();
+    }, [category, search, tag])
 
     return (
         <>
