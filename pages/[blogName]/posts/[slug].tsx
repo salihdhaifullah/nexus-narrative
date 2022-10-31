@@ -1,4 +1,3 @@
-import Layout from '../../../components/layout';
 import { getAllSlugs, getPostData } from '../../../controllers';
 import Head from 'next/head';
 import ReactMarkdown from 'react-markdown'
@@ -6,17 +5,19 @@ import remarkGfm from 'remark-gfm'
 import Markdown from '../../../components/Markdown';
 import Blog from '../../../components/Blog';
 import moment from 'moment';
+import { getBlogDataS } from '../../../api';
 
 
 
 export default function Post({ postData }: any) {
-  console.log(postData)
+  console.log(postData.authorPosts.posts)
   return (
     <>
       <Head>
         <title>hello-world</title>
       </Head>
       <Blog 
+      posts={postData.authorPosts.posts}
       slug={postData.slug}
       content={postData.content} 
       about={postData.dataItem.author.about}
@@ -46,9 +47,10 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: any) {
   const postData = await getPostData(params.slug);
-  return {
-    props: {
-      postData,
-    },
-  };
+
+    return {
+      props: {
+        postData,
+      },
+    };
 }

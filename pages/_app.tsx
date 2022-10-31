@@ -10,7 +10,7 @@ import { GetToken } from "../api";
 import { useEffect, useState } from "react";
 import { IUser } from "../types/user";
 import { checkExpirationDateJwt } from "../static";
-
+import NextNProgress from 'nextjs-progressbar';
 const sections = [
   { title: 'Technology', url: '#' },
   { title: 'Design', url: '#' },
@@ -69,6 +69,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <div className="flex flex-col min-h-[100vh]">
       <Provider store={store}>
+        <NextNProgress />
           <Header title="Blog" sections={sections} />
           <Component {...pageProps} />
           <Copyright />

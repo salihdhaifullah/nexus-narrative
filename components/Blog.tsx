@@ -71,9 +71,10 @@ interface IBlogProps {
     id: number;
   }[]
   slug: string;
+  posts: any[];
 }
 
-export default function Blog({ slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
+export default function Blog({ posts, slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
 
   const [commentState, setComment] = React.useState("");
   const [idToUpdate, setIdToUpdate] = React.useState<number | null>(null)
@@ -207,9 +208,13 @@ export default function Blog({ slug, comments, postId, content, about, socil, em
               <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
             </div>
             <Grid container spacing={4}>
-              {featuredPosts.map((post) => (
-                <FeaturedPost key={post.title} post={post} />
-              ))}
+              {posts.length > 0 ? posts.map((post) => (
+                <div key={post.title} className="mb-4 w-full">
+                  <FeaturedPost key={post.title} post={post} blogName={blogName} />
+                </div>
+              )) : (
+                <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>
+              )}
             </Grid>
             <div className='flex justify-center items-center  my-8'>
               <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>

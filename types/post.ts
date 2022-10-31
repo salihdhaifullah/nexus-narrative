@@ -10,3 +10,14 @@ export interface ICreatePostData {
     tags: string[]
     backgroundImageUrl: string
 }
+
+
+export interface IFeaturedPostProps {
+    backgroundImageUrl: string,
+    title: string,
+    slug: string,
+    createdAt: Date,
+    author: {
+      blogName: string,
+    },
+}
