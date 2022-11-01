@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import { createPost, GetTagsAndCategories } from '../api';
+import { createPost, GetTagsAndCategories, UpdatePost } from '../api';
 import { ICreatePostData } from '../types/post';
 import { Files } from '../types/file';
 import { Button } from '@mui/material';
@@ -32,9 +32,26 @@ interface IOptions {
   inputValue?: string
 }
 
+interface IMdEditorProps {
+  isUpdate?: boolean;
+  postId?: number;
+  data?: {
+    content: string;
+    backgroundImageUrl: string;
+    slug: string;
+    category: {
+      name: string;
+    };
+    title: string;
+    tags: {
+      name: string;
+    }[];
+  }
+}
+
 const filter = createFilterOptions<FilmOptionType>();
 
-const MdEditorCom = () => {
+const MdEditorCom = (props: IMdEditorProps) => {
   const mdParser = new MarkdownIt();
   const mdEditorRef: any = useRef();
 
@@ -43,25 +60,44 @@ const MdEditorCom = () => {
   const [text, setText] = useState<string>("");
   const [previewsUrl, setPreviewsUrl] = useState<string[]>([]);
   const [data, setData] = useState<Files[]>([])
-  const [title, setTitle] = useState("") 
+  const [title, setTitle] = useState("")
   const [slug, setSlug] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [category, setCategory] = useState<FilmOptionType | null>(null)
   const [backgroundImageUrl, setBackgroundImageUrl] = useState("")
+  const [isHadBackGroundImage, setIsHadBackGroundImage] = useState(false)
 
   const handleEditorChange = ({ html, text }: HandleEditorChangeProps) => {
     setText(text)
   }
 
+  useEffect(() => {
+    if (props.isUpdate && props.data) {
+      console.log(props)
+      setTitle(props.data.title)
+      setSlug(props.data.slug)
+      setCategory(props.data.category)
+      setText(props.data.content)
+      setBackgroundImageUrl(props.data.backgroundImageUrl)
+      mdEditorRef.current.state.text = props.data.content;
+      let tags: string[] = []
+      for (let tag of props.data.tags) {
+        tags.push(tag.name)
+      }
+      setTags(tags)
+      if (props.data.backgroundImageUrl) setIsHadBackGroundImage(true)
+    }
+  }, [props.data, props.isUpdate])
+
   const init = async () => {
-    await GetTagsAndCategories().then(({data}: any) => {
+    await GetTagsAndCategories().then(({ data }: any) => {
       if (data.categories.length) {
         setCategoriesOptions(data.categories)
         setTagsOptions(data.tags)
       }
     })
   }
-  
+
   useEffect(() => {
     init()
   }, [])
@@ -75,7 +111,7 @@ const MdEditorCom = () => {
       previewsUrl.push(previewUrl)
       setPreviewsUrl(previewsUrl)
 
-      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g,'').replace("[", "").replace("]", "");
+      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g, '').replace("[", "").replace("]", "");
 
       const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
 
@@ -95,7 +131,7 @@ const MdEditorCom = () => {
     if (file.size > 52428800) Swal.fire('some think want wrong', 'file size is to big', 'error');
     else {
 
-      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g,'').replace("[", "").replace("]", "");
+      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g, '').replace("[", "").replace("]", "");
 
       const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
 
@@ -104,44 +140,49 @@ const MdEditorCom = () => {
         Swal.fire('some think want wrong', 'place check internet connection', 'error');
         return;
       };
+      setIsHadBackGroundImage(true)
       setBackgroundImageUrl(fileUrl)
     }
   }
 
   const HandelSubmit = async () => {
+
     if (category && slug && text && title) {
       let replace = text;
       const files = [];
       for (let i = 0; i < data.length; i++) {
-  
+
         if (text.includes(data[i].previewUrl)) {
-  
+
           files.push({ name: data[i].name, fileUrl: data[i].fileUrl });
-  
+
           const { data: success, error } = await supabase.storage.from("public").upload(data[i].name, data[i].file)
           if (error) return Swal.fire('some think want wrong', 'place check internet connection', 'error');
-  
+
           replace = replace.replace(data[i].previewUrl, data[i].fileUrl)
         }
         URL.revokeObjectURL(previewsUrl[i])
       }
-  
-        const endData: ICreatePostData = {
-          title,
-          content: replace,
-          slug,
-          images: files,
-          tags,
-          category: category.name,
-          backgroundImageUrl
-        }
 
-        await createPost(endData).then((res: any) => {}).catch((err: any) => {})
-  
-      setTitle("") 
+      const endData: ICreatePostData = {
+        title,
+        content: replace,
+        slug,
+        images: files,
+        tags,
+        category: category.name,
+        backgroundImageUrl
+      }
+
+
+      if (props.isUpdate) await UpdatePost(Number(props.postId), endData).then((res: any) => { }).catch((err: any) => { })
+      else await createPost(endData).then((res: any) => { }).catch((err: any) => { })
+
+    
+      setTitle("")
       setSlug("")
-      setTags([]) 
-      setCategory({name: ""})
+      setTags([])
+      setCategory({ name: "" })
       mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
       mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
       setText("")
@@ -175,7 +216,7 @@ const MdEditorCom = () => {
             />
 
             <TextField
-            className="w-full flex-1 sm:ml-2 mb-2 sm:mb-0"
+              className="w-full flex-1 sm:ml-2 mb-2 sm:mb-0"
               value={slug}
               onChange={(event) => setSlug(event.target.value)}
               required
@@ -216,15 +257,15 @@ const MdEditorCom = () => {
               className='w-full sm:w-auto flex-1 sm:ml-2'
               value={category}
               onChange={(event, newValue) => {
-                if (typeof newValue === 'string') setCategory({name: newValue});
-                else if (newValue && newValue.inputValue) setCategory({name: newValue.inputValue}); 
-                else setCategory(newValue);  
+                if (typeof newValue === 'string') setCategory({ name: newValue });
+                else if (newValue && newValue.inputValue) setCategory({ name: newValue.inputValue });
+                else setCategory(newValue);
               }}
               filterOptions={(options, params) => {
                 const filtered = filter(options, params);
                 const { inputValue } = params;
                 const isExisting = options.some((option) => inputValue === option.name);
-                if (inputValue !== '' && !isExisting) filtered.push({inputValue, name: `Add "${inputValue}"`});
+                if (inputValue !== '' && !isExisting) filtered.push({ inputValue, name: `Add "${inputValue}"` });
                 return filtered;
               }}
               selectOnFocus
@@ -246,9 +287,9 @@ const MdEditorCom = () => {
             />
           </Stack>
           <Button size='small' startIcon={<BackupIcon />} className="text-sm mt-4 lowercase" variant="contained" component="label">
-                Upload background image
-                <input onChange={(event) => handelUploadImage(event)} hidden accept="image/*" multiple type="file" />
-              </Button>
+            {(isHadBackGroundImage || backgroundImageUrl) ? "uploaded" : "Upload background image" }
+            <input onChange={(event) => handelUploadImage(event)} hidden accept="image/*" multiple type="file" />
+          </Button>
         </Box>
         <MdEditor
           ref={mdEditorRef}

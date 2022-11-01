@@ -1,5 +1,5 @@
 import React from 'react'
-import { getAllBlogsName, getBlogData } from '../../controllers'
+import { getAllBlogsName, getBlogDataForHomePage } from '../../controllers'
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
@@ -12,8 +12,8 @@ import { Typography } from '@mui/material';
 
 const theme = createTheme();
 
-export default function index({ blogData }: any) {
-  console.log(blogData)
+export default function index({blogData}: any) {
+  console.log(blogData.authorPosts)
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -25,7 +25,7 @@ export default function index({ blogData }: any) {
               <div className='flex justify-center items-center mt-14 mb-8'>
                 <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
               </div>
-                {blogData.dataItem.posts.length > 0 ? blogData.dataItem.posts.map((post) => (
+                {blogData.authorPosts.posts.length > 0 ? blogData.authorPosts.posts.map((post) => (
                   <div key={post.title} className="mb-4">
                     <FeaturedPost key={post.title} post={post} blogName={blogData.blogName}/>
                   </div>
@@ -37,11 +37,11 @@ export default function index({ blogData }: any) {
             <div className="col-span-2">
               <Sidebar
                 title="about"
-                description={blogData.dataItem.data?.about}
-                social={blogData.dataItem.data.socil}
-                email={blogData.dataItem.data.email}
-                name={blogData.dataItem.data.firstName + " " + blogData.dataItem.data.lastName}
-                AvatarUrl={blogData.dataItem.data.Avter.fileUrl}
+                description={blogData.authorPosts.data?.about}
+                social={blogData.authorPosts.data.socil}
+                email={blogData.authorPosts.data.email}
+                name={blogData.authorPosts.data.firstName + " " + blogData.authorPosts.data.lastName}
+                AvatarUrl={blogData.authorPosts.data.Avter.fileUrl}
               />
             </div>
 
@@ -61,7 +61,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: any) {
-  const blogData = await getBlogData(params.blogName);
+  const blogData = await getBlogDataForHomePage(params.blogName);
   return {
     props: {
       blogData,

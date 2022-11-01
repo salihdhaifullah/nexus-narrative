@@ -12,6 +12,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { logout } from '../context/reducers/userReducer';
+import { useDispatch } from 'react-redux';
 
 interface ISearchProps {
   open: boolean;
@@ -60,26 +62,21 @@ const Search = ({ open, setOpen, search, setSearch }: ISearchProps) => {
 }
 
 interface HeaderProps {
-  sections: ReadonlyArray<{
-    title: string;
-    url: string;
-  }>;
   title: string;
 }
 
 export default function Header(props: HeaderProps) {
-  const { sections, title } = props;
+  const { title } = props;
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const isBrowser: boolean = typeof window !== 'undefined';
   const isFound = isBrowser && localStorage.getItem("user")
   const user: IUser | null = isFound ? JSON.parse(isFound) : null;
-
+  const dispatch = useDispatch();
   return (
     <React.Fragment>
       <Search open={open} setOpen={setOpen} search={search} setSearch={setSearch} />
       <Toolbar sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Button size="small">Subscribe</Button>
         <Typography
           component="h2"
           variant="h5"
@@ -93,27 +90,17 @@ export default function Header(props: HeaderProps) {
         <IconButton>
           <SearchIcon onClick={() => setOpen(true)} />
         </IconButton>
-        <Button variant="outlined" size="small">
-          {user !== null ? "logout" : "Sign up"}
-        </Button>
-      </Toolbar>
-      <Toolbar
-        component="nav"
-        variant="dense"
-        sx={{ justifyContent: 'space-between', overflowX: 'auto' }}
-      >
-        {sections && sections.map((section) => (
-          <Link
-            color="inherit"
-            noWrap
-            key={section.title}
-            variant="body2"
-            href={section.url}
-            sx={{ p: 1, flexShrink: 0 }}
-          >
-            {section.title}
+        {user !== null ? (
+          <Button onClick={() => logout()(dispatch)} variant="outlined" size="small">
+            logout
+          </Button>
+        ) : (
+          <Link className="no-underline" href="/sing-up">
+            <Button variant="outlined" size="small">
+              Sign up
+            </Button>
           </Link>
-        ))}
+        )}
       </Toolbar>
     </React.Fragment>
   );

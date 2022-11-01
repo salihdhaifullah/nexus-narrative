@@ -14,6 +14,7 @@ import { CreateComment, dislikePost, likePost, updateComment } from '../api';
 import Link from 'next/link';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
+import { IFeaturedPostProps } from '../types/post';
 
 const featuredPosts = [
   {
@@ -71,10 +72,11 @@ interface IBlogProps {
     id: number;
   }[]
   slug: string;
-  posts: any[];
+  posts: IFeaturedPostProps[];
+  PostsRelated: IFeaturedPostProps[]
 }
 
-export default function Blog({ posts, slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
+export default function Blog({ PostsRelated, posts, slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
 
   const [commentState, setComment] = React.useState("");
   const [idToUpdate, setIdToUpdate] = React.useState<number | null>(null)
@@ -137,7 +139,7 @@ export default function Blog({ posts, slug, comments, postId, content, about, so
           </Typography>
 
           <Grid container spacing={5} sx={{ mt: 3 }}>
-            <Main title={`From the ` + blogName} post={content} />
+            <Main blogName={blogName} post={content} />
             <Sidebar
               title="about"
               description={about}
@@ -222,9 +224,13 @@ export default function Blog({ posts, slug, comments, postId, content, about, so
               <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
             </div>
             <Grid container spacing={4} >
-              {featuredPosts.map((post) => (
-                <FeaturedPost key={post.title} post={post} />
-              ))}
+              {PostsRelated.length > 0 ? PostsRelated.map((post) => (
+                <div key={post.title} className="mb-4 w-full">
+                  <FeaturedPost key={post.title} post={post} blogName={blogName} />
+                </div>
+              )) : (
+              <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>
+            )}
             </Grid>
           </Container>
 

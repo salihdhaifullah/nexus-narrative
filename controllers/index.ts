@@ -1,5 +1,5 @@
 import prisma from '../libs/prisma/index'
-import { GetPostData, GetProfileData, getBlogDataS } from '../api';
+import { GetPostData, GetProfileData, getBlogDataS, getBlogDataHome, getPostsRelated } from '../api';
 import { ISocil, IUserProfileProps } from '../types/profile';
 import { ISocial, Social } from '../static';
 
@@ -62,15 +62,30 @@ export const getAllSlugs = async (): Promise<ISlugItem[] | any> => {
 export const getPostData = async (slug: string) => {
     let dataItem: any = null
     let authorPosts: any = null
+    let PostsRelated: any = null
     await GetPostData(slug).then((data: any) => dataItem = data.data.dataItem)
     await getBlogDataS(dataItem.author.blogName).then((data: any) => authorPosts = data.data)
+    await getPostsRelated(dataItem.category.name).then((data: any) => PostsRelated = data.data.PostsRelated)
+
     return {
         slug,
         dataItem: dataItem,
         authorPosts: authorPosts,
+        PostsRelated: PostsRelated,
         content: dataItem.content,
     };
 }
+
+export const getBlogDataForHomePage = async (blogName: string) => {
+    let authorPosts: any = null
+    await getBlogDataHome(blogName).then((data: any) => authorPosts = data.data)
+    return {
+        blogName,
+        authorPosts: authorPosts,
+    };
+}
+
+
 
 export const getBlogData = async (blogName: string) => {
     let dataItem = {};

@@ -10,13 +10,14 @@ import { getBlogDataS } from '../../../api';
 
 
 export default function Post({ postData }: any) {
-  console.log(postData.authorPosts.posts)
+  console.log(postData.PostsRelated)
   return (
     <>
       <Head>
         <title>hello-world</title>
       </Head>
       <Blog 
+      PostsRelated={postData.PostsRelated}
       posts={postData.authorPosts.posts}
       slug={postData.slug}
       content={postData.content} 
@@ -29,7 +30,7 @@ export default function Post({ postData }: any) {
       backgroundImageUrl={postData.dataItem.backgroundImageUrl}
       AvatarUrl={postData.dataItem.author.Avter.fileUrl}
       name={postData.dataItem.author.firstName + " " + postData.dataItem.author.lastName}
-      createdAt={moment(postData.dataItem.createdAt).format("yyyy, MMM, d")}
+      createdAt={moment(postData.dataItem.createdAt).format("ll")}
       tags={postData.dataItem.tags}
       category={postData.dataItem.category.name}
       comments={postData.dataItem.comments}/>

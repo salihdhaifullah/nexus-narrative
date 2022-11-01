@@ -59,8 +59,19 @@ export const dislikePost = async (slug: string) => await API.get(`handelPost?typ
 
 export const getBlogDataS = async (blogName: string) => await API.get(`blog?blogName=${blogName}`);
 
+export const getBlogDataHome = async (blogName: string) => await API.get(`blog?blogName=${blogName}&home=true`);
+
+export const getPostsRelated = async (category: string) => await API.put(`blog?category=${category}`);
+
 export const generalSearch = async (query: string) => await API.get(`search?search=${query}`)
 
 export const SearchByTag = async (tag: string) => await API.get(`search?tag=${tag}`)
 
 export const SearchByCategory = async (category: string) => await API.get(`search?category=${category}`)
+
+export const GetAdminPageData = async () => await API.get("admin")
+
+export const GetPostToUpdate = async (id: number) => await API.get(`admin/update-post/?id=${id}`)
+
+export const UpdatePost = async (id: number, data: ICreatePostData) => await API.post(`admin/update-post/?id=${id}`, data)
+

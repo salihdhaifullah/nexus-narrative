@@ -32,9 +32,9 @@ export default function Sidebar(props: SidebarProps) {
   return (
     <Grid item xs={12} md={4}>
 
-      
-<div className='inline-flex items-center'>
-<Image
+
+      <div className='inline-flex items-center'>
+        <Image
           className='rounded-full'
           loader={() => myLoader(AvatarUrl)}
           src={"me.png"}
@@ -42,9 +42,9 @@ export default function Sidebar(props: SidebarProps) {
           width={80}
           height={80}
         />
-        
-      <Typography className="text-xl ml-2 text-center">{name}</Typography>
-</div>
+
+        <Typography className="text-xl ml-2 text-center">{name}</Typography>
+      </div>
 
       <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.200' }}>
         <Typography variant="h6" gutterBottom>
@@ -59,6 +59,7 @@ export default function Sidebar(props: SidebarProps) {
         <Link
           display="block"
           variant="body1"
+          target="_blank"
           href={network.link}
           key={network.name}
           sx={{ mb: 0.5 }}

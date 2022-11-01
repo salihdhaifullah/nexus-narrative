@@ -3,14 +3,15 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Markdown from './Markdown';
+import Link from 'next/link';
 
 interface MainProps {
   post: string;
-  title: string;
+  blogName: string;
 }
 
 export default function Main(props: MainProps) {
-  const { post, title } = props;
+  const { post, blogName } = props;
 
   return (
     <Grid
@@ -23,9 +24,11 @@ export default function Main(props: MainProps) {
         },
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        {title}
+      <Link href={`/${blogName}`}>
+      <Typography className="link" variant="h6" gutterBottom>
+         {"from " + blogName }
       </Typography>
+      </Link>
       <Divider />
         <Markdown className="markdown" key={post.substring(0, 40)}>
           {post}

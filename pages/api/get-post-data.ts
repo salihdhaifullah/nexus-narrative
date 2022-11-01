@@ -82,10 +82,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         id: dataItem.id,
                     },
                     data: {
-                        views: (dataItem.views + 1),
+                        views: (Number(dataItem.views) + 1),
                     },
                 })
-                console.log(dataItem?.viewscount);
             }
 
 
