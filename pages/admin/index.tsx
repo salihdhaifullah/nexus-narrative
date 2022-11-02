@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
-import { GetAdminPageData } from '../../api';
+import { DeletePost, GetAdminPageData } from '../../api';
 import Link from 'next/link';
 import Button from '@mui/material/Button';
 
@@ -30,6 +30,15 @@ export default function Index() {
       setPosts(res.data.data.posts)
       setBlogName(res.data.data.blogName)
       setIsLoading(false)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+
+  const handelDelete = async (postId: number) => {
+    await DeletePost(postId).then((res) => {
+      console.log(res)
     }).catch((err) => {
       console.log(err)
     })
@@ -72,8 +81,10 @@ export default function Index() {
                       </Link>
                       <TableCell align="right">{post.views}</TableCell>
                       <TableCell align="right">{post.title}</TableCell>
+                      <Link href={`admin/update-post/?id=${post.id}`}>
                       <TableCell align="right" className="link">update</TableCell>
-                      <TableCell align="right" className="link">delete</TableCell>
+                      </Link>
+                      <TableCell align="right" onClick={() => handelDelete(post.id)} className="link">delete</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

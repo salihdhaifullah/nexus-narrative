@@ -42,7 +42,7 @@ const UpdatePost = () => {
     <Head>
         <title>|~ Update Post</title>
     </Head>
-    {postToUpdateData && (
+    {postId && postToUpdateData && (
       <MdEditorCom isUpdate={true} postId={postId} data={postToUpdateData}></MdEditorCom>
     )}
     </>

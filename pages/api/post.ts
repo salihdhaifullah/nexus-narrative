@@ -7,7 +7,6 @@ import { GetUserIdMiddleware } from '../../middleware';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
-        const { error, id } = GetUserIdMiddleware(req)
 
         const tags = await prisma.tag.findMany({
             select: {
@@ -21,12 +20,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
         res.status(200).json({ tags, categories })
 
-    } else if (req.method === "POST") {
+    } 
+    
+    
+    if (req.method === "POST") {
         const TagsQuery = []
-        
+
         const { error, id } = GetUserIdMiddleware(req)
-        
-        if (error) return res.status(400).json({massage: error});
+
+        if (error) return res.status(400).json({ massage: error });
 
         const user = await prisma.user.findFirst({
             where: {
@@ -37,11 +39,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         });
 
-        if (!user) return res.status(400).json({massage: "User Not Found"})
-        
+        if (!user) return res.status(400).json({ massage: "User Not Found" })
+
         const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body
 
-        if (!title || !content || !slug || !category) return res.status(400).json({massage: "Bad Request"})
+        if (!title || !content || !slug || !category) return res.status(400).json({ massage: "Bad Request" })
 
         const isSlugUnique = await prisma.post.findUnique({
             where: {
@@ -52,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         })
 
-        if (isSlugUnique?.id) return res.status(400).json({massage: "Bad Request slug is not unique"})
+        if (isSlugUnique?.id) return res.status(400).json({ massage: "Bad Request slug is not unique" })
 
         if (tags && tags.length) {
             for (let tag of tags) {
@@ -101,5 +103,51 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
 
         return res.status(200).json({ massage: "post Successfully Created", data: data });
-    } else return res.status(404).json({ massage: `this method ${req.method} is not allowed` });
+
+    }  
+    
+    if (req.method === 'DELETE') {
+        const postId = req.query["id"]
+
+        if (typeof Number(postId) !== 'number') return res.status(400).json({ massage: "postId Not Valid" })
+
+        const { error, id } = GetUserIdMiddleware(req)
+
+        if (error) return res.status(400).json({ massage: error });
+
+        const user = await prisma.user.findFirst({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                posts: {
+                    where: {
+                        id: Number(postId),
+                    },
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+
+        if (!user?.posts[0].id) return res.status(400).json({ massage: "User Not Found" })
+
+        await prisma.post.delete({
+            where: {
+                id: Number(postId)
+            },
+        });
+
+        return res.status(200).json({ massage: "post Successfully Deleted" });
+
+    } 
+    
+    
+    
+    
+    
+    
+    res.status(404).json({ massage: `this method ${req.method} is not allowed` });
 }

@@ -15,6 +15,7 @@ import { ICreatePostData } from '../types/post';
 import { Files } from '../types/file';
 import { Button } from '@mui/material';
 import BackupIcon from '@mui/icons-material/Backup';
+import { useRouter } from 'next/router'
 
 
 interface HandleEditorChangeProps {
@@ -54,7 +55,7 @@ const filter = createFilterOptions<FilmOptionType>();
 const MdEditorCom = (props: IMdEditorProps) => {
   const mdParser = new MarkdownIt();
   const mdEditorRef: any = useRef();
-
+  const Router = useRouter()
   const [tagsOptions, setTagsOptions] = useState<IOptions[]>([])
   const [categoriesOptions, setCategoriesOptions] = useState<IOptions[]>([])
   const [text, setText] = useState<string>("");
@@ -175,8 +176,10 @@ const MdEditorCom = (props: IMdEditorProps) => {
       }
 
 
-      if (props.isUpdate) await UpdatePost(Number(props.postId), endData).then((res: any) => { }).catch((err: any) => { })
-      else await createPost(endData).then((res: any) => { }).catch((err: any) => { })
+      if (props.isUpdate) { 
+        await UpdatePost(Number(props.postId), endData).then((res: any) => { }).catch((err: any) => { })
+        Router.push("/admin")
+      } else await createPost(endData).then((res: any) => { }).catch((err: any) => { })
 
     
       setTitle("")

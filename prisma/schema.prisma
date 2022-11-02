@@ -24,7 +24,7 @@ model Iamge {
   id      Int    @id @default(autoincrement())
   name    String
   fileUrl String @unique
-  Post    Post   @relation(fields: [postId], references: [id])
+  Post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId  Int
 }
 
@@ -32,7 +32,7 @@ model Avter {
   id      Int    @id @default(autoincrement())
   name    String
   fileUrl String @unique
-  User    User   @relation(fields: [userId], references: [id])
+  User    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  Int    @unique
 }
 
@@ -42,10 +42,10 @@ model Post {
   content            String
   images             Iamge[]
   tags               Tag[]
-  author             User      @relation(fields: [authorId], references: [id])
+  author             User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments           Comment[]
   slug               String    @unique
-  category           Category  @relation(fields: [categoryId], references: [id])
+  category           Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId         Int
   authorId           Int
   createdAt          DateTime  @default(now())
@@ -82,15 +82,15 @@ model Comment {
   updatedAt DateTime @updatedAt
   authorId  Int
   postId    Int
-  author    User     @relation(fields: [authorId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Socil {
   id     Int        @id @default(autoincrement())
   name   SocilTypes @unique
   link   String
-  User   User       @relation(fields: [userId], references: [id])
+  User   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 }
 
