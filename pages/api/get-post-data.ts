@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             firstName: true,
                             lastName: true,
                             blogName: true,
+                            id: true,
                             Avter: {
                                 select: {
                                     fileUrl: true
@@ -69,8 +70,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     },
                     createdAt: true,
                     backgroundImageUrl: true,
-                    likes: true,
-                    dislikes: true,
                     views: true,
                 },
             });

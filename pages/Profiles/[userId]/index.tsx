@@ -132,9 +132,7 @@ const Profile = (props: IUserProfileProps) => {
                       <div className='mr-4'>
                         <h2 className='text-lg text-start text-gray-800 font-medium'>{item.name}</h2>
                         {item.url ? (
-                          <Link href={item.url}>
-                            <a className='text-blue-600 hover:text-blue-500 hover:underline'>{item.url.length > 20 ? `${item.url.slice(0, 20)}...` : item.url}</a>
-                          </Link>
+                            <a href={`${item.url}`} rel="noreferrer" target="_blank" className='text-blue-600 hover:text-blue-500 hover:underline'>{item.url.length > 20 ? `${item.url.slice(0, 20)}...` : item.url}</a>
                         ) : (
                           <h2 className='text-md font-normal text-gray-600'>Not Connected</h2>
                         )}
@@ -153,7 +151,7 @@ const Profile = (props: IUserProfileProps) => {
             <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{props.blogName || "Not Found"}</strong>
               <hr className='my-2' />
             </h2>
-            {props.blogName && (<Link href={props.blogName}>
+            {props.blogName && (<Link href={`/${props.blogName}`}>
               <a className='text-blue-600 hover:text-blue-500 hover:underline text-base'>{props.blogName}</a>
             </Link>)}
           </div>

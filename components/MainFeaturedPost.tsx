@@ -27,7 +27,6 @@ export default function MainFeaturedPost(props: MainFeaturedPostProps) {
         backgroundImage: `url(${image})`,
       }}
     >
-      {<Image width={1200} height={80} className="object-contain bg-no-repeat min-w-full" style={{ display: 'none' }} src={image} alt={title} />}
       <Box
         sx={{
           position: 'absolute',

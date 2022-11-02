@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "GET") {
         const slug = req.query["slug"] as string;
         const { error, id } = GetUserIdMiddleware(req)
-        
+
         if (error) return res.status(400).json({massage: error});
 
         const user = await prisma.user.findFirst({
@@ -26,88 +26,73 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             select: {
                 likes: true,
                 dislikes: true,
+                id: true,
             },
         })
 
         if (typeof likes?.likes === "undefined" || typeof likes?.dislikes === "undefined") return res.status(400).json({massage: "some think wrong"})
 
         if (req.query["type"] === "like") {
-            let data = likes.likes;
-            data.push(`${user.id}`);
-            let disLikes = null; 
-            let isLiked = false;
-            if (likes.dislikes.find((id) => id === `${user.id}`)) disLikes = likes.dislikes.filter((id) => id === `${user.id}`);
-            if (likes.likes.find((id) => id === `${user.id}`)) isLiked = true;
             
-            if (isLiked) return res.status(200).json({likes});
 
-            if (disLikes) {
-                await prisma.post.update({
-                    where: {
-                        slug: slug,
-                    },
-                    data: {
-                        likes: data,
-                        dislikes: disLikes,
-                    }
-                })
-
-
-                return res.status(200).json({likes})
+            let data = [];
+            // i used a for loop to insert likes cuz they are a pointer bug here
+            for (let like of likes.likes) {
+                data.push(like)
             }
+            data.push(`${user.id}`);
+            let disLikes: string[] = []; 
+            let isLiked = false;
+            if (likes.dislikes.find((id) => id === `${user.id}`)) disLikes = likes.dislikes.filter((id) => id !== `${user.id}`);
+            
+            if (likes.likes.find((id) => id === `${user.id}`)) isLiked = true;
+
+            if (isLiked) data = data.filter((id) => id !== `${user.id}`);
 
 
             await prisma.post.update({
                 where: {
                     slug: slug,
+                    id: likes.id,
                 },
                 data: {
-                    likes: data
+                    likes: {set: data},
+                    dislikes: {set: disLikes} ,
                 }
             })
-
             return res.status(200).json({likes})
         }
 
-        if (req.query["type"] === "dislike") {
-            let data = likes.dislikes;
+        if (req.query["type"] === "dislike") {            
+            let data = [];
+            // i used a for loop to insert dislikes cuz they are a pointer bug here
+            for (let like of likes.dislikes) {
+                data.push(like)
+            }
             data.push(`${user.id}`);
-            let Likes = null; 
+
+            let Likes: string[] = []; 
             let isDisLiked = false;
-            if (likes.likes.find((id) => id === `${user.id}`)) Likes = likes.likes.filter((id) => id === `${user.id}`);
+
+            if (likes.likes.find((id) => id === `${user.id}`)) Likes = likes.likes.filter((id) => id !== `${user.id}`);
+            
             if (likes.dislikes.find((id) => id === `${user.id}`)) isDisLiked = true;
             
-            if (isDisLiked) return res.status(200).json({likes});
+            if (isDisLiked) data = data.filter((id) => id !== `${user.id}`);
 
-            if (Likes) {
+
                 await prisma.post.update({
                     where: {
                         slug: slug,
+                        id: likes.id,
                     },
                     data: {
-                        dislikes: data,
-                        likes: Likes,
+                        dislikes: {set: data},
+                        likes: {set: Likes}, 
                     }
                 })
-
                 return res.status(200).json({likes})
-            }
-
-
-            await prisma.post.update({
-                where: {
-                    slug: slug,
-                },
-                data: {
-                    dislikes: data
-                }
-            })
-
-            return res.status(200).json({likes})
         }
-
-
     }
   
-    res.status(200).json({massage: "Hello World"})
 }

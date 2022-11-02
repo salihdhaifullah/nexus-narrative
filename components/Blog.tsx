@@ -9,8 +9,8 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Comment from './Comment';
-import { Button, ButtonBase, Chip, Typography } from '@mui/material';
-import { CreateComment, dislikePost, likePost, updateComment } from '../api';
+import { Button,  Chip, Typography } from '@mui/material';
+import { CreateComment, dislikePost, GetLikes, likePost, updateComment } from '../api';
 import Link from 'next/link';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
@@ -53,15 +53,32 @@ interface IBlogProps {
   }[]
   slug: string;
   posts: IFeaturedPostProps[];
-  PostsRelated: IFeaturedPostProps[]
+  PostsRelated: IFeaturedPostProps[];
+  authorId: number;
 }
 
-export default function Blog({ PostsRelated, posts, slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
+export default function Blog({ authorId, PostsRelated, posts, slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
 
   const [commentState, setComment] = React.useState("");
   const [idToUpdate, setIdToUpdate] = React.useState<number | null>(null)
-  const formRef = React.useRef<HTMLDivElement>();
+  const [liked, setIsLiked] = React.useState<boolean>(false)
+  const formRef = React.useRef<HTMLDivElement | null>(null);
+  const [likes, setLikes] = React.useState<string[]>([])
+  const [dislikes, setDislikes] = React.useState<string[]>([])
 
+  const handelGetLikes = async () => {
+    await GetLikes(slug).then((res) => {
+      console.log(res.data.likes);
+      setLikes(res.data.likes.likes)
+      setDislikes(res.data.likes.dislikes)
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+  
+  useEffect(() => {
+    handelGetLikes()
+  }, [liked])
 
   const handelCreateOrUpdateComment = async () => {
     if (!commentState) return;
@@ -82,25 +99,21 @@ export default function Blog({ PostsRelated, posts, slug, comments, postId, cont
       scroll(formRef.current.offsetLeft, (formRef.current.offsetTop - 200));
     }
   }
-  const HandelCancel = () => {
-    setComment("")
-  }
-  const handelSearchByTags = (tag: string) => {
 
-  }
-
-  const hnadelLike = async () => {
+  const handelLike = async () => {
     await likePost(slug).then((res) => {
     }).catch((err: any) => {
       console.log(err)
     })
+    setIsLiked(!liked)
   }
 
-  const hnadelDisLike = async () => {
+  const handelDisLike = async () => {
     await dislikePost(slug).then((res) => {
     }).catch((err: any) => {
       console.log(err)
     })
+    setIsLiked(!liked)
   }
 
 
@@ -127,6 +140,7 @@ export default function Blog({ PostsRelated, posts, slug, comments, postId, cont
               email={email}
               name={name}
               AvatarUrl={AvatarUrl}
+              authorId={authorId}
             />
 
           </Grid>
@@ -135,8 +149,10 @@ export default function Blog({ PostsRelated, posts, slug, comments, postId, cont
           <Grid container spacing={5} sx={{ mt: 3 }} className="flex-col mt-10">
             <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
             <div className="mt-4">
-              <Button className="" onClick={hnadelLike} startIcon={<ThumbUpIcon />}>like</Button>
-              <Button className="" onClick={hnadelDisLike} startIcon={<ThumbDownAltIcon />}>disLike</Button>
+              <Button className="" onClick={handelLike} startIcon={<ThumbUpIcon />}>like</Button>
+              {likes.length && likes.length}
+              <Button className="" onClick={handelDisLike} startIcon={<ThumbDownAltIcon />}>disLike</Button>
+              {dislikes.length && dislikes.length}
             </div>
           </Grid>
 
@@ -164,7 +180,7 @@ export default function Blog({ PostsRelated, posts, slug, comments, postId, cont
                   Comment
                 </Button>
                 <Button
-                  onClick={HandelCancel}
+                  onClick={() => setComment("")}
                   className="px-3 py-2 text-sm hover:text-white border-blue-600 hover:bg-blue-600 text-blue-600 border rounded">
                   Cancel
                 </Button>
@@ -184,7 +200,7 @@ export default function Blog({ PostsRelated, posts, slug, comments, postId, cont
             <Grid container spacing={4} className="flex justify-center items-center my-4">
               {tags && tags.map((item, index) => (
                 <Link key={index} href={`/search/?tag=${item.name}`}>
-                  <Chip label={item.name} className="mr-1 link" variant="outlined" onClick={() => handelSearchByTags(item.name)} />
+                  <Chip label={item.name} className="mr-1 link" variant="outlined"  />
                 </Link>
               ))}
             </Grid>

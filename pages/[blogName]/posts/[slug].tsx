@@ -10,13 +10,14 @@ import { getBlogDataS } from '../../../api';
 
 
 export default function Post({ postData }: any) {
-  console.log(postData.PostsRelated)
+  console.log(postData)
   return (
     <>
       <Head>
         <title>hello-world</title>
       </Head>
       <Blog 
+      authorId={postData.dataItem.author.id}
       PostsRelated={postData.PostsRelated}
       posts={postData.authorPosts.posts}
       slug={postData.slug}

@@ -44,6 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             link: true,
                         },
                     },
+                    id: true,
                     email: true,
                     firstName: true,
                     lastName: true,
@@ -101,8 +102,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         return res.status(200).json({ PostsRelated })
     } 
-    if (req.method === "PATCH") {
 
-    } 
     res.status(200).json({ name: 'John Doe' })
 }

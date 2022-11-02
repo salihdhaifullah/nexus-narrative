@@ -1,7 +1,6 @@
 import React from 'react'
 import { getAllBlogsName, getBlogDataForHomePage } from '../../controllers'
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FeaturedPost from '../../components/FeaturedPost';
@@ -13,7 +12,6 @@ import { Typography } from '@mui/material';
 const theme = createTheme();
 
 export default function index({blogData}: any) {
-  console.log(blogData.authorPosts)
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -42,6 +40,7 @@ export default function index({blogData}: any) {
                 email={blogData.authorPosts.data.email}
                 name={blogData.authorPosts.data.firstName + " " + blogData.authorPosts.data.lastName}
                 AvatarUrl={blogData.authorPosts.data.Avter.fileUrl}
+                authorId={blogData.authorPosts.data.id}
               />
             </div>
 
