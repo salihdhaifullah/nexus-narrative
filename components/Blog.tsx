@@ -9,32 +9,12 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Comment from './Comment';
-import { Button, Chip, Typography } from '@mui/material';
+import { Button, ButtonBase, Chip, Typography } from '@mui/material';
 import { CreateComment, dislikePost, likePost, updateComment } from '../api';
 import Link from 'next/link';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import { IFeaturedPostProps } from '../types/post';
-
-const featuredPosts = [
-  {
-    title: 'Featured post',
-    date: 'Nov 12',
-    description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random',
-    imageLabel: 'Image Text',
-  },
-  {
-    title: 'Post title',
-    date: 'Nov 11',
-    description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random',
-    imageLabel: 'Image Text',
-  },
-];
-
 
 const theme = createTheme();
 
@@ -137,8 +117,8 @@ export default function Blog({ PostsRelated, posts, slug, comments, postId, cont
               <a className="text-lg ml-1 font-bold link">{category}</a>
             </Link>
           </Typography>
-
           <Grid container spacing={5} sx={{ mt: 3 }}>
+    
             <Main blogName={blogName} post={content} />
             <Sidebar
               title="about"
@@ -229,8 +209,8 @@ export default function Blog({ PostsRelated, posts, slug, comments, postId, cont
                   <FeaturedPost key={post.title} post={post} blogName={blogName} />
                 </div>
               )) : (
-              <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>
-            )}
+                <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>
+              )}
             </Grid>
           </Container>
 

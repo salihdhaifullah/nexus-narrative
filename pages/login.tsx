@@ -89,7 +89,7 @@ const Login: NextPage = () => {
             autoFocus
           />
 
-          <FormControl className='w-full' variant="outlined">
+
             <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
             <OutlinedInput
               id="outlined-adornment-password"
@@ -114,7 +114,6 @@ const Login: NextPage = () => {
               }
               label="Password"
             />
-          </FormControl>
 
           <Button
             type={(isLoading) ? "reset" : "submit"}

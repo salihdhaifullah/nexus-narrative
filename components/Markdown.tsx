@@ -8,7 +8,7 @@ import remarkGfm from 'remark-gfm';
 function MarkdownListItem(props: any) {
   return <Box component="li" sx={{ mt: 1, typography: 'body1' }} {...props} />;
 }
-const h1 = (): React.ReactComponentElement => {
+const h1 = () => {
   return <h1 className="text-2xl"></h1>
 }
 const options = {

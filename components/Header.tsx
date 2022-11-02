@@ -2,7 +2,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import { IUser } from '../types/user';
 import * as React from 'react';
 import Button from '@mui/material/Button';
@@ -14,6 +13,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { logout } from '../context/reducers/userReducer';
 import { useDispatch } from 'react-redux';
+import Link from 'next/link';
 
 interface ISearchProps {
   open: boolean;
