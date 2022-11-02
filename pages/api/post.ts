@@ -25,6 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     if (req.method === "POST") {
         const TagsQuery = []
+        const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body
+        const isValidSlug: boolean = (slug.includes("\\") || slug.includes("/") || slug.includes(" "))
 
         const { error, id } = GetUserIdMiddleware(req)
 
@@ -41,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (!user) return res.status(400).json({ massage: "User Not Found" })
 
-        const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body
+
 
         if (!title || !content || !slug || !category) return res.status(400).json({ massage: "Bad Request" })
 
@@ -55,6 +57,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
 
         if (isSlugUnique?.id) return res.status(400).json({ massage: "Bad Request slug is not unique" })
+        
+        if (isValidSlug) return res.status(400).json({ massage: "Bad Request slug is unValid" })
 
         if (tags && tags.length) {
             for (let tag of tags) {
@@ -68,6 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 })
             }
         }
+
 
         const data = await prisma.post.create({
             data: {

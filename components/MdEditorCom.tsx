@@ -66,7 +66,6 @@ const MdEditorCom = (props: IMdEditorProps) => {
   const [tags, setTags] = useState<string[]>([])
   const [category, setCategory] = useState<FilmOptionType | null>(null)
   const [backgroundImageUrl, setBackgroundImageUrl] = useState("")
-  const [isHadBackGroundImage, setIsHadBackGroundImage] = useState(false)
 
   const handleEditorChange = ({ html, text }: HandleEditorChangeProps) => {
     setText(text)
@@ -86,7 +85,6 @@ const MdEditorCom = (props: IMdEditorProps) => {
         tags.push(tag.name)
       }
       setTags(tags)
-      if (props.data.backgroundImageUrl) setIsHadBackGroundImage(true)
     }
   }, [props.data, props.isUpdate])
 
@@ -102,7 +100,6 @@ const MdEditorCom = (props: IMdEditorProps) => {
   useEffect(() => {
     init()
   }, [])
-
 
 
   const onImageUpload = async (file: File) => {
@@ -141,7 +138,6 @@ const MdEditorCom = (props: IMdEditorProps) => {
         Swal.fire('some think want wrong', 'place check internet connection', 'error');
         return;
       };
-      setIsHadBackGroundImage(true)
       setBackgroundImageUrl(fileUrl)
     }
   }
@@ -168,7 +164,7 @@ const MdEditorCom = (props: IMdEditorProps) => {
       const endData: ICreatePostData = {
         title,
         content: replace,
-        slug,
+        slug: slug.replace(/[ \/_]/g, '-'),
         images: files,
         tags,
         category: category.name,
@@ -184,6 +180,7 @@ const MdEditorCom = (props: IMdEditorProps) => {
     
       setTitle("")
       setSlug("")
+      setBackgroundImageUrl("")
       setTags([])
       setCategory({ name: "" })
       mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
@@ -290,7 +287,7 @@ const MdEditorCom = (props: IMdEditorProps) => {
             />
           </Stack>
           <Button size='small' startIcon={<BackupIcon />} className="text-sm mt-4 lowercase" variant="contained" component="label">
-            {(isHadBackGroundImage || backgroundImageUrl) ? "uploaded" : "Upload background image" }
+            {backgroundImageUrl ? "uploaded" : "Upload background image" }
             <input onChange={(event) => handelUploadImage(event)} hidden accept="image/*" multiple type="file" />
           </Button>
         </Box>
