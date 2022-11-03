@@ -53,9 +53,9 @@ export const deleteComment = async (id: number) => await API.delete(`comment?id=
 
 export const updateComment = async (id: number, content: string) => await API.patch(`comment?id=${id}`, {content: content})
 
-export const likePost = async (slug: string) => await API.get(`handelPost?type=like&?slug=${slug}`)
+export const likePost = async (slug: string) => await API.patch(`handelPost?type=like&?slug=${slug}`)
 
-export const dislikePost = async (slug: string) => await API.get(`handelPost?type=dislike&?slug=${slug}`)
+export const dislikePost = async (slug: string) => await API.patch(`handelPost?type=dislike&?slug=${slug}`)
 
 export const getBlogDataS = async (blogName: string) => await API.get(`blog?blogName=${blogName}`);
 
@@ -80,3 +80,5 @@ export const DeletePost = async (id: number) => await API.delete(`post/?id=${id}
 export const GetLikes = async (slug: string) => await API.get(`likes?slug=${slug}`)
 
 export const GetComments = async (slug: string) => await API.get(`comments?slug=${slug}`)
+
+export const GetPosts = async () => await API.get('handelPost');

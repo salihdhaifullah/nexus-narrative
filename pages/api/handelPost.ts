@@ -3,7 +3,7 @@ import prisma from '../../libs/prisma'
 import { GetUserIdMiddleware } from '../../middleware';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === "GET") {
+    if (req.method === "PATCH") {
         const slug = req.query["slug"] as string;
         const { error, id } = GetUserIdMiddleware(req)
 
@@ -94,5 +94,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(200).json({likes})
         }
     }
-  
+
+    if (req.method === "GET") {
+        const posts = await prisma.post.findMany({
+            orderBy: {
+                views: "desc",
+            },
+            select: {
+                author: {
+                    select: {
+                        blogName: true,
+                    },
+                },
+                backgroundImageUrl: true,
+                title: true,
+                slug: true,
+                createdAt: true,
+            },
+        });
+
+
+        return res.status(200).json({posts})
+    }
 }
