@@ -40,6 +40,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "POST") {
 
         const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body;
+
+        if (title.length <= 8 && slug.length <= 8 && content.length <= 100 && category.length <= 2 && tags.length <= 1 && backgroundImageUrl.length > 10) {
+            return res.status(400).json({ massage: "unValid data" });
+        }
+
         const postId = Number(req.query["id"]);
         const TagsQuery = []
         const TagsQueryForDelete = [];

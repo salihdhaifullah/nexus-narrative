@@ -25,7 +25,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     if (req.method === "POST") {
         const TagsQuery = []
-        const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body
+        const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body;
+        if (title.length <= 8 && slug.length <= 8 && content.length <= 100 && category.length <= 2 && tags.length <= 1 && backgroundImageUrl.length > 10) {
+            return res.status(400).json({ massage: "unValid data" });
+        }
         const isValidSlug: boolean = (slug.includes("\\") || slug.includes("/") || slug.includes(" "))
 
         const { error, id } = GetUserIdMiddleware(req)
@@ -74,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
 
-        const data = await prisma.post.create({
+          await prisma.post.create({
             data: {
                 backgroundImageUrl: backgroundImageUrl,
                 tags: {
@@ -100,14 +103,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     connect: { id: id },
                 },
             },
-            include: {
-                tags: true,
-                category: true,
-                author: true
-            },
+
         })
 
-        return res.status(200).json({ massage: "post Successfully Created", data: data });
+        return res.status(200).json({ massage: "post Successfully Created" });
 
     }  
     
