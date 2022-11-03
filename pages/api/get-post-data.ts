@@ -39,25 +39,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             }
                         },
                     },
-                    comments: {
-                        select: {
-                            createdAt: true,
-                            id: true,
-                            content: true,
-                            authorId: true,
-                            author: {
-                                select: {
-                                    firstName: true,
-                                    lastName: true,
-                                    Avter: {
-                                        select: {
-                                            fileUrl: true
-                                        },
-                                    }
-                                },
-                            },
-                        },
-                    },
                     tags: {
                         select: {
                             name: true

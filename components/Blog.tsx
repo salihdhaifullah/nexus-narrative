@@ -9,8 +9,8 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Comment from './Comment';
-import { Button,  Chip, Typography } from '@mui/material';
-import { CreateComment, dislikePost, GetLikes, likePost, updateComment } from '../api';
+import { Button, Chip, Typography } from '@mui/material';
+import { CreateComment, dislikePost, GetComments, GetLikes, likePost, updateComment } from '../api';
 import Link from 'next/link';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
@@ -38,28 +38,33 @@ interface IBlogProps {
   category: string;
   postId: number;
 
-  comments: {
-    author: {
-      Avter: {
-        fileUrl: string;
-      }
-      firstName: string;
-      lastName: string;
-    }
-    authorId: number;
-    content: string;
-    createdAt: Date;
-    id: number;
-  }[]
+
   slug: string;
   posts: IFeaturedPostProps[];
   PostsRelated: IFeaturedPostProps[];
   authorId: number;
 }
 
-export default function Blog({ authorId, PostsRelated, posts, slug, comments, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
+interface IComment {
+  author: {
+    Avter: {
+      fileUrl: string;
+    }
+    firstName: string;
+    lastName: string;
+  }
+  authorId: number;
+  content: string;
+  createdAt: Date;
+  id: number;
+}
+
+export default function Blog({ authorId, PostsRelated, posts, slug, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
 
   const [commentState, setComment] = React.useState("");
+
+  const [comments, setComments] = React.useState<IComment[]>([]);
+  const [changeComments, setChangeComments] = React.useState(false);
   const [idToUpdate, setIdToUpdate] = React.useState<number | null>(null)
   const [liked, setIsLiked] = React.useState<boolean>(false)
   const formRef = React.useRef<HTMLDivElement | null>(null);
@@ -75,10 +80,30 @@ export default function Blog({ authorId, PostsRelated, posts, slug, comments, po
       console.log(err);
     })
   }
-  
+
+  const handelGetComments = async () => {
+    await GetComments(slug).then((res) => {
+      setComments(res.data.comments.comments)
+      console.log(res.data.comments)
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+
   useEffect(() => {
     handelGetLikes()
   }, [liked])
+
+  useEffect(() => {
+    handelGetComments()
+  }, [changeComments])
+
+  useEffect(() => {
+    if (idToUpdate) {
+      const content: string | undefined = comments.find((c: IComment) => c.id === idToUpdate)?.content;
+      if (content) setComment(content)
+    }
+  }, [idToUpdate])
 
   const handelCreateOrUpdateComment = async () => {
     if (!commentState) return;
@@ -86,10 +111,13 @@ export default function Blog({ authorId, PostsRelated, posts, slug, comments, po
       await CreateComment({ postId: Number(postId), comment: commentState }).then((res) => {
       }).catch((err: any) => {
       })
+      setChangeComments(!changeComments)
     } else {
       await updateComment(idToUpdate, commentState).then((res) => {
       }).catch((err: any) => {
       })
+      setChangeComments(!changeComments)
+      setIdToUpdate(null)
     }
     setComment("")
   }
@@ -131,7 +159,7 @@ export default function Blog({ authorId, PostsRelated, posts, slug, comments, po
             </Link>
           </Typography>
           <Grid container spacing={5} sx={{ mt: 3 }}>
-    
+
             <Main blogName={blogName} post={content} />
             <Sidebar
               title="about"
@@ -188,8 +216,12 @@ export default function Blog({ authorId, PostsRelated, posts, slug, comments, po
             </div>
 
             <div className="flex flex-col">
-              {comments.map((comment, index) => (
-                <Comment comment={comment} setIdToUpdate={setIdToUpdate} scrollToForm={scrollToForm} key={index} />
+              {comments?.length && comments.map((comment, index) => (
+                <Comment comment={comment}
+                  setChangeComments={setChangeComments}
+                  changeComments={changeComments}
+                  setIdToUpdate={setIdToUpdate}
+                  scrollToForm={scrollToForm} key={index} />
               ))}
             </div>
 
@@ -200,7 +232,7 @@ export default function Blog({ authorId, PostsRelated, posts, slug, comments, po
             <Grid container spacing={4} className="flex justify-center items-center my-4">
               {tags && tags.map((item, index) => (
                 <Link key={index} href={`/search/?tag=${item.name}`}>
-                  <Chip label={item.name} className="mr-1 link" variant="outlined"  />
+                  <Chip label={item.name} className="mr-1 link" variant="outlined" />
                 </Link>
               ))}
             </Grid>

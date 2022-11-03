@@ -76,31 +76,48 @@ export default function Header(props: HeaderProps) {
   return (
     <React.Fragment>
       <Search open={open} setOpen={setOpen} search={search} setSearch={setSearch} />
-      <Toolbar sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Typography
-          component="h2"
-          variant="h5"
-          color="inherit"
-          align="center"
-          noWrap
-          sx={{ flex: 1 }}
-        >
-          {title}
-        </Typography>
-        <IconButton>
-          <SearchIcon onClick={() => setOpen(true)} />
-        </IconButton>
-        {user !== null ? (
-          <Button onClick={() => logout()(dispatch)} variant="outlined" size="small">
-            logout
+      <Toolbar className="flex justify-between" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+
+        <Link className="no-underline" href="/posts">
+          <Button size="small">
+            Posts
           </Button>
-        ) : (
-          <Link className="no-underline" href="/sing-up">
-            <Button variant="outlined" size="small">
-              Sign up
+        </Link>
+
+        <Link className="no-underline" href="/admin/profile">
+          <Button size="small">
+            Profile
+          </Button>
+        </Link>
+
+        <Link className="no-underline" href="/admin/create-post">
+          <Button size="small">
+            Create Post
+          </Button>
+        </Link>
+
+        <Link className="no-underline" href="/admin">
+          <Button size="small">
+            Dashboard
+          </Button>
+        </Link>
+        
+        <div>
+          <IconButton>
+            <SearchIcon onClick={() => setOpen(true)} />
+          </IconButton>
+          {user !== null ? (
+            <Button onClick={() => logout()(dispatch)} variant="outlined" size="small">
+              logout
             </Button>
-          </Link>
-        )}
+          ) : (
+            <Link className="no-underline" href="/sing-up">
+              <Button variant="outlined" size="small">
+                Sign up
+              </Button>
+            </Link>
+          )}
+        </div>
       </Toolbar>
     </React.Fragment>
   );

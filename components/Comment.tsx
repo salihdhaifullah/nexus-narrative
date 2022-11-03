@@ -22,10 +22,12 @@ interface ICommentProps {
   }
   scrollToForm: () => void;
   setIdToUpdate: (id: number) => void;
+  setChangeComments: (value: boolean) => void;
+  changeComments: boolean;
 }
 
 
-const Comment = ({ comment, scrollToForm, setIdToUpdate }: ICommentProps) => {
+const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, setIdToUpdate }: ICommentProps) => {
 
   const isServer = typeof window === 'undefined';
   const [isFound, setIsFound] = useState<any>(null);
@@ -48,6 +50,7 @@ const Comment = ({ comment, scrollToForm, setIdToUpdate }: ICommentProps) => {
     await deleteComment(id).then((res) => {
     }).catch((err: any) => {
     })
+    setChangeComments(!changeComments)
   }
 
   const handelUpdate = (id: number) => {

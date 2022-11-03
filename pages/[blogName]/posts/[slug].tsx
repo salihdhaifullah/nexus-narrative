@@ -34,7 +34,7 @@ export default function Post({ postData }: any) {
       createdAt={moment(postData.dataItem.createdAt).format("ll")}
       tags={postData.dataItem.tags}
       category={postData.dataItem.category.name}
-      comments={postData.dataItem.comments}/>
+      />
     </>
   );
 }

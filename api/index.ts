@@ -78,3 +78,5 @@ export const UpdatePost = async (id: number, data: ICreatePostData) => await API
 export const DeletePost = async (id: number) => await API.delete(`post/?id=${id}`)
 
 export const GetLikes = async (slug: string) => await API.get(`likes?slug=${slug}`)
+
+export const GetComments = async (slug: string) => await API.get(`comments?slug=${slug}`)
