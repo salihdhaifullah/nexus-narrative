@@ -32,7 +32,7 @@ const Search = ({ open, setOpen, search, setSearch }: ISearchProps) => {
         <DialogTitle>Search</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            write a tag category or a title to get the best result .
+            search by title to get the best result .
           </DialogContentText>
           <TextField
             autoFocus

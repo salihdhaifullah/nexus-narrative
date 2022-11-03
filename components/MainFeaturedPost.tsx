@@ -16,11 +16,13 @@ export default function MainFeaturedPost(props: MainFeaturedPostProps) {
 
   return (
     <Paper
+    className="min-h-[28vh]"
       sx={{
         position: 'relative',
         backgroundColor: 'grey.800',
         color: '#fff',
         mb: 4,
+        minHeight: "28vh",
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
