@@ -61,12 +61,8 @@ const Search = ({ open, setOpen, search, setSearch }: ISearchProps) => {
   );
 }
 
-interface HeaderProps {
-  title: string;
-}
 
-export default function Header(props: HeaderProps) {
-  const { title } = props;
+export default function Header() {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const isBrowser: boolean = typeof window !== 'undefined';
@@ -76,9 +72,9 @@ export default function Header(props: HeaderProps) {
   return (
     <React.Fragment>
       <Search open={open} setOpen={setOpen} search={search} setSearch={setSearch} />
-      <Toolbar className="flex justify-between" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Toolbar className="flex justify-between" sx={{ borderBottom: 1, borderColor: 'divider' }}> 
 
-        <Link className="no-underline" href="/posts">
+         <Link className="no-underline" href="/posts">
           <Button size="small">
             Posts
           </Button>
@@ -86,13 +82,18 @@ export default function Header(props: HeaderProps) {
 
         {user && (
           <>
-            <Link className="no-underline" href="/admin/profile">
-              <Button size="small">
-                Profile
-              </Button>
-            </Link>
 
-            <Link className="no-underline" href="/admin/create-post">
+             <Link className="no-underline" href="/admin/profile">
+              <a>
+                <Button size="small">
+                  Profile
+                </Button>
+              </a>
+            </Link> 
+
+
+
+             <Link className="no-underline" href="/admin/create-post">
               <Button size="small">
                 Create Post
               </Button>
@@ -102,14 +103,14 @@ export default function Header(props: HeaderProps) {
               <Button size="small">
                 Dashboard
               </Button>
-            </Link>
+            </Link> 
           </>
         )}
 
 
         <div>
-          <IconButton>
-            <SearchIcon onClick={() => setOpen(true)} />
+           <IconButton onClick={() => setOpen(true)}>
+            <SearchIcon />
           </IconButton>
           {user !== null ? (
             <Button onClick={() => logout()(dispatch)} variant="outlined" size="small">
@@ -121,9 +122,9 @@ export default function Header(props: HeaderProps) {
                 Sign up
               </Button>
             </Link>
-          )}
+          )} 
         </div>
-      </Toolbar>
+       </Toolbar> 
     </React.Fragment>
   );
 }

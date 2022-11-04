@@ -16,8 +16,8 @@ interface IBlogName {
     }
 }
 
-export const getAllBlogsName = async (): Promise<IBlogName[] | any> => {
-    const blogName = [];
+export const getAllBlogsName = async (): Promise<any[]> => {
+    const blogName: any[] = [];
 
     const data = await prisma.user.findMany({
         where: {
@@ -33,7 +33,7 @@ export const getAllBlogsName = async (): Promise<IBlogName[] | any> => {
     })
 
     for (let item of data) {
-        blogName.push({ params: item })
+        blogName.push({ params: item || null })
     }
     return blogName;
 }

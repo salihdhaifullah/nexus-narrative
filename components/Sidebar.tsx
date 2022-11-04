@@ -11,24 +11,22 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import Image from 'next/image'
-
 const myLoader = (url: string) => url;
 
-interface SidebarProps {
+export interface ISidebarProps {
   description: string;
-  social: ReadonlyArray<{
+  social: {
     link: string;
     name: string;
-  }>;
-  title: string;
+  }[];
   email: string;
   name: string;
   AvatarUrl: string;
   authorId: number;
 }
 
-export default function Sidebar(props: SidebarProps) {
-  const { authorId, description, social, title, email, name, AvatarUrl } = props;
+export default function Sidebar(props: ISidebarProps) {
+  const { authorId, description, social, email, name, AvatarUrl } = props;
 
   return (
     <Grid item xs={12} md={4}>
@@ -37,7 +35,7 @@ export default function Sidebar(props: SidebarProps) {
       <div className='inline-flex items-center'>
         <Image
           className='rounded-full'
-          loader={() => myLoader(AvatarUrl)}
+          loader={() => myLoader(AvatarUrl || '/images/user-placeholder.png')}
           src={"me.png"}
           alt="Picture of the author"
           width={80}
@@ -51,7 +49,7 @@ export default function Sidebar(props: SidebarProps) {
 
       <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.200' }}>
         <Typography variant="h6" gutterBottom>
-          {title}
+          about
         </Typography>
         <Typography>{description}</Typography>
       </Paper>
@@ -84,7 +82,7 @@ export default function Sidebar(props: SidebarProps) {
         </a>
       ))}
       <Typography className="text-lg">
-        <div> connect to author |</div>
+        <span> connect to author |</span>
 
         {email}</Typography>
     </Grid>

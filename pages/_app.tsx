@@ -7,21 +7,23 @@ import Copyright from '../components/Copyright'
 import Swal from "sweetalert2"
 import { useRouter } from 'next/router'
 import { GetToken } from "../api";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IUser } from "../types/user";
 import { checkExpirationDateJwt } from "../static";
 import NextNProgress from 'nextjs-progressbar';
+import CircularProgress from '@mui/material/CircularProgress'
 
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-  const IsBrowser = typeof window !== 'undefined';
-  const isFound = IsBrowser && localStorage.getItem("user");
-  const user: IUser = isFound && JSON.parse(isFound);
+
+  const [user, setUser] = useState<IUser | null>(null)
+  const [isBrowser, setIsBrowser] = useState(false)
+
   const [isExpired, setIsExpired] = useState(false)
   const [check, setCheck] = useState(0)
 
-  const SwalError = () => {
+  const SwalError = useCallback(() => {
     Swal.fire({
       title: "you need To login",
       text: 'Please login again',
@@ -29,16 +31,30 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       confirmButtonText: 'OK',
       showCancelButton: true,
     }).then((result) => result.value && router.push('/login'));
-  };
+  }, [router])
 
-  const getToken = async () => {
+  const getToken = useCallback(async () => {
+    if (!user) return;
     await GetToken().then(({ data }: any) => {
       user.token = data.token;
       localStorage.setItem('user', JSON.stringify(user))
     }).catch(err => {
       if (err) SwalError();
     })
-  }
+  }, [SwalError, user])
+
+
+  const getUser = useCallback(() => {
+    if (isBrowser) {
+      const isFound = localStorage.getItem("user");
+      if (isFound)  setUser(JSON.parse(isFound));
+    }
+  }, [isBrowser]);
+
+  useEffect(() => {
+    setIsBrowser(true)
+    getUser()
+  }, [getUser])
 
   // useEffect(() => {
   //   if (user) getToken();
@@ -56,12 +72,20 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   // }, [check])
 
   return (
+
     <div className="flex flex-col min-h-[100vh]">
       <Provider store={store}>
         <NextNProgress />
-          <Header title="Blog"  />
-          <Component {...pageProps} />
-          <Copyright />
+        {isBrowser ? (
+          <>
+            <Header />
+            <Component {...pageProps} />
+            <Copyright />
+          </>
+        ) : (
+          <CircularProgress />
+        )}
+
       </Provider>
     </div>
   );

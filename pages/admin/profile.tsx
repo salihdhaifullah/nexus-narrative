@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { countries, ISocial, Social } from '../../static'
@@ -60,12 +60,12 @@ const Profile = () => {
   const [openDialogInputs, setOpenDialogInputs] = useState(false)
   const [countryDefault, setCountryDefault] = useState<any>(null)
   const [social, setSocial] = useState<ISocial[]>([])
-  let profile: IUserProfileData | null = null;
+  const [profile, setProfile] = useState<IUserProfileData | null>(null)
 
 
-  const init = async () => {
+  const init = useCallback(async () => {
     await GetProfileData().then((data) => {
-      profile = data.data.user
+      setProfile(data.data.user)
       if (profile) {
         if (profile.Avter) setUserImage(profile.Avter.fileUrl);
         if (profile.about) setAbout(profile.about);
@@ -82,11 +82,11 @@ const Profile = () => {
         setSocial(sortByIsUrlNull(Social, socil));
       }
     });
-  }
+  }, [country, profile, socil])
 
   useEffect(() => {
     init()
-  }, [])
+  }, [init])
 
   useEffect(() => {
     setSocial(sortByIsUrlNull(Social, socil));

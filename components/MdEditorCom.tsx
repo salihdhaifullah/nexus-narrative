@@ -2,7 +2,7 @@ import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 import supabase from '../libs/supabase/config'
-import { useEffect, useState, useMemo, useRef, ChangeEvent } from 'react'
+import { useEffect, useState, useMemo, useRef, ChangeEvent, useCallback } from 'react'
 import Swal from 'sweetalert2'
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
@@ -83,13 +83,13 @@ const MdEditorCom = (props: IMdEditorProps) => {
   useEffect(() => {
     if (title.length >= 8 && slug.length >= 8 && text.length >= 100 && (category && category?.name?.length >= 2) && tags.length >= 1 && backgroundImageUrl.length > 10) {
       setIsValid(true)
-      console.log("validation")
     } else {
       setIsValid(false)
     }
   }, [backgroundImageUrl, category, slug, tags, text, title])
 
-  useEffect(() => {
+
+  const init = useCallback(async () => {
     if (props.isUpdate && props.data) {
       console.log(props)
       setTitle(props.data.title)
@@ -104,21 +104,18 @@ const MdEditorCom = (props: IMdEditorProps) => {
       }
       setTags(tags)
     }
-  }, [props.data, props.isUpdate])
 
-  const init = async () => {
     await GetTagsAndCategories().then(({ data }: any) => {
       if (data.categories.length) {
         setCategoriesOptions(data.categories)
         setTagsOptions(data.tags)
       }
     })
-  }
-
+  }, [props])
+  
   useEffect(() => {
     init()
-  }, [])
-
+  }, [init])
 
   const onImageUpload = async (file: File) => {
     if (file.size > 52428800) Swal.fire('some think want wrong', 'file size is to big', 'error')

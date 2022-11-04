@@ -29,21 +29,19 @@ interface ICommentProps {
 
 const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, setIdToUpdate }: ICommentProps) => {
 
-  const isServer = typeof window === 'undefined';
-  const [isFound, setIsFound] = useState<any>(null);
   const [user, setUser] = useState<IUser | null>(null);
   const [changeUi, setChangeUi] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (!isServer) setIsFound(localStorage.getItem("user"));
+    const isFound = localStorage.getItem("user");
     if (isFound) setUser(JSON.parse(isFound));
     setChangeUi(!changeUi)
-  }, [isFound])
+  }, [changeUi])
 
   useEffect(() => {
     setChangeUi(!changeUi)
-  }, [user])
+  }, [changeUi, user])
 
 
   const handelDelete = async (id: number) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import FeaturedPost from '../components/FeaturedPost'
@@ -16,8 +16,15 @@ const Search: NextPage = () => {
     const [tag, setTag] = useState("")
     const [category, setCategory] = useState("")
 
-    const handelSearch = async () => {
-        setIsLoading(true)
+    
+    useEffect(() => {
+        setSearch(window.location.href.split("?search=")[1])
+        setTag(window.location.href.split("?tag=")[1])
+        setCategory(window.location.href.split("?category=")[1])
+    }, [])
+
+    const handelSearch = useCallback(async () => {
+        if (tag || search || category) setIsLoading(true);
 
         if (search) await generalSearch(search).then((res) => {
             setPosts(res.data.posts);
@@ -33,20 +40,13 @@ const Search: NextPage = () => {
             setPosts(res.data.posts);
             setIsLoading(false)
         }).catch((err) => { console.log(err) })
-    }
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setSearch(window.location.href.split("?search=")[1])
-            setTag(window.location.href.split("?tag=")[1])
-            setCategory(window.location.href.split("?category=")[1])
-        }
-    }, [])
-
-
-    useEffect(() => {
-        if (tag || search || category) handelSearch();
     }, [category, search, tag])
+
+
+
+    useEffect(() => {
+        handelSearch();
+    }, [handelSearch])
 
     return (
         <>

@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
@@ -61,17 +60,17 @@ interface IComment {
 
 export default function Blog({ authorId, PostsRelated, posts, slug, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
 
-  const [commentState, setComment] = React.useState("");
+  const [commentState, setComment] = useState("");
 
-  const [comments, setComments] = React.useState<IComment[]>([]);
-  const [changeComments, setChangeComments] = React.useState(false);
-  const [idToUpdate, setIdToUpdate] = React.useState<number | null>(null)
-  const [liked, setIsLiked] = React.useState<boolean>(false)
-  const formRef = React.useRef<HTMLDivElement | null>(null);
-  const [likes, setLikes] = React.useState<string[]>([])
-  const [dislikes, setDislikes] = React.useState<string[]>([])
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [changeComments, setChangeComments] = useState(false);
+  const [idToUpdate, setIdToUpdate] = useState<number | null>(null)
+  const [liked, setIsLiked] = useState<boolean>(false)
+  const formRef = useRef<HTMLDivElement | null>(null);
+  const [likes, setLikes] = useState<string[]>([])
+  const [dislikes, setDislikes] = useState<string[]>([])
 
-  const handelGetLikes = async () => {
+  const handelGetLikes = useCallback(async () => {
     await GetLikes(slug).then((res) => {
       console.log(res.data.likes);
       setLikes(res.data.likes.likes)
@@ -79,31 +78,31 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
     }).catch((err) => {
       console.log(err);
     })
-  }
+  }, [slug])
 
-  const handelGetComments = async () => {
+  const handelGetComments = useCallback(async () => {
     await GetComments(slug).then((res) => {
       setComments(res.data.comments.comments)
       console.log(res.data.comments)
     }).catch((err) => {
       console.log(err);
     })
-  }
+  }, [slug])
 
   useEffect(() => {
     handelGetLikes()
-  }, [liked])
+  }, [liked, handelGetLikes])
 
   useEffect(() => {
     handelGetComments()
-  }, [changeComments])
+  }, [changeComments, handelGetComments])
 
   useEffect(() => {
     if (idToUpdate) {
       const content: string | undefined = comments.find((c: IComment) => c.id === idToUpdate)?.content;
       if (content) setComment(content)
     }
-  }, [idToUpdate])
+  }, [comments, idToUpdate])
 
   const handelCreateOrUpdateComment = async () => {
     if (!commentState) return;
@@ -162,7 +161,6 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
 
             <Main blogName={blogName} post={content} />
             <Sidebar
-              title="about"
               description={about}
               social={socil}
               email={email}
