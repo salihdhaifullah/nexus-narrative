@@ -23,7 +23,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             firstName: firstName,
                             lastName: lastName,
                             email: email,
-                            password: hashPassword
+                            password: hashPassword,
+                            blogName: Date.now().toString()
                         }
                     })
 

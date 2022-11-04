@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
 import { ChangeBlogName, ChangePassword, CreateSocial, GetProfileData, UpdateProfileGeneralInformation, uploadAvatar } from '../../api';
-import userPlaceholder from "../../public/images/user-profile.jpg";
+import userPlaceholder from "../../public/images/user-placeholder.png";
 import { IUserProfileData, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../../types/profile'
 import DialogInputs from '../../components/DialogInputs';
 import { SocilTypes } from '@prisma/client';

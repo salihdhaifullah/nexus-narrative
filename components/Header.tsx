@@ -84,24 +84,29 @@ export default function Header(props: HeaderProps) {
           </Button>
         </Link>
 
-        <Link className="no-underline" href="/admin/profile">
-          <Button size="small">
-            Profile
-          </Button>
-        </Link>
+        {user && (
+          <>
+            <Link className="no-underline" href="/admin/profile">
+              <Button size="small">
+                Profile
+              </Button>
+            </Link>
 
-        <Link className="no-underline" href="/admin/create-post">
-          <Button size="small">
-            Create Post
-          </Button>
-        </Link>
+            <Link className="no-underline" href="/admin/create-post">
+              <Button size="small">
+                Create Post
+              </Button>
+            </Link>
 
-        <Link className="no-underline" href="/admin">
-          <Button size="small">
-            Dashboard
-          </Button>
-        </Link>
-        
+            <Link className="no-underline" href="/admin">
+              <Button size="small">
+                Dashboard
+              </Button>
+            </Link>
+          </>
+        )}
+
+
         <div>
           <IconButton>
             <SearchIcon onClick={() => setOpen(true)} />

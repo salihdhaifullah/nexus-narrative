@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import userPlaceholder from "../../../public/images/user-profile.jpg";
+import userPlaceholder from "../../../public/images/user-placeholder.png";
 import { ISocil, IUserProfileProps } from '../../../types/profile';
 import { getAllUsersIds, GetUserProfileData } from '../../../controllers';
 import { ISocial, Social } from '../../../static';

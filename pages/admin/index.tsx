@@ -9,7 +9,6 @@ import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 import { DeletePost, GetAdminPageData } from '../../api';
 import Link from 'next/link';
-import Button from '@mui/material/Button';
 
 interface IPost {
   slug: string
@@ -39,6 +38,7 @@ export default function Index() {
   const handelDelete = async (postId: number) => {
     await DeletePost(postId).then((res) => {
       console.log(res)
+      setPosts(posts.filter(p => p.id !== postId))
     }).catch((err) => {
       console.log(err)
     })
@@ -50,13 +50,6 @@ export default function Index() {
 
   return (
     <>
-      <div className='flex mt-4 ml-4'>
-        <Link href="admin/create-post">
-          <Button variant="contained" className="bg-blue-600">
-            Create New Post
-          </Button>
-        </Link>
-      </div>
       <div className="p-16 w-full min-h-[100vh] flex justify-center">
         {isLoading ? <CircularProgress /> :
           (posts && posts.length > 0) && (
