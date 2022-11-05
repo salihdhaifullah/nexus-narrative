@@ -4,22 +4,19 @@ import { ICreatePostData } from '../types/post';
 import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
-// let baseURL = 'http://localhost:3000/api'
-// if (process.env.NODE_ENV === "production") {
-//     baseURL = ;
-// } 
-
-
-const API = axios.create({ baseURL: `https://${window.location.host}/api` })
-
-const ISSERVER = typeof window === "undefined";
-
-
+let baseURL = 'http://localhost:3000/api'
+let ISSERVER = typeof window === "undefined";
 let isFoundUser: string | null = null;
 let user: IUser | null = null;
 
 if (!ISSERVER) isFoundUser = localStorage.getItem("user"); 
 if (isFoundUser) user = JSON.parse(isFoundUser);
+
+if (process.env.NODE_ENV === "production" && !ISSERVER) {
+    baseURL = `https://${window.location.host}/api`;
+} 
+
+const API = axios.create({ baseURL: baseURL })
 
 API.interceptors.request.use((req) => {
     if(user && req?.headers?.authorization) req.headers.authorization = `Bearer ${user.token}`;
