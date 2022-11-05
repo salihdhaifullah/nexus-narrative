@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { getBlogDataForHomePage } from '../../controllers'
+import { getAllBlogsName, getBlogDataForHomePage } from '../../controllers'
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import createTheme from '@mui/material/styles/createTheme';
@@ -8,30 +8,39 @@ import FeaturedPost from '../../components/FeaturedPost';
 import Sidebar from '../../components/Sidebar';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import { GetAllBlogsNames } from '../../api';
+import { IFeaturedPostProps } from '../../types/post';
 
 
 const theme = createTheme();
 
-interface IPost {
-  createdAt: Date;
-  backgroundImageUrl: string;
-  slug: string;
-  title: string;
+
+interface IProps {
+  data: {
+    about: string | null;
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+  
+    Avter: {
+      fileUrl: string;
+    } | null;
+  
+    socil: {
+      name: string;
+      link: string;
+    }[];
+  
+    posts: IFeaturedPostProps[] 
+  }
 }
 
 
-export default function Index({ blogData }: any) {
-  const init = async () => {
+export default function Index({ data }: IProps) {
 
-  }
-
-  useEffect(() => {
-    init()
-  }, [])
   return (
     <>
-      {blogData ? (
+      {data ? (
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Container maxWidth="lg" >
@@ -42,9 +51,9 @@ export default function Index({ blogData }: any) {
                   <div className='flex justify-center items-center mt-14 mb-8'>
                     <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
                   </div>
-                  {blogData.authorPosts.posts.length > 0 ? blogData.authorPosts.posts.map((post: IPost) => (
-                    <div key={post.title} className="mb-4">
-                      <FeaturedPost key={post.title} post={post} blogName={blogData.blogName} />
+                  {data?.posts.length > 0 ? data?.posts.map((post, index) => (
+                    <div key={index} className="mb-4">
+                      <FeaturedPost post={post} />
                     </div>
                   )) : (
                     <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>
@@ -53,12 +62,12 @@ export default function Index({ blogData }: any) {
 
                 <div className="col-span-2">
                   <Sidebar
-                    description={blogData.authorPosts.data?.about}
-                    social={blogData.authorPosts.data.socil}
-                    email={blogData.authorPosts.data.email}
-                    name={blogData.authorPosts.data.firstName + " " + blogData.authorPosts.data.lastName}
-                    AvatarUrl={blogData.authorPosts.data?.Avter?.fileUrl || ""}
-                    authorId={blogData.authorPosts.data.id}
+                    description={data?.about || "Not Found"}
+                    social={data.socil}
+                    email={data.email}
+                    name={data.firstName + " " + data.lastName}
+                    AvatarUrl={data?.Avter?.fileUrl || "/images/user-placeholder.png"}
+                    authorId={data.id}
                   />
                 </div>
 
@@ -74,7 +83,7 @@ export default function Index({ blogData }: any) {
 }
 
 export async function getStaticPaths() {
-  const paths = await (await GetAllBlogsNames()).data.blogName;
+  const paths = await getAllBlogsName();
   return {
     paths,
     fallback: false,
@@ -88,11 +97,8 @@ interface IGetStaticProps {
 }
 
 export async function getStaticProps(props: IGetStaticProps) {
-  const blogData = await getBlogDataForHomePage(props.params.blogName);
-  console.log(props.params.blogName)
+  const data = await getBlogDataForHomePage(props.params.blogName);
   return {
-    props: {
-      blogData,
-    },
+    props: data,
   };
 }

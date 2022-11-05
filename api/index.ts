@@ -33,8 +33,6 @@ export const GetTagsAndCategories = async () => await API.get("post")
 
 export const createPost = async (data: ICreatePostData) => await API.post("post", data)
 
-export const GetPostData = async (slug: string) => await API.get(`get-post-data?slug=${slug}`);
-
 export const GetProfileData = async (userId?: string) => await API.get(`/admin/profile?userId=${userId || ""}`);
 
 export const UpdateProfileGeneralInformation = async (data: IUpdateProfileGeneralInformation) => await API.patch("/admin/profile", data)
@@ -82,9 +80,3 @@ export const GetLikes = async (slug: string) => await API.get(`likes?slug=${slug
 export const GetComments = async (slug: string) => await API.get(`comments?slug=${slug}`)
 
 export const GetPosts = async () => await API.get('handelPost');
-
-export const GetAllBlogsNames = async () => await API.get(`get-static-paths/?type=blogs`)
-
-export const GetAllSlugs = async () => await API.get(`get-static-paths/?type=slugs`)
-
-export const getAllUsersIds = async () => await API.get(`get-static-paths/?type=users`)

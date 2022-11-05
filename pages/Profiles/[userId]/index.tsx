@@ -12,7 +12,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { useEffect, useState } from 'react';
 import  CircularProgress from '@mui/material/CircularProgress';
-import { getAllUsersIds } from '../../../api';
+import {getAllUsersIds} from '../../../controllers'
 
 const myLoader = (url: string) => url;
 
@@ -173,8 +173,7 @@ export default Profile;
 
 
 export async function getStaticPaths() {
-  const paths = await (await getAllUsersIds()).data.ids;
-  console.log(paths)
+  const paths = await getAllUsersIds();
   return {
     paths,
     fallback: false,
@@ -182,9 +181,12 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: any) {
+  let props = null;
   const data = await GetUserProfileData(params.userId);
+
+  props = data;
   return {
-    props: data
+    props: props
   };
 }
 

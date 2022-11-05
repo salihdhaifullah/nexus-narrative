@@ -8,58 +8,24 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Comment from './Comment';
-import { Button, Chip, Typography } from '@mui/material';
+import { Button, Chip, CircularProgress, Typography } from '@mui/material';
 import { CreateComment, dislikePost, GetComments, GetLikes, likePost, updateComment } from '../api';
 import Link from 'next/link';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
-import { IFeaturedPostProps } from '../types/post';
+import { IBLogProps, IPostProps } from '../types/post';
+import { IComment } from '../types/comment';
 
 const theme = createTheme();
 
-interface IBlogProps {
-  content: string;
-  about: string;
-  socil: {
-    name: string;
-    link: string;
-  }[]
-  email: string;
-  title: string;
-  blogName: string;
-  backgroundImageUrl: string;
-  name: string;
-  AvatarUrl: string;
-  createdAt: string;
-  tags: {
-    name: string;
-  }[];
-  category: string;
-  postId: number;
 
-
-  slug: string;
-  posts: IFeaturedPostProps[];
-  PostsRelated: IFeaturedPostProps[];
-  authorId: number;
+interface IProps {
+  data: IBLogProps
 }
 
-interface IComment {
-  author: {
-    Avter: {
-      fileUrl: string;
-    }
-    firstName: string;
-    lastName: string;
-  }
-  authorId: number;
-  content: string;
-  createdAt: Date;
-  id: number;
-}
 
-export default function Blog({ authorId, PostsRelated, posts, slug, postId, content, about, socil, email, title, blogName, backgroundImageUrl, name, AvatarUrl, createdAt, tags, category }: IBlogProps) {
-
+export default function Blog({ data }: IProps) {
+  console.log(data)
   const [commentState, setComment] = useState("");
 
   const [comments, setComments] = useState<IComment[]>([]);
@@ -71,23 +37,23 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
   const [dislikes, setDislikes] = useState<string[]>([])
 
   const handelGetLikes = useCallback(async () => {
-    await GetLikes(slug).then((res) => {
+    await GetLikes(data.slug).then((res) => {
       console.log(res.data.likes);
       setLikes(res.data.likes.likes)
       setDislikes(res.data.likes.dislikes)
     }).catch((err) => {
       console.log(err);
     })
-  }, [slug])
+  }, [data.slug])
 
   const handelGetComments = useCallback(async () => {
-    await GetComments(slug).then((res) => {
+    await GetComments(data.slug).then((res) => {
       setComments(res.data.comments.comments)
       console.log(res.data.comments)
     }).catch((err) => {
       console.log(err);
     })
-  }, [slug])
+  }, [data.slug])
 
   useEffect(() => {
     handelGetLikes()
@@ -107,7 +73,7 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
   const handelCreateOrUpdateComment = async () => {
     if (!commentState) return;
     if (idToUpdate === null) {
-      await CreateComment({ postId: Number(postId), comment: commentState }).then((res) => {
+      await CreateComment({ postId: Number(data.postId), comment: commentState }).then((res) => {
       }).catch((err: any) => {
       })
       setChangeComments(!changeComments)
@@ -128,7 +94,7 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
   }
 
   const handelLike = async () => {
-    await likePost(slug).then((res) => {
+    await likePost(data.slug).then((res) => {
     }).catch((err: any) => {
       console.log(err)
     })
@@ -136,7 +102,7 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
   }
 
   const handelDisLike = async () => {
-    await dislikePost(slug).then((res) => {
+    await dislikePost(data.slug).then((res) => {
     }).catch((err: any) => {
       console.log(err)
     })
@@ -144,29 +110,31 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
   }
 
 
-  return (
+  return !data ? (
+    <CircularProgress />
+  ) : (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="lg" >
         <main>
-          <MainFeaturedPost image={backgroundImageUrl} title={title} />
-          <Typography className="text-lg">published at: {createdAt}</Typography>
+          <MainFeaturedPost image={data.backgroundImageUrl} title={data.title} />
+          <Typography className="text-lg">published at: {data.createdAt}</Typography>
           <Typography className="text-lg" component="div">
             category:
-            <Link href={`/search?category=${category}`}>
-              <a className="text-lg ml-1 font-bold link">{category}</a>
+            <Link href={`/search?category=${data.category}`}>
+              <a className="text-lg ml-1 font-bold link">{data.category}</a>
             </Link>
           </Typography>
           <Grid container spacing={5} sx={{ mt: 3 }}>
 
-            <Main blogName={blogName} post={content} />
+            <Main blogName={data.blogName} post={data.content} />
             <Sidebar
-              description={about}
-              social={socil}
-              email={email}
-              name={name}
-              AvatarUrl={AvatarUrl}
-              authorId={authorId}
+              description={data.about}
+              social={data.socil}
+              email={data.email}
+              name={data.name}
+              AvatarUrl={data.AvatarUrl}
+              authorId={data.authorId}
             />
 
           </Grid>
@@ -228,7 +196,7 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
 
           <Container className="mt-20">
             <Grid container spacing={4} className="flex justify-center items-center my-4">
-              {tags && tags.map((item, index) => (
+              {data.tags && data.tags.map((item, index) => (
                 <Link key={index} href={`/search/?tag=${item.name}`}>
                   <Chip label={item.name} className="mr-1 link" variant="outlined" />
                 </Link>
@@ -238,9 +206,9 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
               <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
             </div>
             <Grid container spacing={4}>
-              {posts.length > 0 ? posts.map((post) => (
-                <div key={post.title} className="mb-4 w-full">
-                  <FeaturedPost key={post.title} post={post} blogName={blogName} />
+              {data.posts.length > 0 ? data.posts.map((post, index) => (
+                <div key={index} className="mb-4 w-full">
+                  <FeaturedPost post={post} />
                 </div>
               )) : (
                 <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>
@@ -250,9 +218,9 @@ export default function Blog({ authorId, PostsRelated, posts, slug, postId, cont
               <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
             </div>
             <Grid container spacing={4} >
-              {PostsRelated.length > 0 ? PostsRelated.map((post) => (
-                <div key={post.title} className="mb-4 w-full">
-                  <FeaturedPost key={post.title} post={post} blogName={blogName} />
+              {data.PostsRelated.length > 0 ? data.PostsRelated.map((post, index) => (
+                <div key={index} className="mb-4 w-full">
+                  <FeaturedPost post={post} />
                 </div>
               )) : (
                 <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>

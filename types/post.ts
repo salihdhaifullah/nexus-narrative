@@ -21,3 +21,37 @@ export interface IFeaturedPostProps {
       blogName: string,
     },
 }
+
+
+export interface IBLogProps {
+    content: string;
+    about: string;
+    socil: {
+        name: string;
+        link: string;
+    }[]
+    email: string;
+    title: string;
+    blogName: string;
+    backgroundImageUrl: string;
+    name: string;
+    AvatarUrl: string;
+    createdAt: string;
+    tags: {
+        name: string;
+    }[];
+    category: string;
+    postId: number;
+
+
+    slug: string;
+    posts: IFeaturedPostProps[];
+    PostsRelated: IFeaturedPostProps[];
+    authorId: number;
+}
+
+
+export interface IPostProps {
+    data: IBLogProps | null;
+}
+

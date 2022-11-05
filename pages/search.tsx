@@ -60,7 +60,7 @@ const Search: NextPage = () => {
                     <Grid container spacing={4}>
                         {(posts && posts.length > 0) ? posts.map((post) => (
                             <div key={post.title} className="mb-4 w-full">
-                                <FeaturedPost key={post.title} post={post} blogName={post.author.blogName} />
+                                <FeaturedPost key={post.title} post={post}  />
                             </div>
                         )) : (
                             <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>

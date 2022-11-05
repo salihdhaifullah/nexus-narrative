@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { deleteComment } from '../api';
 import plaseHolder from '../public/images/user-placeholder.png';
 import { IUser } from '../types/user';
@@ -30,18 +30,18 @@ interface ICommentProps {
 const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, setIdToUpdate }: ICommentProps) => {
 
   const [user, setUser] = useState<IUser | null>(null);
-  const [changeUi, setChangeUi] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
+
+  const getUser = useCallback(() => {
     const isFound = localStorage.getItem("user");
     if (isFound) setUser(JSON.parse(isFound));
-    setChangeUi(!changeUi)
-  }, [changeUi])
+  }, [])
+
 
   useEffect(() => {
-    setChangeUi(!changeUi)
-  }, [changeUi, user])
+    getUser()
+  }, [getUser])
 
 
   const handelDelete = async (id: number) => {
