@@ -4,11 +4,11 @@ import { ICreatePostData } from '../types/post';
 import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
-let baseURL = 'http://localhost:3000/api'
-if (process.env.NODE_ENV === "production") {
-    baseURL = "https://blog-sand-iota-89.vercel.app/";
-} 
-const API = axios.create({ baseURL: baseURL  })
+// let baseURL = 'http://localhost:3000/api'
+// if (process.env.NODE_ENV === "production") {
+//     baseURL = ;
+// } 
+const API = axios.create({ baseURL: "https://blog-sand-iota-89.vercel.app/api"  })
 
 const ISSERVER = typeof window === "undefined";
 
