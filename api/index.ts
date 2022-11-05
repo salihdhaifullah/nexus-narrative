@@ -8,7 +8,9 @@ import { ILogin, ISingUp, IUser } from '../types/user';
 // if (process.env.NODE_ENV === "production") {
 //     baseURL = ;
 // } 
-const API = axios.create({ baseURL: "https://blog-sand-iota-89.vercel.app/api"  })
+
+
+const API = axios.create({ baseURL: `https://${window.location.host}/api` })
 
 const ISSERVER = typeof window === "undefined";
 
