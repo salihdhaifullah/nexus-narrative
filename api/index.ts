@@ -4,7 +4,11 @@ import { ICreatePostData } from '../types/post';
 import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
-const API = axios.create({ baseURL: 'http://localhost:3000/api' })
+let baseURL = 'http://localhost:3000/api'
+if (process.env.NODE_ENV === "production") {
+    baseURL = "https://blog-sand-iota-89.vercel.app/";
+} 
+const API = axios.create({ baseURL: baseURL  })
 
 const ISSERVER = typeof window === "undefined";
 
