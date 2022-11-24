@@ -2,8 +2,8 @@ export interface IUser {
     id: string;
     createdAt: Date;
     email: string;
-    name: string;
-    role: "USER" | "ADMIN"
+    lastName: string;
+    firstName: string;
     token: string;
 }
 

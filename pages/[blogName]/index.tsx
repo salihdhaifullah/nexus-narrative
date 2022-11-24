@@ -25,11 +25,7 @@ interface IProps {
     Avter: {
       fileUrl: string;
     } | null;
-  
-    socil: {
-      name: string;
-      link: string;
-    }[];
+
   
     posts: IFeaturedPostProps[] 
   }
@@ -63,7 +59,6 @@ export default function Index({ data }: IProps) {
                 <div className="col-span-2">
                   <Sidebar
                     description={data?.about || "Not Found"}
-                    social={data.socil}
                     email={data.email}
                     name={data.firstName + " " + data.lastName}
                     AvatarUrl={data?.Avter?.fileUrl || "/images/user-placeholder.png"}

@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import React, { useCallback, useEffect, useState } from 'react'
 import { deleteComment } from '../api';
-import plaseHolder from '../public/images/user-placeholder.png';
 import { IUser } from '../types/user';
 import moment from 'moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -79,7 +78,7 @@ const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, set
 
         <Image
           className='rounded-full object-fill'
-          src={comment.author.Avter?.fileUrl || plaseHolder}
+          src={comment.author.Avter?.fileUrl || "/images/user-placeholder.png"}
           alt="Picture of the author"
           width={60}
           height={60}

@@ -26,10 +26,6 @@ export interface IFeaturedPostProps {
 export interface IBLogProps {
     content: string;
     about: string;
-    socil: {
-        name: string;
-        link: string;
-    }[]
     email: string;
     title: string;
     blogName: string;

@@ -130,7 +130,6 @@ export default function Blog({ data }: IProps) {
             <Main blogName={data.blogName} post={data.content} />
             <Sidebar
               description={data.about}
-              social={data.socil}
               email={data.email}
               name={data.name}
               AvatarUrl={data.AvatarUrl}

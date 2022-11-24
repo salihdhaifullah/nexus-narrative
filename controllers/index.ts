@@ -33,7 +33,7 @@ export const getAllSlugs = async (): Promise<ISlugItem[] | any> => {
 }
 
 
-
+// TODO
 
 export const getPostData = async (slug: string): Promise<IPostProps> => {
 
@@ -75,13 +75,7 @@ export const getPostData = async (slug: string): Promise<IPostProps> => {
                             fileUrl: true
                         }
                     },
-                    about: true,
-                    socil: {
-                        select: {
-                            name: true,
-                            link: true,
-                        }
-                    }
+                    about: true
                 },
             },
             tags: {
@@ -149,7 +143,6 @@ export const getPostData = async (slug: string): Promise<IPostProps> => {
             data: {
                 content: data.content,
                 about: data.author.about || "Not Found",
-                socil: data.author.socil,
                 email: data.author.email,
                 title: data.title,
                 blogName: data.author.blogName as string,
@@ -205,21 +198,11 @@ export const getBlogDataForHomePage = async (blogName: string) => {
         },
         select: {
             about: true,
-            socil: {
-                select: {
-                    name: true,
-                    link: true,
-                },
-            },
             id: true,
             email: true,
             firstName: true,
             lastName: true,
-            Avter: {
-                select: {
-                    fileUrl: true
-                }
-            },
+            profile: true,
             posts: {
                 orderBy: {
                     createdAt: "desc",
@@ -263,8 +246,8 @@ export const getAllUsersIds = async (): Promise<IUserIdItem[]> => {
         ids.push({ params: { userId: item.id.toString() } })
     }
 
-    return ids
-}
+    return ids;
+};
 
 
 
@@ -273,7 +256,7 @@ export const getAllUsersIds = async (): Promise<IUserIdItem[]> => {
 export const GetUserProfileData = async (userId: string): Promise<IUserProfileProps> => {
     let Props: IUserProfileProps = {
         userImage: null, about: null, blogName: null, country: null, city: null,
-        phoneNumber: null, title: null, social: null, firstName: "", lastName: "", email: ""
+        phoneNumber: null, title: null, firstName: "", lastName: "", email: ""
     };
 
     const user = await prisma.user.findFirst({
@@ -281,11 +264,7 @@ export const GetUserProfileData = async (userId: string): Promise<IUserProfilePr
             id: Number(userId)
         },
         select: {
-            Avter: {
-                select: {
-                    fileUrl: true
-                },
-            },
+            profile: true,
             firstName: true,
             lastName: true,
             title: true,
@@ -294,34 +273,24 @@ export const GetUserProfileData = async (userId: string): Promise<IUserProfilePr
             blogName: true,
             phoneNumber: true,
             country: true,
-            city: true,
-            socil: {
-                select: {
-                    name: true,
-                    link: true
-                },
-            },
+            city: true
         },
     })
 
     if (user) {
         Props = {
             about: user.about,
-            userImage: user.Avter?.fileUrl || "/images/user-placeholder.png",
+            userImage: user.profile || "/images/user-placeholder.png",
             phoneNumber: `${user.phoneNumber}` || null,
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
             title: user.title,
-            social: user.socil,
             blogName: user.blogName as string,
             country: user.country,
             city: user.city
         }
     }
-
-
-
 
     return Props;
 }

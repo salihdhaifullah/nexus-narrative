@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -11,36 +10,20 @@ datasource db {
 model Category {
   id   Int    @id @default(autoincrement())
   name String @unique
-  Post Post[]
+  post Post[]
 }
 
 model Tag {
   id   Int    @id @default(autoincrement())
   name String @unique
-  Post Post[]
-}
-
-model Iamge {
-  id      Int    @id @default(autoincrement())
-  name    String
-  fileUrl String @unique
-  Post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId  Int
-}
-
-model Avter {
-  id      Int    @id @default(autoincrement())
-  name    String
-  fileUrl String @unique
-  User    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  Int    @unique
+  post Post[]
 }
 
 model Post {
   id                 Int       @id @default(autoincrement())
   title              String
   content            String
-  images             Iamge[]
+  images             String[]
   tags               Tag[]
   author             User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments           Comment[]
@@ -49,11 +32,19 @@ model Post {
   categoryId         Int
   authorId           Int
   createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
   backgroundImageUrl String
   likes              String[] @default([])
   dislikes           String[] @default([])
-  views              Int @default(0)
+  views              Views[]
+  description        String
+}
+
+model Views {
+  id         Int @id @default(autoincrement())
+  apiAdrress String 
+  postId     Int 
+  post       Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@unique(fields: [apiAdrress, postId], name: "view")
 }
 
 model User {
@@ -65,8 +56,7 @@ model User {
   password    String
   comments    Comment[]
   posts       Post[]
-  Avter       Avter?
-  socil       Socil[]
+  profile     String?
   about       String?
   blogName    String?   @unique
   title       String?
@@ -79,26 +69,8 @@ model Comment {
   id        Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   authorId  Int
   postId    Int
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-}
-
-model Socil {
-  id     Int        @id @default(autoincrement())
-  name   SocilTypes @unique
-  link   String
-  User   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
-}
-
-enum SocilTypes {
-  Linkedin
-  Twitter
-  Youtube
-  Facebook
-  Instagram
-  Github
 }

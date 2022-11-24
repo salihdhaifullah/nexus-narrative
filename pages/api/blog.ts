@@ -38,21 +38,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
                 select: {
                     about: true,
-                    socil: {
-                        select: {
-                            name: true,
-                            link: true,
-                        },
-                    },
                     id: true,
                     email: true,
                     firstName: true,
                     lastName: true,
-                    Avter: {
-                        select: {
-                            fileUrl: true
-                        }
-                    },
+                    profile: true
                 }
             })
     

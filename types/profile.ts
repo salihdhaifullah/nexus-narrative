@@ -1,10 +1,5 @@
-import { SocilTypes } from '@prisma/client';
-import { ISocial } from '../static';
-
 export interface IUserProfileData {
-    Avter?: {
-        fileUrl: string
-    }
+    profile: string;
     about?: string
     blogName?: string
     country?: string
@@ -14,25 +9,17 @@ export interface IUserProfileData {
     email: string
     phoneNumber?: number
     title?: string
-    socil: ISocil[]
-}
-
-
-
-export interface ISocil {
-    name: SocilTypes
-    link: string
 }
 
 export interface IUpdateProfileGeneralInformation {
-    country: string
-    city: string
-    firstName: string
+    country: string | null
+    city: string | null
+    firstName: string 
     lastName: string
     email: string
-    phoneNumber?: number
-    title: string
-    about: string
+    phoneNumber: number | null
+    title: string | null
+    about: string | null
 }
 
 export interface IChangeBlogName {
@@ -42,11 +29,6 @@ export interface IChangeBlogName {
 export interface IChangePassword {
     currentPassword: string
     newPassword: string
-}
-
-export interface IUploadAvatar {
-    fileUrl: string
-    name: string
 }
 
 export interface IUserProfileProps {
@@ -60,5 +42,4 @@ export interface IUserProfileProps {
     firstName: string
     lastName: string
     email: string
-    social: ISocil[] | null
-  }
+}

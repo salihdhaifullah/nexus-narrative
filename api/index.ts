@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ICommentData } from '../types/comment';
 import { ICreatePostData } from '../types/post';
-import { IChangeBlogName, IChangePassword, ISocil, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
+import { IChangeBlogName, IChangePassword, IUpdateProfileGeneralInformation } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
 let baseURL = 'http://localhost:3000/api'
@@ -9,22 +9,19 @@ let ISSERVER = typeof window === "undefined";
 let isFoundUser: string | null = null;
 let user: IUser | null = null;
 
-if (!ISSERVER) isFoundUser = localStorage.getItem("user"); 
+if (!ISSERVER) isFoundUser = localStorage.getItem("user");
 if (isFoundUser) user = JSON.parse(isFoundUser);
-
-if (process.env.NODE_ENV === "production" && !ISSERVER) {
-    baseURL = `https://${window.location.host}/api`;
-} 
+if (process.env.NODE_ENV === "production" && !ISSERVER) baseURL = `https://${window.location.host}/api`;
 
 const API = axios.create({ baseURL: baseURL })
 
 API.interceptors.request.use((req) => {
-    if(user && req?.headers?.authorization) req.headers.authorization = `Bearer ${user.token}`;
+    if (user && req.headers) req.headers.authorization = `Bearer ${user.token}`;
     return req
 })
 
 
-export const singUp = async (data: ISingUp) => await API.post(`/auth/singin`, data)
+export const singUp = async (data: ISingUp) => await API.post(`/auth/sing-up`, data)
 
 export const login = async (data: ILogin) => await API.post("/auth/login", data)
 
@@ -40,13 +37,9 @@ export const GetProfileData = async (userId?: string) => await API.get(`/admin/p
 
 export const UpdateProfileGeneralInformation = async (data: IUpdateProfileGeneralInformation) => await API.patch("/admin/profile", data)
 
-export const ChangeBlogName = async (data: IChangeBlogName) => await API.put("/admin/profile?blogName=true", data)
+export const ChangeBlogName = async (data: IChangeBlogName) => await API.put("/admin/profile", data)
 
-export const ChangePassword = async (data: IChangePassword) => await API.put("/admin/profile?password=true", data)
-
-export const uploadAvatar = async (data: IUploadAvatar) => await API.put("/admin/profile?uploadAvatar=true", data)
-
-export const CreateSocial = async (data: ISocil) => await API.post("/admin/profile", data)
+export const ChangePassword = async (data: IChangePassword) => await API.patch("/auth/sing-up", data)
 
 export const CreateComment = async (data: ICommentData) => await API.post(`comment`, data);
 
@@ -83,3 +76,9 @@ export const GetLikes = async (slug: string) => await API.get(`likes?slug=${slug
 export const GetComments = async (slug: string) => await API.get(`comments?slug=${slug}`)
 
 export const GetPosts = async () => await API.get('handelPost');
+
+export const uploadProfileImage = async (files: File[]) => {
+    let formData = new FormData();
+    for (let i = 0; i < files.length; i++) { formData.set(`file${i}`, files[i]) }
+    return await API.postForm("/upload", formData)
+}

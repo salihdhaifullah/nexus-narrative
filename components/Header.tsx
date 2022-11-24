@@ -1,9 +1,7 @@
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import Typography from '@mui/material/Typography';
-import { IUser } from '../types/user';
-import * as React from 'react';
+import {useState} from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -11,9 +9,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { logout } from '../context/reducers/userReducer';
-import { useDispatch } from 'react-redux';
 import Link from 'next/link';
+import useGetUser from '../hooks/useGetUser';
+import { Logout } from '../api';
+import Router, { useRouter } from 'next/router';
 
 interface ISearchProps {
   open: boolean;
@@ -63,14 +62,20 @@ const Search = ({ open, setOpen, search, setSearch }: ISearchProps) => {
 
 
 export default function Header() {
-  const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
-  const isBrowser: boolean = typeof window !== 'undefined';
-  const isFound = isBrowser && localStorage.getItem("user")
-  const user: IUser | null = isFound ? JSON.parse(isFound) : null;
-  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [user] = useGetUser();
+  const router = useRouter()
+  
+  const handelLogout = async () => {
+    await Logout();
+    localStorage.clear();
+    await router.push("/login")
+    router.reload()
+  }
+
   return (
-    <React.Fragment>
+    <>
       <Search open={open} setOpen={setOpen} search={search} setSearch={setSearch} />
       <Toolbar className="flex justify-between" sx={{ borderBottom: 1, borderColor: 'divider' }}> 
 
@@ -109,11 +114,11 @@ export default function Header() {
 
 
         <div>
-           <IconButton onClick={() => setOpen(true)}>
+           <IconButton className="mr-2" onClick={() => setOpen(true)}>
             <SearchIcon />
           </IconButton>
           {user !== null ? (
-            <Button onClick={() => logout()(dispatch)} variant="outlined" size="small">
+            <Button onClick={handelLogout} variant="outlined" size="small">
               logout
             </Button>
           ) : (
@@ -125,6 +130,6 @@ export default function Header() {
           )} 
         </div>
        </Toolbar> 
-    </React.Fragment>
+    </>
   );
 }

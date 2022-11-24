@@ -1,24 +1,12 @@
 import * as React from 'react';
 import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import YouTubeIcon from '@mui/icons-material/YouTube';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import Image from 'next/image'
-const myLoader = (url: string) => url;
+import Image from 'next/image';
 
 export interface ISidebarProps {
   description: string;
-  social: {
-    link: string;
-    name: string;
-  }[];
   email: string;
   name: string;
   AvatarUrl: string;
@@ -26,7 +14,7 @@ export interface ISidebarProps {
 }
 
 export default function Sidebar(props: ISidebarProps) {
-  const { authorId, description, social, email, name, AvatarUrl } = props;
+  const { authorId, description, email, name, AvatarUrl } = props;
 
   return (
     <Grid item xs={12} md={4}>
@@ -35,8 +23,7 @@ export default function Sidebar(props: ISidebarProps) {
       <div className='inline-flex items-center'>
         <Image
           className='rounded-full'
-          loader={() => myLoader(AvatarUrl || '/images/user-placeholder.png')}
-          src={"me.png"}
+          src={AvatarUrl || '/images/user-placeholder.png'}
           alt="Picture of the author"
           width={80}
           height={80}
@@ -53,34 +40,6 @@ export default function Sidebar(props: ISidebarProps) {
         </Typography>
         <Typography>{description}</Typography>
       </Paper>
-      <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-        Social
-      </Typography>
-      {social.map((network) => (
-        <a
-          target="_blank"
-          href={network.link}
-          key={network.name}
-          rel="noreferrer"
-        >
-          <Stack direction="row" spacing={1} alignItems="center">
-            {network.name === "Linkedin" && (
-              <LinkedInIcon className="text-[#0072b1]" />
-            ) || network.name === "Twitter" && (
-              <TwitterIcon className="text-[#00acee]" />
-            ) || network.name === "Youtube" && (
-              <YouTubeIcon className="text-[#FF0000]" />
-            ) || network.name === "Facebook" && (
-              <FacebookIcon className="text-[#3b5998] " />
-            ) || network.name === "Instagram" && (
-              <InstagramIcon className="text-[#8a3ab9] " />
-            ) || network.name === "Github" && (
-              <GitHubIcon className="text-[#171515]" />
-            )}
-            <span className="link">{network.name}</span>
-          </Stack>
-        </a>
-      ))}
       <Typography className="text-lg">
         <span> connect to author |</span>
 

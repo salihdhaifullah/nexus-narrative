@@ -11,9 +11,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress';
 import { NextPage } from 'next';
-import { useDispatch } from 'react-redux';
 import { ISingUp } from '../types/user';
-import Swal from 'sweetalert2';
 import { singUp } from '../api'
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -22,36 +20,30 @@ import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
 import FormControl from '@mui/material/FormControl';
-
+import Toast from '../functions/sweetAlert';
+import { useRouter } from 'next/router';
 
 const SingUp: NextPage = () => {
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-
+  const router = useRouter();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     event.preventDefault();
 
-    await singUp({ password: password, firstName: firstName, lastName: lastName, email: email } as ISingUp).then(({ data }) => {
-      Swal.fire({
-        title: 'Sing Up Success',
-        html: `<h2>${data.massage}</h2>`,
-        color: '#716add',
-        background: '#222222',
-        position: 'top-end',
-        icon: 'success',
-        timer: 1500
-      })
-      localStorage.setItem("user", JSON.stringify(data.data))
-    }).catch(({ response }) => {
-      Swal.fire("something want wrong", response.data.error, 'error')
+    await singUp({ password: password, firstName: firstName, lastName: lastName, email: email } as ISingUp)
+    .then(async ({ data }) => {
+      Toast.fire("Success", "Successfully Sing Up", 'success');
+      localStorage.setItem("user", JSON.stringify(data.data)) 
+      await router.push("/posts")
+      router.reload()
     })
+    .catch(({ response }: any) => { Toast.fire("something want wrong", response.data.error, 'error') })
 
     setIsLoading(false)
     setLastName("")
@@ -164,7 +156,7 @@ const SingUp: NextPage = () => {
           <Grid container>
             <Grid item>
               <Link href='login'>
-                <a className='link'>already have an account? Login</a>
+                <p className='link'>already have an account? Login</p>
               </Link>
             </Grid>
           </Grid>
