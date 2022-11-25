@@ -7,40 +7,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const slug = req.query["slug"] as string;
         const { error, id } = GetUserIdMiddleware(req)
 
-        if (error) return res.status(400).json({massage: error});
 
-        const user = await prisma.user.findFirst({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
-        });
+        if (error) return res.status(400).json({massage: error});
+        if (typeof id !== "number") return res.status(400).json({massage: "User Not FOund" });
+
+        const user = await prisma.user.findFirst({ where: { id: id }, select: { id: true } });
 
         if (!user) return res.status(400).json({massage: "User Not Found"})
-        const likes = await prisma.post.findFirst({
-            where: {
-                slug: slug,
-            },
-            select: {
-                likes: true,
-                dislikes: true,
-                id: true,
-            },
-        })
+        
+        const likes = await prisma.post.findFirst({ where: { slug: slug }, select: { likes: true, dislikes: true, id: true } });
 
-        if (typeof likes?.likes === "undefined" || typeof likes?.dislikes === "undefined") return res.status(400).json({massage: "some think wrong"})
+        if (!likes?.likes || !likes?.dislikes) return res.status(400).json({massage: "some thing wrong"});
 
         if (req.query["type"] === "like") {
-            
-
             let data = [];
-            // i used a for loop to insert likes cuz they are a pointer bug here
-            for (let like of likes.likes) {
-                data.push(like)
-            }
+            for (let like of likes.likes) { data.push(like) }
+
             data.push(`${user.id}`);
+            
             let disLikes: string[] = []; 
             let isLiked = false;
             if (likes.dislikes.find((id) => id === `${user.id}`)) disLikes = likes.dislikes.filter((id) => id !== `${user.id}`);
@@ -97,22 +81,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "GET") {
         const posts = await prisma.post.findMany({
-            orderBy: {
-                views: "desc",
-            },
+            orderBy: { views: { _count: 'desc' } },
             select: {
-                author: {
-                    select: {
-                        blogName: true,
-                    },
-                },
-                backgroundImageUrl: true,
+                author: { select: { blogName: true } },
+                backgroundImage: true,
                 title: true,
                 slug: true,
-                createdAt: true,
-            },
+                createdAt: true
+            }
         });
-
 
         return res.status(200).json({posts})
     }

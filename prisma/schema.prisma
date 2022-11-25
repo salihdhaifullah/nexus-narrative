@@ -10,13 +10,13 @@ datasource db {
 model Category {
   id   Int    @id @default(autoincrement())
   name String @unique
-  post Post[]
+  posts Post[]
 }
 
 model Tag {
   id   Int    @id @default(autoincrement())
   name String @unique
-  post Post[]
+  posts Post[]
 }
 
 model Post {
@@ -32,18 +32,20 @@ model Post {
   categoryId         Int
   authorId           Int
   createdAt          DateTime  @default(now())
-  backgroundImageUrl String
+  backgroundImage    String
   likes              String[] @default([])
   dislikes           String[] @default([])
   views              Views[]
   description        String
 }
 
+
 model Views {
   id         Int @id @default(autoincrement())
   apiAdrress String 
   postId     Int 
   post       Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
   @@unique(fields: [apiAdrress, postId], name: "view")
 }
 
@@ -58,7 +60,7 @@ model User {
   posts       Post[]
   profile     String?
   about       String?
-  blogName    String?   @unique
+  blogName    String   @unique
   title       String?
   phoneNumber Int?
   country     String?

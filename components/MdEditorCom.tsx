@@ -1,7 +1,5 @@
 import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
-import 'react-markdown-editor-lite/lib/index.css';
-import supabase from '../libs/supabase/config'
 import { useEffect, useState, useMemo, useRef, ChangeEvent, useCallback } from 'react'
 import Swal from 'sweetalert2'
 import TextField from '@mui/material/TextField';
@@ -16,6 +14,8 @@ import { Files } from '../types/file';
 import { Button, CircularProgress } from '@mui/material';
 import BackupIcon from '@mui/icons-material/Backup';
 import { useRouter } from 'next/router'
+import Toast from '../functions/sweetAlert';
+import toBase64 from '../functions/toBase64';
 
 
 interface HandleEditorChangeProps {
@@ -33,206 +33,137 @@ interface IOptions {
   inputValue?: string
 }
 
-interface IMdEditorProps {
-  isUpdate?: boolean;
-  postId?: number;
-  data?: {
-    content: string;
-    backgroundImageUrl: string;
-    slug: string;
-    category: {
-      name: string;
-    };
-    title: string;
-    tags: {
-      name: string;
-    }[];
-  }
+interface IFileData {
+  fileName: string;
+  base64: string;
 }
 
-interface IBackgroundImageUrlData {
-  file: File;
-  name: string;
-  fileUrl: string;
+interface IImagesData {
+  fileName: string;
+  base64: string;
+  preViewUrl: string;
 }
 
 const filter = createFilterOptions<FilmOptionType>();
 
-const MdEditorCom = (props: IMdEditorProps) => {
+const MdEditorCom = () => {
   const mdParser = new MarkdownIt();
   const mdEditorRef: any = useRef();
   const Router = useRouter()
-  const [backgroundImageUrlData, setBackgroundImageUrlData] = useState<IBackgroundImageUrlData | null>(null)
+
   const [tagsOptions, setTagsOptions] = useState<IOptions[]>([])
   const [categoriesOptions, setCategoriesOptions] = useState<IOptions[]>([])
+
+
   const [text, setText] = useState<string>("");
-  const [previewsUrl, setPreviewsUrl] = useState<string[]>([]);
-  const [data, setData] = useState<Files[]>([])
   const [title, setTitle] = useState("")
   const [slug, setSlug] = useState("")
+  const [description, setDescription] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [category, setCategory] = useState<FilmOptionType | null>(null)
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState("")
+  const [backgroundImage, setBackgroundImage] = useState<IFileData | null>(null)
+  const [images, setImages] = useState<IImagesData[]>([])
+  const [isValidSlug, setIsValidSlug] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleEditorChange = ({ html, text }: HandleEditorChangeProps) => {
-    setText(text)
-  }
+  const handleEditorChange = ({ html, text }: HandleEditorChangeProps) => setText(text);
 
   useEffect(() => {
-    if (title.length >= 8 && slug.length >= 8 && text.length >= 100 && (category && category?.name?.length >= 2) && tags.length >= 1 && backgroundImageUrl.length > 10) {
+    if (backgroundImage && title.length >= 8 && slug.length >= 8 && text.length >= 100 && (category && category.name.length >= 2) && tags.length >= 1) {
       setIsValid(true)
-    } else {
-      setIsValid(false)
-    }
-  }, [backgroundImageUrl, category, slug, tags, text, title])
+    } else setIsValid(false);
+  }, [backgroundImage, category, slug, tags, text, title])
 
+
+  useEffect(() => {
+    const test = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(slug)
+    setIsValidSlug(test)
+  }, [slug])
 
   const init = useCallback(async () => {
-    if (props.isUpdate && props.data) {
-      console.log(props)
-      setTitle(props.data.title)
-      setSlug(props.data.slug)
-      setCategory(props.data.category)
-      setText(props.data.content)
-      setBackgroundImageUrl(props.data.backgroundImageUrl)
-      mdEditorRef.current.state.text = props.data.content;
-      let tags: string[] = []
-      for (let tag of props.data.tags) {
-        tags.push(tag.name)
-      }
-      setTags(tags)
-    }
+    await GetTagsAndCategories()
+      .then((res) => {
+        if (!res.data.categories.length) return;
+        setCategoriesOptions(res.data.categories)
+        setTagsOptions(res.data.tags)
+      });
+  }, [])
 
-    await GetTagsAndCategories().then(({ data }: any) => {
-      if (data.categories.length) {
-        setCategoriesOptions(data.categories)
-        setTagsOptions(data.tags)
-      }
-    })
-  }, [props])
-  
   useEffect(() => {
     init()
   }, [init])
 
+
+  useEffect(() => {
+    setIsLoading(false)
+  }, [])
+
   const onImageUpload = async (file: File) => {
-    if (file.size > 52428800) Swal.fire('some think want wrong', 'file size is to big', 'error')
-    else {
-      const previewUrl = URL.createObjectURL(file)
-      previewsUrl.push(previewUrl)
-      setPreviewsUrl(previewsUrl)
+    const imagesData = images;
+    const preViewUrl =  URL.createObjectURL(file);
+    const base64: string = await toBase64(file) as string;
 
-      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g, '').replace("[", "").replace("]", "");
+    console.log(imagesData)
+    imagesData.push({base64, fileName: file.name, preViewUrl})
+    setImages(imagesData);
+    console.log(imagesData)
 
-      const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
-
-      const NewObjectFile: Files = { name, fileUrl, file, previewUrl }
-
-      data.push(NewObjectFile)
-
-      setData(data)
-      return previewUrl
-    }
+    return preViewUrl;
   }
 
-  const uploadBackgroundImage = async () => {
-    if (backgroundImageUrlData) {
-      const { data: success, error } = await supabase.storage.from("public").upload(backgroundImageUrlData.name, backgroundImageUrlData.file)
-      if (error) {
-        Swal.fire('some think want wrong', 'place check internet connection', 'error');
-        return;
-      };
-    }
-  }
-
-  const handelUploadImage = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target?.files && event.target.files[0]
+  const handelUploadImage = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target?.files && event.target.files[0];
     if (!file) return;
-    if (file.size > 52428800) Swal.fire('some think want wrong', 'file size is to big', 'error');
-    else {
 
-      const name: string = Date.now().toString() + file?.name.replace(/[() ]/g, '').replace("[", "").replace("]", "");
+    const base64: string = await toBase64(file) as string;
 
-      const fileUrl: string = 'https://nvyulqjjulqfqxirwtdq.supabase.co/storage/v1/object/public/public/' + name;
-
-
-      setBackgroundImageUrlData({ file, name, fileUrl })
-      setBackgroundImageUrl(fileUrl)
-    }
+    setBackgroundImage({base64, fileName: file.name});
   }
 
   const HandelSubmit = async () => {
+    let imagesThatUsed = [];
+    if (!isValid) return;
+    if (!backgroundImage || !category?.name) return;
 
-    if (isValid) {
-      setIsLoading(true)
-      let replace = text;
-      const files = [];
-      await uploadBackgroundImage()
-      for (let i = 0; i < data.length; i++) {
+    setIsLoading(true)
 
-        if (text.includes(data[i].previewUrl)) {
+      for (let i = 0; i < images.length; i++) {
+        if (text.includes(images[i].preViewUrl)) imagesThatUsed.push(images[i]);
 
-          files.push({ name: data[i].name, fileUrl: data[i].fileUrl });
-
-          const { data: success, error } = await supabase.storage.from("public").upload(data[i].name, data[i].file)
-          if (error) return Swal.fire('some think want wrong', 'place check internet connection', 'error');
-
-          replace = replace.replace(data[i].previewUrl, data[i].fileUrl)
-        }
-        URL.revokeObjectURL(previewsUrl[i])
+        URL.revokeObjectURL(images[i].preViewUrl);
       }
+      
+      const data: ICreatePostData = { title, content: text, slug, images: imagesThatUsed, tags, category: category.name, backgroundImage, description }
 
-      const endData: ICreatePostData = {
-        title,
-        content: replace,
-        slug: slug.replace(/[ \/_]/g, '-'),
-        images: files,
-        tags,
-        category: category?.name as string,
-        backgroundImageUrl
-      }
-
-
-      if (props.isUpdate) {
-        await UpdatePost(Number(props.postId), endData).then((res: any) => { 
-          Swal.fire('success', 'post updated', 'success')
-          Router.push("/admin")
-        }).catch((err: any) => { })
-        
-      } else {
-        await createPost(endData).then((res: any) => {
-          Swal.fire('success', 'post created', 'success')
-         }).catch((err: any) => { })
-      }
-
+      await createPost(data)
+        .then((res) => { Toast.fire(res.data.massage || 'success post created', '', 'success') })
+        .catch((err) => { Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error') })
 
       setTitle("")
       setSlug("")
-      setBackgroundImageUrl("")
+      setDescription("")
+      setBackgroundImage(null)
       setTags([])
       setCategory({ name: "" })
       mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
       mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
       setText("")
-      setPreviewsUrl([])
+      imagesThatUsed = []
       setIsLoading(false)
-    }
   }
-
 
 
 
   return (
     <>
-      <div className={`fixed top-[540px] right-[40px] z-10 rounded-full shadow-md  
+      <div className={`fixed bottom-[40px] right-[40px] z-10 rounded-full shadow-md  
       ${isValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-400 cursor-not-allowed hover:bg-gray-300"} 
       text-white`}>
 
         {(isLoading) ? (
           <div className='text-white px-2.5 py-1.5 text-[16px]'>
-          <CircularProgress  className='text-white '/>
+            <CircularProgress className='text-white ' />
           </div>
         ) : (
           <div className='px-2 py-5 text-[16px]' onClick={HandelSubmit}>
@@ -241,7 +172,7 @@ const MdEditorCom = (props: IMdEditorProps) => {
         )}
       </div>
       <Container>
-        <Box className='px-6 my-2 py-2 rounded-md shadow-md bg-white'>
+        <Box className='px-6 my-2 rounded-md shadow-md bg-white py-4'>
           <Box className="flex flex-col sm:flex-row flex-wrap w-full sm:mb-2">
 
             <div className='w-full sm:w-auto flex-1 mb-2 sm:mb-0' >
@@ -269,13 +200,16 @@ const MdEditorCom = (props: IMdEditorProps) => {
                 required
                 fullWidth
                 id="slug"
-
                 label="slug"
                 name="slug"
               />
-              {(slug.length < 8) && (
+              {(slug.length < 8) ? (
                 <p className="text-red-600 text-sm font-light">
                   min length of slug is 8
+                </p>
+              ) : (!isValidSlug) && (
+                <p className="text-red-600 text-sm font-light">
+                  unValid slug, use only numbers and letters with dash as space
                 </p>
               )}
             </div>
@@ -309,9 +243,9 @@ const MdEditorCom = (props: IMdEditorProps) => {
 
               />
 
-              {(tags.length === 0) && (
+              {(tags.length < 2) && (
                 <p className="text-red-600 text-sm font-light">
-                  tags filled are required
+                  use at latest two tags
                 </p>
               )}
             </div>
@@ -358,19 +292,43 @@ const MdEditorCom = (props: IMdEditorProps) => {
               )}
             </div>
 
+
+
+
           </Stack>
+
+          <div className="flex  min-w-full">
+            <TextField
+              className="w-full flex-1 my-2"
+              error={description.length < 20}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              required
+              multiline
+              rows={4}
+              variant="outlined"
+              fullWidth
+              id="description"
+              helperText={description.length < 20 && "min length is 20 characters"}
+              label="description"
+              name="description"
+            />
+          </div>
+
           <div className="mt-4">
             <Button size='small' startIcon={<BackupIcon />} className="text-sm lowercase" variant="contained" component="label">
-              {backgroundImageUrl ? "uploaded" : "Upload background image"}
+              {backgroundImage ? "uploaded" : "Upload background image"}
               <input onChange={(event) => handelUploadImage(event)} hidden accept="image/*" type="file" />
             </Button>
 
-            {(!backgroundImageUrl) && (
+            {(!backgroundImage) && (
               <p className="text-red-600 text-sm font-light">
                 background Image are required
               </p>
             )}
           </div>
+
+
         </Box>
         <MdEditor
           ref={mdEditorRef}

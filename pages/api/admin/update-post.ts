@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../../libs/prisma'
-import supabase from '../../../libs/supabase/config';
 import { GetUserIdMiddleware } from '../../../middleware';
 import { ICreatePostData } from '../../../types/post';
 
@@ -30,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         name: true,
                     },
                 },
-                backgroundImageUrl: true,
+                backgroundImage: true,
             },
         });
 
@@ -39,9 +38,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "POST") {
 
-        const { title, content, slug, images, tags, category, backgroundImageUrl }: ICreatePostData = req.body;
+        const { title, content, slug, images, tags, category, backgroundImage }: ICreatePostData = req.body;
 
-        if (title.length <= 8 && slug.length <= 8 && content.length <= 100 && category.length <= 2 && tags.length <= 1 && backgroundImageUrl.length > 10) {
+        if (title.length <= 8 && slug.length <= 8 && content.length <= 100 && category.length <= 2 && tags.length <= 1 && backgroundImage.length > 10) {
             return res.status(400).json({ massage: "unValid data" });
         }
 
@@ -72,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     },
                 },
                 id: true,
-                backgroundImageUrl: true,
+                backgroundImage: true,
                 tags: {
                     select: {
                         name: true,
@@ -121,7 +120,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 
 
-        if (backgroundImageUrl !== isFound.backgroundImageUrl) imagesToDelete.push(isFound.backgroundImageUrl);
+        if (backgroundImage !== isFound.backgroundImage) imagesToDelete.push(isFound.backgroundImage);
 
         for (let image of isFound.images) {
             if (!content.includes(image.fileUrl)) {
@@ -146,7 +145,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
 
             data: {
-                backgroundImageUrl: backgroundImageUrl,
+                backgroundImage: backgroundImage,
                 tags: {
                     deleteMany: TagsQueryForDelete,
                     connectOrCreate: TagsQuery,

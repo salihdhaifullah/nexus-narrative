@@ -7,7 +7,7 @@ import { GetPostToUpdate } from '../../api'
 interface IPostToUpdateData {
   content: string;
   slug: string;
-  backgroundImageUrl: string;
+  backgroundImage: string;
   category: {
     name: string;
   };

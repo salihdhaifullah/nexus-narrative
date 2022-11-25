@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import 'react-markdown-editor-lite/lib/index.css';
 import type { AppProps } from 'next/app';
 import Header from '../components/Header'
 import Copyright from '../components/Copyright'

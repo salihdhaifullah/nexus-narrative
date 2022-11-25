@@ -3,17 +3,22 @@ export interface ICreatePostData {
     content: string
     slug: string
     category: string
+    description: string
     images: {
-        name: string
-        fileUrl: string
+        fileName: string
+        base64: string
+        preViewUrl: string
     }[]
     tags: string[]
-    backgroundImageUrl: string
-}
+    backgroundImage: {
+        fileName: string
+        base64: string
+    }
+};
 
 
 export interface IFeaturedPostProps {
-    backgroundImageUrl: string,
+    backgroundImage: string,
     title: string,
     slug: string,
     createdAt: Date,
@@ -29,7 +34,7 @@ export interface IBLogProps {
     email: string;
     title: string;
     blogName: string;
-    backgroundImageUrl: string;
+    backgroundImage: string;
     name: string;
     AvatarUrl: string;
     createdAt: string;

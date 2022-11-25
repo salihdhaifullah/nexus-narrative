@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     createdAt: "desc",
                 },
                 select: {
-                    backgroundImageUrl: true,
+                    backgroundImage: true,
                     title: true,
                     slug: true,
                     createdAt: true,
@@ -47,16 +47,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             })
     
             const posts = await prisma.post.findMany({
-                where: {
-                    author: {
-                        blogName: blogName,
-                    },
-                },
+                where: { author: { blogName: blogName } },
                 orderBy: {
                     createdAt: "desc",
                 },
                 select: {
-                    backgroundImageUrl: true,
+                    backgroundImage: true,
                     title: true,
                     slug: true,
                     createdAt: true,
@@ -83,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 createdAt: "desc",
             },
             select: {
-                backgroundImageUrl: true,
+                backgroundImage: true,
                 title: true,
                 slug: true,
                 createdAt: true,

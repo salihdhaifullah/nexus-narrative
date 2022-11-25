@@ -117,7 +117,7 @@ export default function Blog({ data }: IProps) {
       <CssBaseline />
       <Container maxWidth="lg" >
         <main>
-          <MainFeaturedPost image={data.backgroundImageUrl} title={data.title} />
+          <MainFeaturedPost image={data.backgroundImage} title={data.title} />
           <Typography className="text-lg">published at: {data.createdAt}</Typography>
           <Typography className="text-lg" component="div">
             category:

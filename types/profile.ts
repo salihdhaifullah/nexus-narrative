@@ -32,13 +32,13 @@ export interface IChangePassword {
 }
 
 export interface IUserProfileProps {
-    userImage: string | null
-    about: string | null
-    blogName: string | null
-    country: string | null
-    city: string | null
-    phoneNumber: string | null
-    title: string | null
+    userImage: string
+    about: string
+    blogName: string
+    country: string
+    city: string
+    phoneNumber: string
+    title: string
     firstName: string
     lastName: string
     email: string

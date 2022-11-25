@@ -54,7 +54,7 @@ export const getPostData = async (slug: string): Promise<IPostProps> => {
                             createdAt: "desc",
                         },
                         select: {
-                            backgroundImageUrl: true,
+                            backgroundImage: true,
                             title: true,
                             slug: true,
                             createdAt: true,
@@ -70,11 +70,7 @@ export const getPostData = async (slug: string): Promise<IPostProps> => {
                     lastName: true,
                     blogName: true,
                     id: true,
-                    Avter: {
-                        select: {
-                            fileUrl: true
-                        }
-                    },
+                    profile: true,
                     about: true
                 },
             },
@@ -89,75 +85,48 @@ export const getPostData = async (slug: string): Promise<IPostProps> => {
                 },
             },
             createdAt: true,
-            backgroundImageUrl: true,
+            backgroundImage: true,
             views: true,
         },
     });
 
 
-
-
-    if (data?.id && `${data.views}`) { // i do the validation like this cus view count matey be zero 
-        await prisma.post.update({
-            where: {
-                id: data.id,
-            },
-            data: {
-                views: (Number(data.views) + 1),
-            },
-        })
-    }
-
-
     const PostsRelated = await prisma.post.findMany({
         take: 5,
-        where: {
-            category: {
-                name: data?.category.name || " ",
-            },
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
+        where: { category: { name: data?.category.name || " " } },
+        orderBy: { createdAt: "desc" },
         select: {
-            backgroundImageUrl: true,
+            backgroundImage: true,
             title: true,
             slug: true,
             createdAt: true,
-            author: {
-                select: {
-                    blogName: true,
-                },
-            },
+            author: { select: { blogName: true } }
         },
-    })
+    });
 
 
 
-    let serializedData: IPostProps = {
-        data: null,
-    };
+    let serializedData: IPostProps = { data: null };
 
-    if (data) {
-        serializedData = {
-            data: {
-                content: data.content,
-                about: data.author.about || "Not Found",
-                email: data.author.email,
-                title: data.title,
-                blogName: data.author.blogName as string,
-                backgroundImageUrl: data.backgroundImageUrl,
-                name: data.author.firstName + " " + data.author.lastName,
-                AvatarUrl: data.author.Avter?.fileUrl || "/images/user-placeholder.png",
-                createdAt: moment(data.createdAt).format("ll"),
-                tags: data.tags,
-                category: data.category.name,
-                postId: data.id,
-                slug: slug,
-                posts: data.author.posts as IFeaturedPostProps[],
-                PostsRelated: PostsRelated as IFeaturedPostProps[],
-                authorId: data.author.id,
-            }
+    if (!data) return;
+    serializedData = {
+        data: {
+            content: data.content,
+            about: data.author.about || "Not Found",
+            email: data.author.email,
+            title: data.title,
+            blogName: data.author.blogName as string,
+            backgroundImage: data.backgroundImage,
+            name: data.author.firstName + " " + data.author.lastName,
+            AvatarUrl: data.author.profile || "/images/user-placeholder.png",
+            createdAt: moment(data.createdAt).format("ll"),
+            tags: data.tags,
+            category: data.category.name,
+            postId: data.id,
+            slug: slug,
+            posts: data.author.posts as IFeaturedPostProps[],
+            PostsRelated: PostsRelated as IFeaturedPostProps[],
+            authorId: data.author.id,
         }
     }
 
@@ -165,37 +134,24 @@ export const getPostData = async (slug: string): Promise<IPostProps> => {
 }
 
 
-interface IBlogName {
-    params: {
-        blogName: string;
-    }
-}
 
-export const getAllBlogsName = async (): Promise<IBlogName[]> => {
-    const blogName: IBlogName[] = [];
+export const getAllBlogsName = async (): Promise<{params: { blogName: string; }}[]> => {
+    const blogsNames: {params: { blogName: string; }}[] = [];
 
-    const data = await prisma.user.findMany({
-        select: {
-            blogName: true
-        }
-    })
+    const data = await prisma.user.findMany({ select: { blogName: true } })
 
     for (let item of data) {
-        if (typeof item.blogName === "string") {
-            blogName.push({ params: { blogName: item.blogName }})
-        }
+        if (!item.blogName) return;
+        blogsNames.push({ params: { blogName: item.blogName } });
     }
-    return blogName;
+
+    return blogsNames;
 }
-
-
 
 export const getBlogDataForHomePage = async (blogName: string) => {
 
     const data = await prisma.user.findFirst({
-        where: {
-            blogName: blogName
-        },
+        where: { blogName: blogName },
         select: {
             about: true,
             id: true,
@@ -208,7 +164,7 @@ export const getBlogDataForHomePage = async (blogName: string) => {
                     createdAt: "desc",
                 },
                 select: {
-                    backgroundImageUrl: true,
+                    backgroundImage: true,
                     title: true,
                     slug: true,
                     createdAt: true,
@@ -225,72 +181,4 @@ export const getBlogDataForHomePage = async (blogName: string) => {
     return {
         data: JSON.parse(JSON.stringify(data)),
     };
-}
-
-
-interface IUserIdItem {
-    params: {
-        userId: string
-    }
-}
-
-export const getAllUsersIds = async (): Promise<IUserIdItem[]> => {
-    const ids: IUserIdItem[] = []
-    const data = await prisma.user.findMany({
-        select: {
-            id: true
-        }
-    })
-
-    for (let item of data) {
-        ids.push({ params: { userId: item.id.toString() } })
-    }
-
-    return ids;
-};
-
-
-
-
-
-export const GetUserProfileData = async (userId: string): Promise<IUserProfileProps> => {
-    let Props: IUserProfileProps = {
-        userImage: null, about: null, blogName: null, country: null, city: null,
-        phoneNumber: null, title: null, firstName: "", lastName: "", email: ""
-    };
-
-    const user = await prisma.user.findFirst({
-        where: {
-            id: Number(userId)
-        },
-        select: {
-            profile: true,
-            firstName: true,
-            lastName: true,
-            title: true,
-            about: true,
-            email: true,
-            blogName: true,
-            phoneNumber: true,
-            country: true,
-            city: true
-        },
-    })
-
-    if (user) {
-        Props = {
-            about: user.about,
-            userImage: user.profile || "/images/user-placeholder.png",
-            phoneNumber: `${user.phoneNumber}` || null,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            title: user.title,
-            blogName: user.blogName as string,
-            country: user.country,
-            city: user.city
-        }
-    }
-
-    return Props;
 }

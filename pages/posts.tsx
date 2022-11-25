@@ -17,7 +17,7 @@ interface IPost {
   slug: string;
   title: string;
   createdAt: Date;
-  backgroundImageUrl: string;
+  backgroundImage: string;
 }
 
 const Posts = () => {
@@ -55,7 +55,7 @@ const Posts = () => {
                 <CardMedia
                   component="img"
                   className="w-20"
-                  image={post.backgroundImageUrl}
+                  image={post.backgroundImage}
                   alt={post.title}
                 />
               </Card>

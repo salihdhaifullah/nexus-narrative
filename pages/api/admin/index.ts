@@ -7,28 +7,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const { error, id } = GetUserIdMiddleware(req);
         if (error) return res.status(400).json({ massage: error });
-        if (id === undefined) return res.status(400).json({ massage: "Bad Request" });
+        if (typeof id !== "number") return res.status(400).json({ massage: "User Not Found" });
 
         const data = await prisma.user.findFirst({
-            where: {
-                id: id,
-            },
+            where: { id: id },
             select: {
-                posts: {
-                    select: {
-                        slug: true,
-                        views: true,
-                        title: true,
-                        id: true,
-                    }
-                },
-                blogName: true,
-            },
+                posts: { select: { slug: true, views: true, title: true, id: true } },
+                blogName: true
+            }
         });
 
-        return res.status(200).json({data})
-    } 
-    
-    
-    res.status(200).json({massage: 'hello world'})
+        return res.status(200).json({ data })
+    }
 }
