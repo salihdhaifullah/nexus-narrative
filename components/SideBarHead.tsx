@@ -15,10 +15,11 @@ import CreateIcon from '@mui/icons-material/Create';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import Link from 'next/link';
+import useGetUser from '../hooks/useGetUser';
 
 export default function SideBarHead() {
     const [state, setState] = useState(false);
-
+    const [user] = useGetUser()
     const toggleDrawer = (value: boolean) => (event: KeyboardEvent | MouseEvent) => {
         if (event.type === 'keydown' && ((event as KeyboardEvent).key === 'Tab' || (event as KeyboardEvent).key === 'Shift')) return;
 
@@ -27,6 +28,8 @@ export default function SideBarHead() {
 
     const ListSide = () => (
         <Box role="presentation" onClick={toggleDrawer(true)} onKeyDown={toggleDrawer(true)} >
+            
+            {user ? (
             <List>
                 <ListItem disablePadding>
                     <Link href="/admin/posts">
@@ -72,7 +75,8 @@ export default function SideBarHead() {
                     </Link>
                 </ListItem>
 
-            </List>
+            </List> 
+        ) : null}
 
 
             <Divider />

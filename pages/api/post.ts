@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (typeof id !== "number") return res.status(400).json({ massage: "User Not Found" });
 
-        const user = await prisma.user.findFirst({ where: { id: id }, select: { id: true } });
+        const user = await prisma.user.findFirst({ where: { id: id }, select: { id: true, blogName: true } });
 
         if (!user) return res.status(400).json({ massage: "User Not Found" });
 
@@ -45,22 +45,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (tags && tags.length) for (let tag of tags) { TagsQuery.push({ where: { name: tag }, create: { name: tag } }) };
 
+
+        await fs.mkdirSync("./public/uploads", {recursive: true});
+
+
         for (let image of images) {
-            const fileContents = image.base64.replace(/^data:image\/png;base64,/, "");
+            const fileContents = image.base64.split(',')[1];
             const name = Date.now().toString() + image.fileName;
             filesNames.push(name);
             const fileName = `./public/uploads/${name}`;
             content = content.replace(image.preViewUrl, `/uploads/${name}`)
 
-            fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
+            await fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
         }
 
 
-        const fileContents = backgroundImage.base64.replace(/^data:image\/png;base64,/, "");
+        const fileContents = backgroundImage.base64.split(',')[1];
         const backgroundImageName = Date.now().toString() + backgroundImage.fileName;
         const fileName = `./public/uploads/${backgroundImageName}`
 
-        fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
+        await fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
 
 
         await prisma.post.create({
@@ -77,7 +81,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         });
 
-        return res.status(200).json({ massage: "post Successfully Created" });
+        return res.status(200).json({ massage: "post Successfully Created",  postUrl: `/${user.blogName}/posts/${slug}` });
 
     }
 

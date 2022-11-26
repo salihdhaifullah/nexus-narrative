@@ -49,7 +49,7 @@ const filter = createFilterOptions<FilmOptionType>();
 const MdEditorCom = () => {
   const mdParser = new MarkdownIt();
   const mdEditorRef: any = useRef();
-  const Router = useRouter()
+  const router = useRouter()
 
   const [tagsOptions, setTagsOptions] = useState<IOptions[]>([])
   const [categoriesOptions, setCategoriesOptions] = useState<IOptions[]>([])
@@ -137,7 +137,10 @@ const MdEditorCom = () => {
       const data: ICreatePostData = { title, content: text, slug, images: imagesThatUsed, tags, category: category.name, backgroundImage, description }
 
       await createPost(data)
-        .then((res) => { Toast.fire(res.data.massage || 'success post created', '', 'success') })
+        .then((res) => { 
+          Toast.fire(res.data.massage || 'success post created', '', 'success')
+          router.push(res.data.postUrl)
+        })
         .catch((err) => { Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error') })
 
       setTitle("")

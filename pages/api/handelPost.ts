@@ -4,6 +4,7 @@ import { GetUserIdMiddleware } from '../../middleware';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "PATCH") {
+
         const slug = req.query["slug"] as string;
         const { error, id } = GetUserIdMiddleware(req)
 
@@ -80,6 +81,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === "GET") {
+
         const posts = await prisma.post.findMany({
             orderBy: { views: { _count: 'desc' } },
             select: {
@@ -91,6 +93,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         });
 
-        return res.status(200).json({posts})
+        return res.status(200).json({posts});
+
+    }
+
+
+
+    if (req.method === "PUT") {
+
+        const postId = Number(req.query["id"]);
+        const UserIPAddress = req.socket.remoteAddress;
+
+        const { error, id } = GetUserIdMiddleware(req)
+        if (error) return res.status(400).json({massage: error});
+
+        if (typeof id !== "number") return res.status(400).json({massage: "User Not FOund" });
+
+        if (typeof postId !== "number") return res.status(404).json({massage: "post Id Not Found"});
+
+        if (typeof UserIPAddress !== "string") return res.status(404).json({massage: "Bad IP Address"});
+
+        const view = await prisma.views.findFirst({
+            where: { postId: postId, IPAddress: UserIPAddress },
+            select: { id: true }
+        })
+
+        console.log(view)
+        console.log(postId)
+        console.log(UserIPAddress)
+
+        if (view?.id) return res.status(200).json({ massage: "all Ready Viewed"})
+        
+        const data = await prisma.views.create({
+            data: {
+                post: { connect: {id: postId } },
+                IPAddress: UserIPAddress
+            }
+        });
+
+        return res.status(200).json({data});
     }
 }

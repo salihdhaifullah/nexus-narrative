@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-import { CreateComment, dislikePost, GetComments, GetLikes, likePost, updateComment } from '../../../api';
+import { dislikePost, GetLikes, likePost, viewedPost } from '../../../api';
 import { IFeaturedPostProps, IPostProps } from '../../../types/post';
 import { IComment } from '../../../types/comment';
 
@@ -10,7 +10,6 @@ import MainFeaturedPost from '../../../components/MainFeaturedPost';
 import FeaturedPost from '../../../components/FeaturedPost';
 import Main from '../../../components/Main';
 import Sidebar from '../../../components/Sidebar';
-import Comment from '../../../components/Comment';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
@@ -24,74 +23,39 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import prisma from '../../../libs/prisma';
 import moment from 'moment';
+import Comments from '../../../components/Comments';
 
 
 export default function Post({ data }: IPostProps) {
-  const formRef = useRef<HTMLDivElement | null>(null);
-
-  const [commentState, setComment] = useState("");
-  const [comments, setComments] = useState<IComment[]>([]);
-  const [changeComments, setChangeComments] = useState(false);
-  const [idToUpdate, setIdToUpdate] = useState<number | null>(null)
   const [liked, setIsLiked] = useState<boolean>(false)
   const [likes, setLikes] = useState<string[]>([])
   const [dislikes, setDislikes] = useState<string[]>([])
 
   const handelGetLikes = useCallback(async () => {
-    await GetLikes(data.slug)
+    if (!data.id) return;
+    await GetLikes(data.id)
       .then((res) => {
         setLikes(res.data.likes.likes)
         setDislikes(res.data.likes.dislikes)
       })
       .catch((err) => { console.log(err) })
-  }, [data.slug])
+  }, [data.id])
 
-  const handelGetComments = useCallback(async () => {
-    await GetComments(data.slug)
-      .then((res) => {
-        setComments(res.data.comments.comments)
-        console.log(res.data.comments)
-      })
+
+  const init = useCallback(async () => {
+    if (!data.id) return;
+    await viewedPost(data.id)
+      .then((res) => { console.log(res.data) })
       .catch((err) => { console.log(err) })
-  }, [data.slug])
+  }, [data.id])
+
+  useEffect(() => {
+    init()
+  }, [init])
 
   useEffect(() => {
     handelGetLikes()
   }, [liked, handelGetLikes])
-
-  useEffect(() => {
-    handelGetComments()
-  }, [changeComments, handelGetComments])
-
-  useEffect(() => {
-    if (idToUpdate) {
-      const content: string | undefined = comments.find((c: IComment) => c.id === idToUpdate)?.content;
-      if (content) setComment(content)
-    }
-  }, [comments, idToUpdate])
-
-  const handelCreateOrUpdateComment = async () => {
-    if (!commentState) return;
-
-    if (!idToUpdate) {
-      await CreateComment({ postId: Number(data.postId), comment: commentState })
-        .then((res) => { })
-        .catch((err) => { })
-    } else {
-      await updateComment(idToUpdate, commentState)
-        .then((res) => { })
-        .catch((err) => { })
-      setIdToUpdate(null)
-    }
-    setChangeComments(!changeComments)
-    setComment("")
-  }
-
-  const scrollToForm = () => {
-    if (formRef?.current && formRef.current?.offsetLeft && formRef.current?.offsetTop) {
-      scroll(formRef.current.offsetLeft, (formRef.current.offsetTop - 200));
-    }
-  }
 
   const handelLike = async () => {
     await likePost(data.slug)
@@ -157,41 +121,7 @@ export default function Post({ data }: IPostProps) {
             </div>
 
             <div className="grid lg:grid-cols-2 grid-cols-1  gap-4">
-
-              <div className="rounded-lg h-fit shadow-lg bg-white p-6" ref={formRef}>
-                <div className="mb-2">
-                  <label htmlFor="comment" className="text-lg text-gray-600">Add a comment</label>
-                  <textarea
-                    value={commentState}
-                    onChange={(event) => setComment(event.target.value)}
-                    id="comment"
-                    className="min-h-[10rem] min-w-full p-2 border rounded focus:outline-none focus:ring-gray-300 focus:ring-1"
-                    name="comment"
-                    placeholder=""></textarea>
-                </div>
-                <div className="justify-evenly flex items-center">
-                  <Button onClick={handelCreateOrUpdateComment} className="px-3 py-2 hover:text-blue-600 hover:border-blue-600 hover:border hover:bg-white text-sm text-white bg-blue-600 rounded">
-                    Comment
-                  </Button>
-                  <Button
-                    onClick={() => setComment("")}
-                    className="px-3 py-2 text-sm hover:text-white border-blue-600 hover:bg-blue-600 text-blue-600 border rounded">
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex flex-col">
-                {comments?.length ? comments.map((comment, index) => (
-                  <Comment comment={comment}
-                    setChangeComments={setChangeComments}
-                    changeComments={changeComments}
-                    setIdToUpdate={setIdToUpdate}
-                    scrollToForm={scrollToForm} key={index} />
-                )) : null}
-              </div>
-
-
+              <Comments postId={data.id} />
             </div>
 
             <Container className="mt-20">
@@ -325,6 +255,7 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
   if (!postData) return;
   serializedData = {
     data: {
+      id: postData.id,
       content: postData.content,
       about: postData.author.about || "Not Found",
       email: postData.author.email,

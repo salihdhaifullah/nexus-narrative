@@ -71,9 +71,9 @@ export const UpdatePost = async (id: number, data: ICreatePostData) => await API
 
 export const DeletePost = async (id: number) => await API.delete(`post/?id=${id}`)
 
-export const GetLikes = async (slug: string) => await API.get(`likes?slug=${slug}`)
+export const GetLikes = async (id: number) => await API.get(`likes?id=${id}`)
 
-export const GetComments = async (slug: string) => await API.get(`comments?slug=${slug}`)
+export const GetComments = async (id: number) => await API.get(`comments?id=${id}`)
 
 export const GetPosts = async () => await API.get('handelPost');
 
@@ -82,3 +82,5 @@ export const uploadProfileImage = async (files: File[]) => {
     for (let i = 0; i < files.length; i++) { formData.set(`file${i}`, files[i]) }
     return await API.postForm("/upload", formData)
 }
+
+export const viewedPost = async (id: number) => await API.put(`handelPost/?id=${id}`);

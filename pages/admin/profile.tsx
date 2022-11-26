@@ -28,6 +28,7 @@ const Profile = () => {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [countryDefault, setCountryDefault] = useState<any>(null)
+  const [isValidBlogName, setIsValidBlogName] = useState(false)
 
 
   const [isLoadingInfo, setIsLoadingInfo] = useState(false)
@@ -63,6 +64,11 @@ const Profile = () => {
   useEffect(() => {
     init()
   }, [init])
+
+  useEffect(() => {
+    const test = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(blogName)
+    setIsValidBlogName(test)
+  }, [blogName])
 
   const HandelUpdateProfileGeneralInformation = async () => {
     if (!lastName.length || !firstName.length || !email.length) return Toast.fire("firstName, lastName, Email are required", "", 'error');
@@ -101,19 +107,19 @@ const Profile = () => {
   const HandelChangePassword = async () => {
 
     Swal.fire({ title: "Do You want to change your password ?", icon: "warning", showConfirmButton: true, showCancelButton: true })
-    .then(async (res) => {
-      if (!res.value) return;
+      .then(async (res) => {
+        if (!res.value) return;
 
-      if (!currentPassword || !newPassword) return Toast.fire("current password, new password are required", "", "error");
-      setIsLoadingPassword(true)
-      
-      await ChangePassword({ currentPassword, newPassword })
-        .then((res) => { Toast.fire(res.data.massage, "", 'success') })
-        .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') });
-  
-      init();
-      setIsLoadingPassword(false)
-    });
+        if (!currentPassword || !newPassword) return Toast.fire("current password, new password are required", "", "error");
+        setIsLoadingPassword(true)
+
+        await ChangePassword({ currentPassword, newPassword })
+          .then((res) => { Toast.fire(res.data.massage, "", 'success') })
+          .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') });
+
+        init();
+        setIsLoadingPassword(false)
+      });
   }
 
   const handelUploadAvatar = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -242,9 +248,14 @@ const Profile = () => {
             <TextField value={blogName} onChange={(event) => setBlogName(event.target.value)} id="Blog Name" name="Blog Name" label="Blog Name" variant="outlined" />
 
             <div className="flex w-full items-start mt-4">
-              <Button onClick={handelChangeBlogName} disabled={isLoadingBlogName} size="small" className='w-fit bg-blue-600 text-white' variant='contained'>
+              <Button onClick={handelChangeBlogName} disabled={isLoadingBlogName || !isValidBlogName} size="small" className='w-fit bg-blue-600 text-white' variant='contained'>
                 {isLoadingBlogName ? (<CircularProgress className='text-white  w-5 h-5' />) : "Save"}
               </Button>
+              {isValidBlogName ? null : (
+                <p className="text-red-600 text-center text-sm font-light">
+                  unValid blog Name, use only numbers and letters with dash as space
+                </p>
+              )}
             </div>
 
           </div>

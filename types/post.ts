@@ -44,7 +44,7 @@ export interface IBLogProps {
     category: string;
     postId: number;
 
-
+    id: number;
     slug: string;
     posts: IFeaturedPostProps[];
     PostsRelated: IFeaturedPostProps[];

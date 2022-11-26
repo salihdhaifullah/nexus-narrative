@@ -42,11 +42,10 @@ model Post {
 
 model Views {
   id         Int @id @default(autoincrement())
-  apiAdrress String 
+  IPAddress String 
   postId     Int 
   post       Post @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-  @@unique(fields: [apiAdrress, postId], name: "view")
 }
 
 model User {
