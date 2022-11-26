@@ -53,6 +53,6 @@ export interface IBLogProps {
 
 
 export interface IPostProps {
-    data: IBLogProps | null;
+    data: IBLogProps;
 }
 

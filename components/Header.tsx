@@ -13,6 +13,7 @@ import Link from 'next/link';
 import useGetUser from '../hooks/useGetUser';
 import { Logout } from '../api';
 import Router, { useRouter } from 'next/router';
+import SideBarHead from './SideBarHead';
 
 interface ISearchProps {
   open: boolean;
@@ -78,40 +79,7 @@ export default function Header() {
     <>
       <Search open={open} setOpen={setOpen} search={search} setSearch={setSearch} />
       <Toolbar className="flex justify-between" sx={{ borderBottom: 1, borderColor: 'divider' }}> 
-
-         <Link className="no-underline" href="/posts">
-          <Button size="small">
-            Posts
-          </Button>
-        </Link>
-
-        {user && (
-          <>
-
-             <Link className="no-underline" href="/admin/profile">
-              <a>
-                <Button size="small">
-                  Profile
-                </Button>
-              </a>
-            </Link> 
-
-
-
-             <Link className="no-underline" href="/admin/create-post">
-              <Button size="small">
-                Create Post
-              </Button>
-            </Link>
-
-            <Link className="no-underline" href="/admin">
-              <Button size="small">
-                Dashboard
-              </Button>
-            </Link> 
-          </>
-        )}
-
+      <SideBarHead />
 
         <div>
            <IconButton className="mr-2" onClick={() => setOpen(true)}>
@@ -129,6 +97,7 @@ export default function Header() {
             </Link>
           )} 
         </div>
+
        </Toolbar> 
     </>
   );

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -34,16 +33,18 @@ export default function Sidebar(props: ISidebarProps) {
         </Link>
       </div>
 
-      <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.200' }}>
-        <Typography variant="h6" gutterBottom>
-          about
-        </Typography>
-        <Typography>{description}</Typography>
-      </Paper>
-      <Typography className="text-lg">
-        <span> connect to author |</span>
+      {description === "Not Found" ? null : (
+        <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.200' }}>
+          <Typography variant="h6" gutterBottom>
+            about
+          </Typography>
+          <Typography>{description}</Typography>
+        </Paper>
+      )}
 
-        {email}</Typography>
+
+      <Typography className="text-lg "> connect to author |</Typography>
+      <Typography className="text-lg">{email}</Typography>
     </Grid>
   );
 }
