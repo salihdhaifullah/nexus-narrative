@@ -55,7 +55,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // create 'uploads' folder if not exist
             fs.mkdirSync("./public/uploads", { recursive: true });
 
-            fs.writeFileSync(`./public/uploads/${name}`, data);
+            await fs.access(`./public/uploads/${name}`, fs.constants.R_OK, async (err) => {
+                if (err) await fs.writeFileSync(`./public/uploads/${name}`, data);
+            })
 
             fs.unlinkSync(filesArray[0].filepath);
 

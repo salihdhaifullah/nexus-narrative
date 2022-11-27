@@ -71,6 +71,7 @@ export default function Post({ data }: IPostProps) {
     setIsLiked(!liked)
   }
 
+
   return (
     <>
       <Head>

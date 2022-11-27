@@ -63,7 +63,9 @@ export const SearchByTag = async (tag: string) => await API.get(`search?tag=${ta
 
 export const SearchByCategory = async (category: string) => await API.get(`search?category=${category}`)
 
-export const GetAdminPageData = async () => await API.get("admin")
+export const GetPostsPageData = async (skip: number, take: number) => await API.get(`admin/?skip=${skip}&take=${take}`)
+
+export const GetPagesNumber = async () => await API.get(`admin/?length=true`)
 
 export const GetPostToUpdate = async (id: number) => await API.get(`admin/update-post/?id=${id}`)
 

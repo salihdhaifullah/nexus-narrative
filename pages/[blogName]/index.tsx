@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { getAllBlogsName, getBlogDataForHomePage } from '../../controllers'
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import createTheme from '@mui/material/styles/createTheme';
@@ -9,6 +7,7 @@ import Sidebar from '../../components/Sidebar';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IFeaturedPostProps } from '../../types/post';
+import prisma from '../../libs/prisma';
 
 
 const theme = createTheme();
@@ -21,12 +20,8 @@ interface IProps {
     email: string;
     firstName: string;
     lastName: string;
-  
-    Avter: {
-      fileUrl: string;
-    } | null;
+    profile: string | null;
 
-  
     posts: IFeaturedPostProps[] 
   }
 }
@@ -61,7 +56,7 @@ export default function Index({ data }: IProps) {
                     description={data?.about || "Not Found"}
                     email={data.email}
                     name={data.firstName + " " + data.lastName}
-                    AvatarUrl={data?.Avter?.fileUrl || "/images/user-placeholder.png"}
+                    AvatarUrl={data?.profile ? `/uploads/${data.profile}` : "/images/user-placeholder.png"}
                     authorId={data.id}
                   />
                 </div>
@@ -78,22 +73,43 @@ export default function Index({ data }: IProps) {
 }
 
 export async function getStaticPaths() {
-  const paths = await getAllBlogsName();
-  return {
-    paths,
-    fallback: false,
-  };
-}
+  const blogsNames: {params: { blogName: string; }}[] = [];
 
-interface IGetStaticProps {
-  params: {
-    blogName: string;
+  const data = await prisma.user.findMany({ select: { blogName: true } })
+
+  for (let item of data) {
+      if (!item.blogName) return;
+      blogsNames.push({ params: { blogName: item.blogName } })
   }
+
+  return { paths: blogsNames, fallback: false };
 }
 
-export async function getStaticProps(props: IGetStaticProps) {
-  const data = await getBlogDataForHomePage(props.params.blogName);
-  return {
-    props: data,
-  };
+export async function getStaticProps({params}: {  params: { blogName: string; }} ) {
+
+  const data = await prisma.user.findFirst({
+    where: { blogName: params.blogName },
+    select: {
+        about: true,
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        profile: true,
+        posts: {
+            orderBy: { createdAt: "desc" },
+            select: {
+                backgroundImage: true,
+                title: true,
+                slug: true,
+                createdAt: true,
+                author: { select: { blogName: true } }
+            }
+        }
+    }
+});
+
+const serializedData = {data: JSON.parse(JSON.stringify(data))}
+
+  return { props: serializedData };
 }

@@ -17,12 +17,37 @@ a {
   box-sizing: border-box;
 }
 
+
 .link {
   @apply text-blue-600 hover:text-blue-500 cursor-pointer underline
 }
 
 .underLine {
   @apply after:content-[""] flex-col flex after:w-full after:h-[2px] after:rounded-lg after:bg-blue-600
+}
+
+
+.button-type-underline {
+  @apply hidden !important
+}
+
+.custom-html-style > h5 {
+  @apply text-sm
+}
+
+
+.custom-html-style > h6 {
+  @apply text-xs
+}
+
+.custom-html-style > ol {
+  list-style-type: decimal !important;
+}
+
+
+.custom-html-style > ol > li {
+  display: list-item !important;
+  text-align: -webkit-match-parent !important;
 }
 
 @tailwind base;

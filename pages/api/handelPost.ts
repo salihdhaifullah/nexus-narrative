@@ -118,10 +118,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             select: { id: true }
         })
 
-        console.log(view)
-        console.log(postId)
-        console.log(UserIPAddress)
-
         if (view?.id) return res.status(200).json({ massage: "all Ready Viewed"})
         
         const data = await prisma.views.create({

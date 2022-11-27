@@ -1,4 +1,3 @@
-import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import { useEffect, useState, useMemo, useRef, ChangeEvent, useCallback } from 'react'
 import Swal from 'sweetalert2'
@@ -16,6 +15,9 @@ import BackupIcon from '@mui/icons-material/Backup';
 import { useRouter } from 'next/router'
 import Toast from '../functions/sweetAlert';
 import toBase64 from '../functions/toBase64';
+import 'react-markdown-editor-lite/lib/index.css';
+import 'highlight.js/styles/github.css';
+import mdParser from '../libs/markdown';
 
 
 interface HandleEditorChangeProps {
@@ -47,7 +49,6 @@ interface IImagesData {
 const filter = createFilterOptions<FilmOptionType>();
 
 const MdEditorCom = () => {
-  const mdParser = new MarkdownIt();
   const mdEditorRef: any = useRef();
   const router = useRouter()
 
@@ -140,20 +141,20 @@ const MdEditorCom = () => {
         .then((res) => { 
           Toast.fire(res.data.massage || 'success post created', '', 'success')
           router.push(res.data.postUrl)
+
+          setTitle("")
+          setSlug("")
+          setDescription("")
+          setBackgroundImage(null)
+          setTags([])
+          setCategory({ name: "" })
+          mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
+          mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
+          setText("")
+          imagesThatUsed = []
+          setIsLoading(false)
         })
         .catch((err) => { Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error') })
-
-      setTitle("")
-      setSlug("")
-      setDescription("")
-      setBackgroundImage(null)
-      setTags([])
-      setCategory({ name: "" })
-      mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
-      mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
-      setText("")
-      imagesThatUsed = []
-      setIsLoading(false)
   }
 
 
@@ -336,7 +337,7 @@ const MdEditorCom = () => {
         <MdEditor
           ref={mdEditorRef}
           style={{ height: '500px' }}
-          renderHTML={text => mdParser.render(text)}
+          renderHTML={text => mdParser(text)}
           onChange={handleEditorChange}
           onImageUpload={onImageUpload}
         />

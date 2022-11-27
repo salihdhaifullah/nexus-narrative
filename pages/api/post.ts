@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const TagsQuery = []
         let { title, description, content, slug, images, tags, category, backgroundImage }: ICreatePostData = req.body;
         const filesNames: string[] = [];
-        
+
         if (!title || !content || !slug || !category || !description) return res.status(400).json({ massage: "Bad Request" });
 
         if (title.length < 8 || description.length < 20 || slug.length < 8 || content.length < 100 || category.length < 1 || tags.length < 2 || !backgroundImage) {
@@ -46,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (tags && tags.length) for (let tag of tags) { TagsQuery.push({ where: { name: tag }, create: { name: tag } }) };
 
 
-        await fs.mkdirSync("./public/uploads", {recursive: true});
+        await fs.mkdirSync("./public/uploads", { recursive: true });
 
 
         for (let image of images) {
@@ -56,7 +56,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const fileName = `./public/uploads/${name}`;
             content = content.replace(image.preViewUrl, `/uploads/${name}`)
 
-            await fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
+
+            await fs.access(fileName, fs.constants.R_OK, async (err) => {
+                if (err) await fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
+            })
+
+
         }
 
 
@@ -64,7 +69,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const backgroundImageName = Date.now().toString() + backgroundImage.fileName;
         const fileName = `./public/uploads/${backgroundImageName}`
 
-        await fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
+        await fs.access(fileName, fs.constants.R_OK, async (err) => {
+            if (err) await fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
+        })
 
 
         await prisma.post.create({
@@ -74,19 +81,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 title: title,
                 content: content,
                 images: filesNames || [],
-                category: { connectOrCreate: { where: { name: category }, create: {name: category } } },
+                category: { connectOrCreate: { where: { name: category }, create: { name: category } } },
                 slug: slug,
                 author: { connect: { id: id } },
-                description: description 
+                description: description
             }
         });
 
-        return res.status(200).json({ massage: "post Successfully Created",  postUrl: `/${user.blogName}/posts/${slug}` });
+        return res.status(200).json({ massage: "post Successfully Created", postUrl: `/${user.blogName}/posts/${slug}` });
 
     }
 
     if (req.method === 'DELETE') {
-        const postId = req.query["id"]
+        const postId = Number(req.query["id"])
 
         if (typeof Number(postId) !== 'number') return res.status(400).json({ massage: "postId Not Valid" })
 
@@ -94,9 +101,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (typeof id !== "number") return res.status(400).json({ massage: "User Not Found" });
         if (error) return res.status(400).json({ massage: error });
 
-        const user = await prisma.user.findFirst({ where: { id: id }, select: { id: true, posts: { where: { id: Number(postId) }, select: { id: true } } } });
+        const post = await prisma.post.findUnique({
+            where: { id: postId },
+            select: { id: true, backgroundImage: true, images: true, authorId: true }
+        });
 
-        if (!user?.posts[0].id) return res.status(400).json({ massage: "User Not Found" })
+        if (!post?.id) return res.status(400).json({ massage: "Post Not Found" })
+
+        if (post.authorId !== id) return res.status(403).json({ massage: "UnAuthorized To Delete This Post" });
+
+
+        await fs.access(`./public/uploads/${post.backgroundImage}`, fs.constants.R_OK, async (err) => {
+            if (err) return;
+            await fs.unlinkSync(`./public/uploads/${post.backgroundImage}`)
+        });
+
+        for (let image of post.images) {
+            await fs.access(`./public/uploads/${image}`, fs.constants.R_OK, async (err) => {
+                if (err) return;
+                await fs.unlinkSync(`./public/uploads/${image}`)
+            });
+        }
 
         await prisma.post.delete({ where: { id: Number(postId) } });
 
