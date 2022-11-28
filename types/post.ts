@@ -16,6 +16,18 @@ export interface ICreatePostData {
     }
 };
 
+export interface IUpdatePostData {
+    title: string
+    content: string
+    category: string
+    images: {
+        fileName: string
+        base64: string
+        preViewUrl: string
+    }[]
+    tags: string[]
+};
+
 
 export interface IFeaturedPostProps {
     backgroundImage: string,

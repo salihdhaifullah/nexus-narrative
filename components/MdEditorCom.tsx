@@ -1,6 +1,5 @@
 import MdEditor from 'react-markdown-editor-lite';
-import { useEffect, useState, useMemo, useRef, ChangeEvent, useCallback } from 'react'
-import Swal from 'sweetalert2'
+import { useEffect, useState, useRef, ChangeEvent, useCallback } from 'react'
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -9,7 +8,6 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { createPost, GetTagsAndCategories, UpdatePost } from '../api';
 import { ICreatePostData } from '../types/post';
-import { Files } from '../types/file';
 import { Button, CircularProgress } from '@mui/material';
 import BackupIcon from '@mui/icons-material/Backup';
 import { useRouter } from 'next/router'
@@ -152,9 +150,9 @@ const MdEditorCom = () => {
           mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
           setText("")
           imagesThatUsed = []
-          setIsLoading(false)
         })
         .catch((err) => { Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error') })
+        setIsLoading(false)
   }
 
 

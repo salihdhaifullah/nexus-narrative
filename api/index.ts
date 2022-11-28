@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ICommentData } from '../types/comment';
-import { ICreatePostData } from '../types/post';
+import { ICreatePostData, IUpdatePostData } from '../types/post';
 import { IChangeBlogName, IChangePassword, IUpdateProfileGeneralInformation } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
@@ -69,7 +69,7 @@ export const GetPagesNumber = async () => await API.get(`admin/?length=true`)
 
 export const GetPostToUpdate = async (id: number) => await API.get(`admin/update-post/?id=${id}`)
 
-export const UpdatePost = async (id: number, data: ICreatePostData) => await API.post(`admin/update-post/?id=${id}`, data)
+export const UpdatePost = async (id: number, data: IUpdatePostData) => await API.post(`admin/update-post/?id=${id}`, data)
 
 export const DeletePost = async (id: number) => await API.delete(`post/?id=${id}`)
 

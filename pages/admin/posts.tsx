@@ -28,7 +28,7 @@ interface IPost {
 }
 
 export default function Index() {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [blogName, setBlogName] = useState("");
     const [posts, setPosts] = useState<IPost[]>([])
     const [skip, setSkip] = useState(0);
@@ -46,20 +46,24 @@ export default function Index() {
             .catch((err) => { console.error(err) });
     }, [take])
 
-    const getTicketPagination = useCallback(async () => {
+    const getPostsPagination = useCallback(async () => {
         setIsLoading(true)
         await GetPostsPageData(skip, take)
-            .then((res) => {
+            .then(async (res) => {
                 setPosts(res.data.data.posts)
                 setBlogName(res.data.data.blogName)
+                if (res.data.data.posts) setIsLoading(false);
             })
-            .catch((err) => { console.log(err) })
-        setIsLoading(false)
+            .catch((err) => { 
+                console.log(err)
+                setIsLoading(false)
+            });
+
     }, [skip, take])
 
     useEffect(() => {
-        getTicketPagination()
-    }, [getTicketPagination])
+        getPostsPagination()
+    }, [getPostsPagination])
 
     useEffect(() => {
         init()
@@ -137,7 +141,7 @@ export default function Index() {
                                             </Link>
                                             <TableCell align="right">{post._count.views}</TableCell>
                                             <TableCell align="right">{post.title}</TableCell>
-                                            <Link href={`admin/update-post/?id=${post.id}`}>
+                                            <Link href={`/admin/update-post/?id=${post.id}`}>
                                                 <TableCell align="right" className="link">update</TableCell>
                                             </Link>
                                             <TableCell align="right" onClick={() => handelDelete(post.id)} className="link">delete</TableCell>

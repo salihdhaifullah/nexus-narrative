@@ -4,7 +4,6 @@ import Link from 'next/link';
 
 import { dislikePost, GetLikes, likePost, viewedPost } from '../../../api';
 import { IFeaturedPostProps, IPostProps } from '../../../types/post';
-import { IComment } from '../../../types/comment';
 
 import MainFeaturedPost from '../../../components/MainFeaturedPost';
 import FeaturedPost from '../../../components/FeaturedPost';
