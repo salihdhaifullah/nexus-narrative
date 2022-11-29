@@ -89,4 +89,4 @@ export const uploadProfileImage = async (files: File[]) => {
     return await API.postForm("/upload", formData)
 }
 
-export const viewePost = async (id: number) => await API.put(`views/?id=${id}`);
+export const viewedPost = async (id: number) => await API.put(`views/?id=${id}`);
