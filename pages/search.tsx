@@ -7,6 +7,7 @@ import Box from '@mui/material/Box'
 import { generalSearch, SearchByCategory, SearchByTag } from '../api'
 import { IFeaturedPostProps } from '../types/post'
 import { CircularProgress } from '@mui/material'
+import { useRouter } from 'next/router'
 
 
 const Search = () => {
@@ -16,12 +17,13 @@ const Search = () => {
     const [tag, setTag] = useState("")
     const [category, setCategory] = useState("")
 
+    const router = useRouter();
 
     useEffect(() => {
         setSearch(window.location.href.split("?search=")[1])
         setTag(window.location.href.split("?tag=")[1])
         setCategory(window.location.href.split("?category=")[1])
-    }, [])
+    }, [router])
 
     const handelSearch = useCallback(async () => {
         if (tag || search || category) setIsLoading(true);
@@ -34,8 +36,8 @@ const Search = () => {
 
         else if (tag) await SearchByTag(tag)
         .then((res) => {
-            setPosts(res.data.posts.Post);
-            if (res.data.posts.Post) setIsLoading(false)    
+            setPosts(res.data.posts.posts);
+            if (res.data.posts.posts) setIsLoading(false)    
         })
 
         else if (category) await SearchByCategory(category)

@@ -78,13 +78,8 @@ const Profile = () => {
     const data: IUpdateProfileGeneralInformation = { country, city, firstName, lastName, email, phoneNumber: Number(phoneNumber) || null, title, about };
 
     await UpdateProfileGeneralInformation(data)
-      .then((res) => {
-        Toast.fire(res.data.message, "", 'success')
-      })
-      .catch((err) => {
-        console.log(err)
-        Toast.fire(err.response.data.massage, "", 'error')
-      });
+      .then((res) => { Toast.fire(res.data.message, "", 'success') })
+      .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') });
     init()
     setIsLoadingInfo(false)
   }

@@ -103,10 +103,8 @@ const MdEditorCom = () => {
     const preViewUrl =  URL.createObjectURL(file);
     const base64: string = await toBase64(file) as string;
 
-    console.log(imagesData)
     imagesData.push({base64, fileName: file.name, preViewUrl})
     setImages(imagesData);
-    console.log(imagesData)
 
     return preViewUrl;
   }

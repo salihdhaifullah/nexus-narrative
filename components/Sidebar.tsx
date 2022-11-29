@@ -36,14 +36,13 @@ export default function Sidebar(props: ISidebarProps) {
               </Link>
             </Typography>
 
-
-
             <Link href={`/${blogName}`}>
               <Typography className="link" variant="h6" gutterBottom>
-                <h6 className="text-black inline-block no-underline cursor-default mr-2">from </h6> {blogName}
+                <p className="text-black inline-block no-underline cursor-default mr-2">from </p> {blogName}
               </Typography>
             </Link>
           </Box>
+          
           <Divider />
         </>
       )}

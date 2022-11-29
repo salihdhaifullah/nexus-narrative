@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     else if (typeof tag === 'string') {
+      
       const posts = await prisma.tag.findFirst({
         where: { name: { contains: tag } },
         select: {

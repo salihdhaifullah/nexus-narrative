@@ -1,7 +1,4 @@
-import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
-import createTheme from '@mui/material/styles/createTheme';
-import ThemeProvider from '@mui/material/styles/ThemeProvider';
+import Box from '@mui/material/Box';
 import FeaturedPost from '../../components/FeaturedPost';
 import Sidebar from '../../components/Sidebar';
 import Typography from '@mui/material/Typography';
@@ -10,7 +7,7 @@ import { IFeaturedPostProps } from '../../types/post';
 import prisma from '../../libs/prisma';
 
 
-const theme = createTheme();
+
 
 
 interface IProps {
@@ -32,11 +29,20 @@ export default function Index({ data }: IProps) {
   return (
     <>
       {data ? (
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Container maxWidth="lg" >
+          <Box className="mx-4">
             <main>
-              <div className="grid grid-cols-5 grid-flow-dense gap-10 my-16">
+              <div className="flex flex-col md:grid grid-cols-5 grid-flow-dense gap-10 my-16">
+
+              <div className="col-span-2">
+                  <Sidebar
+                    isNotShow={true}
+                    description={data?.about || "Not Found"}
+                    email={data.email}
+                    name={data.firstName + " " + data.lastName}
+                    AvatarUrl={data?.profile ? `/uploads/${data.profile}` : "/images/user-placeholder.png"}
+                    authorId={data.id}
+                  />
+                </div>
 
                 <div className="col-span-3">
 
@@ -49,21 +55,9 @@ export default function Index({ data }: IProps) {
                   )}
                 </div>
 
-                <div className="col-span-2">
-                  <Sidebar
-                    isNotShow={true}
-                    description={data?.about || "Not Found"}
-                    email={data.email}
-                    name={data.firstName + " " + data.lastName}
-                    AvatarUrl={data?.profile ? `/uploads/${data.profile}` : "/images/user-placeholder.png"}
-                    authorId={data.id}
-                  />
-                </div>
-
               </div>
             </main>
-          </Container >
-        </ThemeProvider >
+            </Box>
       ) : (
         <CircularProgress />
       )}

@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 
             await fs.access(fileName, fs.constants.R_OK, async (err) => {
-                if (err) await fs.writeFile(fileName, fileContents, 'base64', function (err: any) { console.log(err) });
+                if (err) await fs.writeFile(fileName, fileContents, 'base64', (err: any) => {  });
             });
 
         }

@@ -3,10 +3,6 @@ import prisma from '../../libs/prisma'
 import { GetUserIdMiddleware } from '../../middleware';
 import { ICommentData } from '../../types/comment';
 
-interface Comment {
-    content: string
-}  
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "POST") {
         const { error, id } = GetUserIdMiddleware(req)

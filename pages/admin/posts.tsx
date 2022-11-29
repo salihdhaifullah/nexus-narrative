@@ -49,15 +49,12 @@ export default function Index() {
     const getPostsPagination = useCallback(async () => {
         setIsLoading(true)
         await GetPostsPageData(skip, take)
-            .then(async (res) => {
+            .then((res) => {
                 setPosts(res.data.data.posts)
                 setBlogName(res.data.data.blogName)
                 if (res.data.data.posts) setIsLoading(false);
             })
-            .catch((err) => { 
-                console.log(err)
-                setIsLoading(false)
-            });
+            setIsLoading(false)
 
     }, [skip, take])
 

@@ -92,7 +92,6 @@ export function TokenHandler() {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      console.log(user?.token)
       setIsExpired(checkExpirationDateJwt(user?.token as string));
       if (user && isExpired) await checkErrorAndGetToken()
 

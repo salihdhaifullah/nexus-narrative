@@ -17,11 +17,7 @@ const Comments = ({ postId }: { postId: number }) => {
     const handelGetComments = useCallback(async () => {
         if (!postId) return;
         await GetComments(postId)
-            .then((res) => {
-                setComments(res.data.comments.comments)
-                console.log(res.data.comments)
-            })
-            .catch((err) => { console.log(err) })
+            .then((res) => { setComments(res.data.comments.comments) })
     }, [postId])
 
 

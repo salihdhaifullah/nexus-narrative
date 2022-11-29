@@ -4,12 +4,7 @@ import 'react-markdown-editor-lite/lib/index.css';
 import 'highlight.js/styles/github.css';
 import mdParser from '../libs/markdown';
 
-
-interface MainProps {
-  post: string;
-}
-
-export default function Main(props: MainProps) {
+export default function Main(props: {post: string;}) {
   const { post } = props;
   const html = mdParser(post)
   return (

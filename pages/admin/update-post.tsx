@@ -71,7 +71,6 @@ const UpdatePostPage = () => {
         setTags(tagsData)
         setTitle(res.data.data.title)
        })
-      .catch((err) => { console.log(err) })
   }, [postId])
 
 

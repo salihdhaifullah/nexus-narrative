@@ -1,8 +1,7 @@
-import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../../libs/prisma'
 import { GetUserIdMiddleware } from '../../../middleware'
-import { IChangeBlogName, IChangePassword, IUpdateProfileGeneralInformation } from '../../../types/profile';
+import { IChangeBlogName, IUpdateProfileGeneralInformation } from '../../../types/profile';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
@@ -15,15 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 UserId = id
             };
 
-
             if (typeof UserId !== "number") return res.status(404).json({ massage: "User Not Found" })
 
-
-
             const user = await prisma.user.findFirst({
-                where: {
-                    id: UserId
-                },
+                where: { id: UserId },
                 select: {
                     profile: true,
                     firstName: true,

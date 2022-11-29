@@ -3,12 +3,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 
-interface MainFeaturedPostProps {
-  image: string
-  title: string
-}
-
-export default function MainFeaturedPost(props: MainFeaturedPostProps) {
+export default function MainFeaturedPost(props: {image: string, title: string }) {
   const { image, title } = props;
 
   return (

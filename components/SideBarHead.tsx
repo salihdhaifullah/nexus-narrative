@@ -9,11 +9,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
-
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import CreateIcon from '@mui/icons-material/Create';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import Link from 'next/link';
 import useGetUser from '../hooks/useGetUser';
 
@@ -60,17 +58,6 @@ export default function SideBarHead() {
                                 <AccountBoxIcon />
                             </ListItemIcon>
                             <ListItemText primary={"my profile"} />
-                        </ListItemButton>
-                    </Link>
-                </ListItem>
-
-                <ListItem disablePadding>
-                    <Link href="/admin">
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <DashboardIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={"dashboard"} />
                         </ListItemButton>
                     </Link>
                 </ListItem>

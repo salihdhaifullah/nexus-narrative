@@ -13,7 +13,6 @@ import Sidebar from '../../../components/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress'
@@ -29,8 +28,6 @@ export default function Post({ data }: IPostProps) {
   const [likes, setLikes] = useState(0)
   const [dislikes, setDislikes] = useState(0);
 
-
-
   const handelGetLikes = useCallback(async () => {
     if (!data.id) return;
     await GetLikes(data.id)
@@ -38,14 +35,11 @@ export default function Post({ data }: IPostProps) {
         setLikes(res.data.likes)
         setDislikes(res.data.dislikes)
       })
-      .catch((err) => { console.log(err) })
   }, [data.id])
 
   const init = useCallback(async () => {
     if (!data.id) return;
     await viewedPost(data.id)
-      .then((res) => { console.log(res.data) })
-      .catch((err) => { console.log(err) })
   }, [data.id])
 
   useEffect(() => {
@@ -63,7 +57,6 @@ export default function Post({ data }: IPostProps) {
 
         handelGetLikes()
       })
-      .catch((err) => { console.log(err) })
   }
 
   const handelDisLike = async () => {
@@ -72,7 +65,6 @@ export default function Post({ data }: IPostProps) {
       .then((res) => {
         handelGetLikes()
       })
-      .catch((err) => { console.log(err) })
   }
 
   const getKeywords = (): string => {
@@ -102,7 +94,7 @@ export default function Post({ data }: IPostProps) {
             <article>
               <MainFeaturedPost image={`/uploads/${data.backgroundImage}`} title={data.title} />
 
-              <Grid className="inline-flex flex-row flex-wrap-reverse md:flex-nowrap gap-2">
+              <Grid className="inline-flex flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
 
                 <Main post={data.content} />
 

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
@@ -9,11 +8,7 @@ import moment from 'moment';
 import Link from 'next/link';
 import { IFeaturedPostProps } from '../types/post';
 
-interface IProps {
-  post: IFeaturedPostProps
-}
-
-export default function FeaturedPost(props: IProps) {
+export default function FeaturedPost(props: {post: IFeaturedPostProps }) {
   const { post } = props;
 
   return (
@@ -26,7 +21,7 @@ export default function FeaturedPost(props: IProps) {
 
               <CardContent className="flex-1">
 
-                <Typography component="h2" variant="h5">
+                <Typography component="h2" variant="h5"> 
                   {post.title}
                 </Typography>
                 

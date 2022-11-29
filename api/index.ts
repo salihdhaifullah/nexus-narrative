@@ -47,9 +47,9 @@ export const deleteComment = async (id: number) => await API.delete(`comment?id=
 
 export const updateComment = async (id: number, content: string) => await API.patch(`comment?id=${id}`, {content: content})
 
-export const likePost = async (id: number) => await API.patch(`handelPost?type=like&id=${id}`)
+export const likePost = async (id: number) => await API.patch(`likes?type=like&id=${id}`)
 
-export const dislikePost = async (id: number) => await API.patch(`handelPost?type=dislike&id=${id}`)
+export const dislikePost = async (id: number) => await API.patch(`likes?type=dislike&id=${id}`)
 
 export const getBlogDataS = async (blogName: string) => await API.get(`blog?blogName=${blogName}`);
 
@@ -89,4 +89,4 @@ export const uploadProfileImage = async (files: File[]) => {
     return await API.postForm("/upload", formData)
 }
 
-export const viewedPost = async (id: number) => await API.put(`handelPost/?id=${id}`);
+export const viewePost = async (id: number) => await API.put(`views/?id=${id}`);

@@ -89,12 +89,12 @@ export default Profile;
 
 export async function getStaticPaths() {
     const ids: { params: { id: string } }[] = [];
-
     const data = await prisma.user.findMany({ select: { id: true } });
 
-    for (let item of data) { ids.push({ params: { id: item.id.toString() } }) }
+    for (let item of data) { 
+        ids.push({ params: { id: item.id.toString() } })
+     }
 
-    console.log(ids)
     return { paths: ids, fallback: false };
 };
 
