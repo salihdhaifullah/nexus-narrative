@@ -26,20 +26,20 @@ import Comments from '../../../components/Comments';
 
 
 export default function Post({ data }: IPostProps) {
-  const [liked, setIsLiked] = useState<boolean>(false)
-  const [likes, setLikes] = useState<string[]>([])
-  const [dislikes, setDislikes] = useState<string[]>([])
+  const [likes, setLikes] = useState(0)
+  const [dislikes, setDislikes] = useState(0);
+
+
 
   const handelGetLikes = useCallback(async () => {
     if (!data.id) return;
     await GetLikes(data.id)
       .then((res) => {
-        setLikes(res.data.likes.likes)
-        setDislikes(res.data.likes.dislikes)
+        setLikes(res.data.likes)
+        setDislikes(res.data.dislikes)
       })
       .catch((err) => { console.log(err) })
   }, [data.id])
-
 
   const init = useCallback(async () => {
     if (!data.id) return;
@@ -54,124 +54,154 @@ export default function Post({ data }: IPostProps) {
 
   useEffect(() => {
     handelGetLikes()
-  }, [liked, handelGetLikes])
+  }, [handelGetLikes])
 
   const handelLike = async () => {
-    await likePost(data.slug)
-      .then((res) => { })
+
+    await likePost(data.id)
+      .then((res) => {
+
+        handelGetLikes()
+      })
       .catch((err) => { console.log(err) })
-    setIsLiked(!liked)
   }
 
   const handelDisLike = async () => {
-    await dislikePost(data.slug)
-      .then((res) => { })
+
+    await dislikePost(data.id)
+      .then((res) => {
+        handelGetLikes()
+      })
       .catch((err) => { console.log(err) })
-    setIsLiked(!liked)
   }
 
+  const getKeywords = (): string => {
+    let text = "";
+
+    for (let tag of data.tags) {
+      text = text + tag.name + ", "
+    }
+
+    text = text + data.category;
+
+    return text;
+  }
 
   return (
     <>
-      <Head>
-        <title>hello-world</title>
-      </Head>
       {data ? (
-        <Box className="min-w-[100vw] p-4 my-10" >
-          <CssBaseline />
-          <article>
-            <MainFeaturedPost image={`/uploads/${data.backgroundImage}`} title={data.title} />
-            <Typography className="text-lg">published at: {data.createdAt}</Typography>
-            <Typography className="text-lg" component="div">
-              category:
-              <Link href={`/search?category=${data.category}`}>
-                <a className="text-lg ml-1 font-bold link">{data.category}</a>
-              </Link>
-            </Typography>
+        <>
+          <Head>
+            <title>{data.title}</title>
+            <meta name="description" content={data.description}></meta>
+            <meta name="keywords" content={getKeywords()}></meta>
+          </Head>
 
-            <Grid container spacing={5} sx={{ mt: 3 }}>
+          <Box className="min-w-[95vw] p-4 mb-10 mt-4" >
+            <CssBaseline />
+            <article>
+              <MainFeaturedPost image={`/uploads/${data.backgroundImage}`} title={data.title} />
 
-              <Main blogName={data.blogName} post={data.content} />
+              <Grid className="inline-flex flex-row flex-wrap-reverse md:flex-nowrap gap-2">
 
-              <Sidebar
-                description={data.about}
-                email={data.email}
-                name={data.name}
-                AvatarUrl={data.AvatarUrl}
-                authorId={data.authorId}
-              />
+                <Main post={data.content} />
 
-            </Grid>
+                <Sidebar
+                  description={data.about}
+                  email={data.email}
+                  name={data.name}
+                  AvatarUrl={data.AvatarUrl}
+                  authorId={data.authorId}
+                  blogName={data.blogName}
+                  category={data.category}
+                  createdAt={data.createdAt}
+                />
 
-
-            <Grid className="flex-col mt-10">
-              <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
-              <div className="mt-4 flex flex-row gap-2">
-                <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelLike} startIcon={<ThumbUpIcon />}>{likes.length && likes.length}</Button>
-                <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelDisLike} startIcon={<ThumbDownAltIcon />}>{dislikes.length && dislikes.length}</Button>
-              </div>
-            </Grid>
+              </Grid>
 
 
-            <hr className='mt-20 mb-20' />
+              <Grid className="flex-col mt-20 border p-4 w-fit rounded-md border-blue-600 bg-blue-100 shadow-lg shadow-blue-400 hover:shadow-blue-400 hover:shadow-xl">
+                <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
+                <div className="mt-4 flex flex-row  gap-2">
+                  <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelLike} startIcon={<ThumbUpIcon />}>{likes}</Button>
+                  <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelDisLike} startIcon={<ThumbDownAltIcon />}>{dislikes}</Button>
+                </div>
+              </Grid>
 
-            <div className='flex mb-6 justify-start items-start'>
-              <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
-              <hr />
-            </div>
-
-            <div className="grid lg:grid-cols-2 grid-cols-1  gap-4">
-              <Comments postId={data.id} />
-            </div>
-
-            <Container className="mt-20">
-
-
-              <Grid container spacing={4} className="flex mb-20 justify-center items-center my-4">
+              <Grid container spacing={4} className="flex my-20 justify-center items-center">
                 {data.tags.map((item, index) => (
                   <Link key={index} href={`/search/?tag=${item.name}`}>
-                    <Chip label={item.name} className="mr-1 link" variant="outlined" />
+                    <Chip label={"#" + item.name} className="mr-1 text-base link" variant="outlined" />
                   </Link>
                 ))}
               </Grid>
 
+              <hr className='mt-20 mb-20' />
 
 
-              <Grid container spacing={4} className="mb-20" >
-                {data.posts.length > 0 ?
-                  <>
-                    <div className='flex mb-2 justify-start items-start'>
-                      <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
-                    </div>
-                    {data.posts.map((post, index) => (
-                      <div key={index} className="mb-4 w-full">
-                        <FeaturedPost post={post} />
+              <div className='flex mb-6 justify-start items-start'>
+                <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
+              </div>
+
+              <section className="grid md:grid-cols-2 grid-cols-1  gap-4">
+                <Comments postId={data.id} />
+              </section>
+
+              <Box className="mt-[200px] flex-col flex gap-20">
+
+
+                <Box className="flex flex-col min-w-full">
+                  {data.posts.length > 0 ?
+                    <>
+                      <div className='flex mb-2 justify-start items-start'>
+                        <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
                       </div>
-                    ))}
-                  </>
-                  : (null)}
-              </Grid>
+
+                      <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
+
+                        {data.posts.map((post, index) => (
+                          <div key={index} className="w-full">
+                            <FeaturedPost post={post} />
+                          </div>
+                        ))}
+
+                      </Box>
+
+                    </>
+                    : (null)}
+                </Box>
 
 
-              <Grid container spacing={4}>
-                {data.PostsRelated.length > 0 ?
-                  <>
-                    <div className='flex mb-2 justify-start items-start'>
-                      <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
-                    </div>
-                    {data.PostsRelated.map((post, index) => (
-                      <div key={index} className="mb-4 w-full">
-                        <FeaturedPost post={post} />
+                <Box className="flex flex-col min-w-full">
+
+                  {data.PostsRelated.length > 0 ?
+                    <>
+
+                      <div className='flex mb-2 justify-start items-start'>
+                        <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
                       </div>
-                    ))}
-                  </>
-                  : (null)}
-              </Grid>
 
-            </Container>
+                      <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
 
-          </article>
-        </Box>
+                        {data.PostsRelated.map((post, index) => (
+                          <div key={index} className="w-full ">
+                            <FeaturedPost post={post} />
+                          </div>
+                        ))}
+
+                      </Box>
+
+                    </>
+                    : (null)}
+
+                </Box>
+
+              </Box>
+
+            </article>
+          </Box>
+
+        </>
       ) : (
         <CircularProgress />
       )}
@@ -205,9 +235,11 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
       id: true,
       content: true,
       title: true,
+      description: true,
       author: {
         select: {
           posts: {
+            where: { NOT: [{ slug: params.slug }] },
             take: 5,
             orderBy: { createdAt: "desc" },
             select: {
@@ -215,7 +247,8 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
               title: true,
               slug: true,
               createdAt: true,
-              author: { select: { blogName: true } }
+              author: { select: { blogName: true } },
+              description: true
             },
           },
           email: true,
@@ -236,15 +269,19 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 
 
   const PostsRelated = await prisma.post.findMany({
+    where: {
+      NOT: [{ slug: params.slug }],
+      category: { name: postData?.category.name || "" }
+    },
     take: 5,
-    where: { category: { name: postData?.category.name || " " } },
     orderBy: { createdAt: "desc" },
     select: {
       backgroundImage: true,
       title: true,
       slug: true,
       createdAt: true,
-      author: { select: { blogName: true } }
+      author: { select: { blogName: true } },
+      description: true
     }
   });
 
@@ -256,6 +293,7 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
   serializedData = {
     data: {
       id: postData.id,
+      description: postData.description,
       content: postData.content,
       about: postData.author.about || "Not Found",
       email: postData.author.email,

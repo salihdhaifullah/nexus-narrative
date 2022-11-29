@@ -15,25 +15,37 @@ interface IProps {
 
 export default function FeaturedPost(props: IProps) {
   const { post } = props;
+
   return (
-    <div className="min-w-full w-full block">
-      <Grid item className="min-w-full w-full">
+    <div className="w-full flex">
+      <Grid item className="w-full">
+        
         <Link href={`/${post.author.blogName}/posts/${post.slug}`}>
-          <CardActionArea component="a" href="#">
-            <Card sx={{ display: 'flex' }} className="min-w-full w-full">
-              <CardContent sx={{ flex: 1 }}>
+          <CardActionArea>
+            <Card className="flex w-full">
+
+              <CardContent className="flex-1">
+
                 <Typography component="h2" variant="h5">
                   {post.title}
                 </Typography>
+                
                 <Typography component="p" variant="body2">
                   {moment(post.createdAt).format('ll')}
                 </Typography>
+
+                {post.description ? (
+                  <Typography component="p" variant="body2">
+                    {post.description.substring(0, 30)}
+                  </Typography>
+                ) : null}
 
                 <Typography variant="subtitle1" color="primary">
                   Continue reading...
                 </Typography>
 
               </CardContent>
+
               <CardMedia
                 component="img"
                 sx={{ width: 100 }}
@@ -42,6 +54,7 @@ export default function FeaturedPost(props: IProps) {
               />
             </Card>
           </CardActionArea>
+        
         </Link>
       </Grid>
     </div>

@@ -70,7 +70,7 @@ export function TokenHandler() {
     const token = await getTokenHandler();
     if (!token) return;
     
-    if (!user) getUser();
+    if (!user) return getUser();
      
     let userData = { 
       id: user?.id,

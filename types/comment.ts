@@ -6,9 +6,7 @@ export interface ICommentData {
 
 export interface IComment {
     author: {
-        Avter: {
-            fileUrl: string;
-        }
+        profile: string;
         firstName: string;
         lastName: string;
     }

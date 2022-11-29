@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ICommentData } from '../types/comment';
-import { ICreatePostData, IUpdatePostData } from '../types/post';
+import { ICreatePostData, IUpdatePostData, SortByType } from '../types/post';
 import { IChangeBlogName, IChangePassword, IUpdateProfileGeneralInformation } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
@@ -47,9 +47,9 @@ export const deleteComment = async (id: number) => await API.delete(`comment?id=
 
 export const updateComment = async (id: number, content: string) => await API.patch(`comment?id=${id}`, {content: content})
 
-export const likePost = async (slug: string) => await API.patch(`handelPost?type=like&?slug=${slug}`)
+export const likePost = async (id: number) => await API.patch(`handelPost?type=like&id=${id}`)
 
-export const dislikePost = async (slug: string) => await API.patch(`handelPost?type=dislike&?slug=${slug}`)
+export const dislikePost = async (id: number) => await API.patch(`handelPost?type=dislike&id=${id}`)
 
 export const getBlogDataS = async (blogName: string) => await API.get(`blog?blogName=${blogName}`);
 
@@ -77,7 +77,11 @@ export const GetLikes = async (id: number) => await API.get(`likes?id=${id}`)
 
 export const GetComments = async (id: number) => await API.get(`comments?id=${id}`)
 
-export const GetPosts = async () => await API.get('handelPost');
+export const GetPostsLength = async (category: string | undefined) => 
+await API.get(`posts/${category ? `?category=${category}&` : "?"}&length=${true}`);
+
+export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) => 
+await API.get(`posts/${category ? `?category=${category}&` : "?"}skip=${skip}&take=${take}&sort=${sort}`);
 
 export const uploadProfileImage = async (files: File[]) => {
     let formData = new FormData();

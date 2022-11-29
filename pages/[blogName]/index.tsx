@@ -39,9 +39,7 @@ export default function Index({ data }: IProps) {
               <div className="grid grid-cols-5 grid-flow-dense gap-10 my-16">
 
                 <div className="col-span-3">
-                  <div className='flex justify-center items-center mt-14 mb-8'>
-                    <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
-                  </div>
+
                   {data?.posts.length > 0 ? data?.posts.map((post, index) => (
                     <div key={index} className="mb-4">
                       <FeaturedPost post={post} />
@@ -53,6 +51,7 @@ export default function Index({ data }: IProps) {
 
                 <div className="col-span-2">
                   <Sidebar
+                    isNotShow={true}
                     description={data?.about || "Not Found"}
                     email={data.email}
                     name={data.firstName + " " + data.lastName}
@@ -78,7 +77,6 @@ export async function getStaticPaths() {
   const data = await prisma.user.findMany({ select: { blogName: true } })
 
   for (let item of data) {
-      if (!item.blogName) return;
       blogsNames.push({ params: { blogName: item.blogName } })
   }
 
@@ -102,6 +100,7 @@ export async function getStaticProps({params}: {  params: { blogName: string; }}
                 backgroundImage: true,
                 title: true,
                 slug: true,
+                description: true,
                 createdAt: true,
                 author: { select: { blogName: true } }
             }

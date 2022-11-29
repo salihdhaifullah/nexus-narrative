@@ -22,7 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const commentData = await prisma.comment.create({
             data: {
                 content: comment,
-                author: { connect: { id: id }}, post: { connect: { id: postId } }
+                author: { connect: { id: id }}, 
+                post: { connect: { id: postId } }
             }
         });
 
@@ -31,60 +32,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "DELETE") {
         const { error, id } = GetUserIdMiddleware(req)
-        const commentId: number | undefined = req.query["id"] as number | undefined;
-        if (!commentId) return res.status(404).json({ massage: "comment Not Found" })
-        if (!id) return res.status(404).json({ massage: "user Not Found" })
+        const commentId = Number(req.query["id"]);
+
+        if (typeof id !== "number") return res.status(404).json({ massage: "user Not Found" })
+
         if (error) return res.status(400).json({ massage: error })
 
-        const user = await prisma.user.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            },
-        })
+        if (!commentId) return res.status(404).json({ massage: "comment Not Found" })
 
-        const comment = await prisma.comment.findFirst({
-            where: {
-                id: Number(commentId),
-                authorId: id,
-            },
-            select: {
-                id: true,
-            },
-        })
+        const comment = await prisma.comment.findFirst({ where: { id: commentId, authorId: id }, select: { id: true } })
 
-        if (!user?.id) return res.status(404).json({ massage: "user Not Found" })
         if (!comment?.id) return res.status(404).json({ massage: "comment Not Found" })
 
-        await prisma.comment.delete({
-            where: {
-                id: Number(commentId)
-            },
-        })
+        await prisma.comment.delete({ where: { id: commentId } })
 
         return res.status(200).json({ massage: "success Deleting comment" });
     }
 
     if (req.method === "PATCH") {
         const { error, id } = GetUserIdMiddleware(req)
-        const commentId: number | undefined = req.query["id"] as number | undefined;
-        if (!commentId) return res.status(404).json({ massage: "comment Not Found" })
-        if (!id) return res.status(404).json({ massage: "user Not Found" })
+        const {content}: {content: string} = req.body;
+        const commentId = Number(req.query["id"]);
+
+        if (typeof id !== "number") return res.status(404).json({ massage: "user Not Found" })
+
         if (error) return res.status(400).json({ massage: error })
+
+        if (!commentId) return res.status(404).json({ massage: "comment Not Found" })
+ 
 
         const user = await prisma.user.findUnique({ where: { id: id }, select: { id: true } });
 
-        const comment = await prisma.comment.findFirst({ where: { id: Number(commentId), authorId: id }, select: { id: true } })
+        const comment = await prisma.comment.findFirst({ where: { id: commentId, authorId: id }, select: { id: true } })
 
         if (!user?.id) return res.status(404).json({ massage: "user Not Found" });
 
         if (!comment?.id) return res.status(404).json({ massage: "comment Not Found" });
  
-        const {content}: {content: string} = req.body;
 
-        await prisma.comment.update({ where: { id: Number(commentId) }, data: { content: content } });
+
+        await prisma.comment.update({ where: { id: commentId }, data: { content: content } });
     
+        return res.status(200).json({ massage: "Comment Successfully Updated" });
     }
 }

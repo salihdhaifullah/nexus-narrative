@@ -39,6 +39,9 @@ a {
 .custom-html-style > h6 {
   @apply text-xs
 }
+.custom-html-style > p > img{
+  @apply my-6 
+}
 
 .custom-html-style > ol {
   list-style-type: decimal !important;

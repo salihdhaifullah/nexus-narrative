@@ -1,24 +1,14 @@
 import Image from 'next/image'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { deleteComment } from '../api';
-import { IUser } from '../types/user';
 import moment from 'moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import useGetUser from '../hooks/useGetUser';
+import { IComment } from '../types/comment';
+import Toast from '../functions/sweetAlert';
 
 interface ICommentProps {
-  comment: {
-    author: {
-      Avter: {
-        fileUrl: string;
-      }
-      firstName: string;
-      lastName: string;
-    }
-    authorId: number;
-    content: string;
-    createdAt: Date;
-    id: number;
-  }
+  comment: IComment;
   scrollToForm: () => void;
   setIdToUpdate: (id: number) => void;
   setChangeComments: (value: boolean) => void;
@@ -28,29 +18,24 @@ interface ICommentProps {
 
 const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, setIdToUpdate }: ICommentProps) => {
 
-  const [user, setUser] = useState<IUser | null>(null);
+  const [user] = useGetUser()
   const [isOpen, setIsOpen] = useState(false);
-
-
-  const getUser = useCallback(() => {
-    const isFound = localStorage.getItem("user");
-    if (isFound) setUser(JSON.parse(isFound));
-  }, [])
-
+  const [isCanUpdateAndDelete, setIsCanUpdateAndDelete] = useState(false)
 
   useEffect(() => {
-    getUser()
-  }, [getUser])
-
+    if (user?.id && Number(user?.id) === Number(comment.authorId)) setIsCanUpdateAndDelete(true); 
+  }, [comment.authorId, user?.id])
 
   const handelDelete = async (id: number) => {
-    await deleteComment(id).then((res) => {
-    }).catch((err: any) => {
-    })
+    setIsOpen(false)
+    await deleteComment(id)
+    .then((res) => { Toast.fire(res.data.massage || "Success Deleting Comment", "", "success") })
+    .catch((err) => { Toast.fire(err.response.data.massage || "Some Thing Went Wrong !", "", "error") })
     setChangeComments(!changeComments)
   }
 
   const handelUpdate = (id: number) => {
+    setIsOpen(false)
     scrollToForm()
     setIdToUpdate(id)
   }
@@ -72,17 +57,16 @@ const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, set
           </span>
         )}
 
-        {user?.id && Number(user?.id) === Number(comment.authorId) && (
-          <MoreVertIcon onClick={() => setIsOpen(!isOpen)} className="cursor-pointer" />
-        )}
+        {isCanUpdateAndDelete ? (<MoreVertIcon  onClick={() => setIsOpen(!isOpen)} className="cursor-pointer" />) : null}
 
         <Image
           className='rounded-full object-fill'
-          src={comment.author.Avter?.fileUrl || "/images/user-placeholder.png"}
-          alt="Picture of the author"
+          src={comment.author.profile ? `/uploads/${comment.author.profile}` : "/images/user-placeholder.png"}
+          alt="Picture of the User"
           width={60}
           height={60}
         />
+
         <span className="text-base text-gray-700 mr-2 flex-1 ml-6">By {comment.author.firstName + " " + comment.author.lastName}</span>
         <span className="text-sm text-gray-500">{moment(comment.createdAt).format('ll')}</span>
       </div>

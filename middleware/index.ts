@@ -6,12 +6,6 @@ interface IGetUserIdMiddleware {
     id: number | null
 }
 
-interface IGetUserIdAndRoleMiddleware {
-    error: any | null
-    id: number | null
-    role: 'PROJECT_MANAGER' | 'DEVELOPER' | 'ADMIN' | null;
-}
-
 
 export const GetUserIdMiddlewareFromCookie = (req: NextApiRequest): IGetUserIdMiddleware => {
     const data: IGetUserIdMiddleware = { error: null, id: null }

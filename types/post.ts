@@ -30,13 +30,14 @@ export interface IUpdatePostData {
 
 
 export interface IFeaturedPostProps {
-    backgroundImage: string,
-    title: string,
-    slug: string,
-    createdAt: Date,
+    backgroundImage: string;
+    title: string;
+    slug: string;
+    description: string;
+    createdAt: Date;
     author: {
-      blogName: string,
-    },
+      blogName: string;
+    };
 }
 
 
@@ -45,6 +46,7 @@ export interface IBLogProps {
     about: string;
     email: string;
     title: string;
+    description: string;
     blogName: string;
     backgroundImage: string;
     name: string;
@@ -68,3 +70,4 @@ export interface IPostProps {
     data: IBLogProps;
 }
 
+export type SortByType = "CreateAt" | "Views" | "Likes"
