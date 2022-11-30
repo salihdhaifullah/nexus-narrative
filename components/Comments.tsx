@@ -3,15 +3,19 @@ import Button from '@mui/material/Button'
 import { IComment } from '../types/comment';
 import { CreateComment, GetComments, updateComment } from '../api';
 import Comment from './Comment';
+import useGetUser from '../hooks/useGetUser';
+import { useRouter } from 'next/router';
+import Swal from 'sweetalert2';
 
 
 const Comments = ({ postId }: { postId: number }) => {
     const formRef = useRef<HTMLDivElement | null>(null);
-
+    const [user] = useGetUser();
     const [commentState, setComment] = useState("");
     const [comments, setComments] = useState<IComment[]>([]);
     const [changeComments, setChangeComments] = useState(false);
     const [idToUpdate, setIdToUpdate] = useState<number | null>(null)
+    const router = useRouter();
 
 
     const handelGetComments = useCallback(async () => {
@@ -34,6 +38,16 @@ const Comments = ({ postId }: { postId: number }) => {
 
     const handelCreateOrUpdateComment = async () => {
         if (!commentState) return;
+        if (!user)  {
+            return Swal.fire({
+                title: "You Need to Login",
+                text: "You Need to Login To Make This Action",
+                icon: "info",
+                showCancelButton: true,
+                showConfirmButton: true
+            })
+            .then((res) => { if (res.value) router.push("/login") })
+        };
 
         if (!idToUpdate) {
             await CreateComment({ postId: Number(postId), comment: commentState })
@@ -54,9 +68,6 @@ const Comments = ({ postId }: { postId: number }) => {
             scroll(formRef.current.offsetLeft, (formRef.current.offsetTop - 200));
         }
     }
-
-
-
 
     return (
         <>

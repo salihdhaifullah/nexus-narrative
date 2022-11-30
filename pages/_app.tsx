@@ -25,7 +25,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       {isBrowser ? (
         <>
           <Header />
+          <div className="mb-4 min-h-[68vh]">
           <Component {...pageProps} />
+          </div>
           <Copyright />
         </>
       ) : (

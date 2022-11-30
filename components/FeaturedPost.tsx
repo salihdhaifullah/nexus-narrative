@@ -44,7 +44,7 @@ export default function FeaturedPost(props: {post: IFeaturedPostProps }) {
               <CardMedia
                 component="img"
                 sx={{ width: 100 }}
-                image={`/uploads/${post.backgroundImage}`}
+                image={post.backgroundImage}
                 alt={post.title}
               />
             </Card>

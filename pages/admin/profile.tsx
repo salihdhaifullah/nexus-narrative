@@ -9,9 +9,10 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress'
 
 import { ChangeBlogName, ChangePassword, GetProfileData, UpdateProfileGeneralInformation, uploadProfileImage } from '../../api';
-import { IUserProfileData, IUpdateProfileGeneralInformation } from '../../types/profile'
+import { IUserProfileData, IUpdateProfileGeneralInformation, IUploadAvatar } from '../../types/profile'
 import { countries } from '../../static';
 import Toast from '../../functions/sweetAlert';
+import toBase64 from '../../functions/toBase64';
 
 
 const Profile = () => {
@@ -118,23 +119,28 @@ const Profile = () => {
   }
 
   const handelUploadAvatar = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target?.files
-    if (!files?.length) return;
-    if (files[0].size > 52428800) return Toast.fire('file size is to big', "", 'error');
-    setIsLoadingAvatar(true)
+    const file = event.target?.files ? event.target.files[0] : null;
 
-    // @ts-ignore
-    await uploadProfileImage(files)
+    if (!file) return Toast.fire("No File Selected", "", 'warning');
+
+    setIsLoadingAvatar(true);
+
+    const base64 = await toBase64(file) as string;
+
+    const data: IUploadAvatar = { fileName: file.name, base64 }
+
+
+  
+    await uploadProfileImage(data)
       .then((res) => {
+        setUserImage(res.data.name)
         Toast.fire(res.data.massage, "", 'success')
       })
       .catch((err) => {
         Toast.fire(err.response.data.massage, "", 'error')
       });
 
-    init()
     setIsLoadingAvatar(false)
-
   }
 
   return (
@@ -148,12 +154,12 @@ const Profile = () => {
             <div>
               {userImage ? (
                 <Image
-                  className='rounded-md'
-                  src={`/uploads/${userImage}`}
-                  alt="Picture of the author"
-                  width={120}
-                  height={100}
-                />
+                className='rounded-md'
+                src={userImage}
+                alt="user-image"
+                width={120}
+                height={100}
+              />
               ) : (
                 <Image
                   className='rounded-md'

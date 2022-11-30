@@ -61,7 +61,7 @@ const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, set
 
         <Image
           className='rounded-full object-fill'
-          src={comment.author.profile ? `/uploads/${comment.author.profile}` : "/images/user-placeholder.png"}
+          src={comment.author.profile || "/images/user-placeholder.png"}
           alt="Picture of the User"
           width={60}
           height={60}

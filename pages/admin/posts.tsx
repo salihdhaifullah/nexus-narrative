@@ -105,8 +105,7 @@ export default function Index() {
         <Box className='flex justify-center items-center mb-10'>
             <div className="flex w-full flex-col px-8 py-6 items-center gap-4 mt-10 justify-center">
 
-                <Box className="w-full items-start flex mb-4 justify-between">
-                    <Typography variant='h4' component='h1' className="underLine"> My Posts </Typography>
+                <Box className="w-full items-start flex justify-between mb-10">
                     <Link href='/admin/create-post'>
                         <Button className="shadow-md hover:shadow-xl transition-all hover:shadow-blue-500 shadow-blue-500">
                             Create a Post
@@ -148,7 +147,7 @@ export default function Index() {
                             </Table>
                         </TableContainer>
 
-                        <nav aria-label="Page navigation" className="mt-4">
+                        <nav aria-label="Page navigation" className="mt-[200px]">
                             <ul className="flex items-center">
 
                                 {activePage > 0 ? (
@@ -193,7 +192,7 @@ export default function Index() {
                         </nav>
                     </>
                 ) : (
-                    <Typography variant='h3'>No Posts Found</Typography>
+                    <Typography variant='h4'>No Posts Found</Typography>
                 ) : (
                     <Box className="flex items-center justify-center">
                         <CircularProgress />

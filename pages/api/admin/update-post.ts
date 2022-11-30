@@ -1,8 +1,8 @@
-import fs from 'fs';
 import { IUpdatePostData } from './../../../types/post';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../../libs/prisma'
 import { GetUserIdMiddleware } from '../../../middleware';
+import Storage from '../../../libs/supabase';
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -25,16 +25,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === "POST") {
-
+        const storage = new Storage();
         let { title, content, images, tags, category }: IUpdatePostData = req.body;
 
         if (title.length < 8 || content.length < 100 || category.length < 2 || tags.length < 2) return res.status(400).json({ massage: "unValid data" });
-        
+
 
         const postId = Number(req.query["id"]);
         const TagsQuery = []
         const filesNames = []
- 
+
         const { error, id } = GetUserIdMiddleware(req);
 
         if (error) return res.status(400).json({ massage: error });
@@ -45,36 +45,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const isFound = await prisma.post.findFirst({
             where: { authorId: id, id: postId },
-            select: { images: true, id: true, slug: true, author: { select: { blogName: true }  }}
+            select: { images: true, id: true, slug: true, author: { select: { blogName: true } } }
         })
 
-        
+
         if (!isFound?.id) return res.status(404).json({ massage: "Not Found Post" });
 
 
-        await fs.mkdirSync("./public/uploads", { recursive: true });
-
         for (let image of isFound?.images) {
-            if (!content.includes(`/uploads/${image}`)) {
-                await fs.access(`./public/uploads/${image}`, fs.constants.R_OK, async (err) => {
-                    if (err) return;
-                    await fs.unlinkSync(`./public/uploads/${image}`)
-                });
+            if (!content.includes(image)) {
+                await storage.deleteFile(image.split("/public/public/")[1]);   
+            } else {
+                filesNames.push(image)
             };
         }
 
         for (let image of images) {
-            const fileContents = image.base64.split(',')[1];
-            const name = Date.now().toString() + image.fileName;
-            filesNames.push(name);
-            const fileName = `./public/uploads/${name}`;
-            content = content.replace(image.preViewUrl, `/uploads/${name}`)
-
-
-            await fs.access(fileName, fs.constants.R_OK, async (err) => {
-                if (err) await fs.writeFile(fileName, fileContents, 'base64', (err: any) => {  });
-            });
-
+            const { error, Url } = await storage.uploadFile(image.base64, image.fileName)
+            if (error) return res.status(500).json({ massage: "Internal Server Error", error: error })
+            filesNames.push(Url);
+            content = content.replace(image.preViewUrl, Url)
         }
 
 

@@ -148,7 +148,7 @@ const Posts = () => {
             ))}
           </Box>
 
-          <nav aria-label="Page navigation" className="mt-4 min-w-full flex justify-center items-center">
+          <nav aria-label="Page navigation" className="mt-[200px] min-w-full flex justify-center items-center">
             <ul className="flex items-center">
 
               {activePage > 0 ? (

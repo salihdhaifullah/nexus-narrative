@@ -39,7 +39,7 @@ export default function Index({ data }: IProps) {
                     description={data?.about || "Not Found"}
                     email={data.email}
                     name={data.firstName + " " + data.lastName}
-                    AvatarUrl={data?.profile ? `/uploads/${data.profile}` : "/images/user-placeholder.png"}
+                    AvatarUrl={data?.profile || "/images/user-placeholder.png"}
                     authorId={data.id}
                   />
                 </div>

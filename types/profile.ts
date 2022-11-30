@@ -43,3 +43,8 @@ export interface IUserProfileProps {
     lastName: string
     email: string
 }
+
+export interface IUploadAvatar {
+    fileName: string
+    base64: string
+}

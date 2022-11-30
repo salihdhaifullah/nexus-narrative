@@ -128,7 +128,7 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
         firstName: user.firstName,
         lastName: user.lastName,
         blogName: user.blogName,
-        userImage: user.profile ? `/uploads/${user.profile}` : "/images/user-placeholder.png",
+        userImage: user.profile || "/images/user-placeholder.png",
         phoneNumber: user.phoneNumber?.toString() || "Not Found",
         about: user.about || "Not Found",
         title: user.title || "Not Found",

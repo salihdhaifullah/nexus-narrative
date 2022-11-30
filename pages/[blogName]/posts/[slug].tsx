@@ -22,12 +22,17 @@ import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import prisma from '../../../libs/prisma';
 import moment from 'moment';
 import Comments from '../../../components/Comments';
+import useGetUser from '../../../hooks/useGetUser';
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/router';
 
 
 export default function Post({ data }: IPostProps) {
   const [likes, setLikes] = useState(0)
   const [dislikes, setDislikes] = useState(0);
-
+  const [user] = useGetUser();
+  const router = useRouter();
+  
   const handelGetLikes = useCallback(async () => {
     if (!data.id) return;
     await GetLikes(data.id)
@@ -51,20 +56,35 @@ export default function Post({ data }: IPostProps) {
   }, [handelGetLikes])
 
   const handelLike = async () => {
+    if (!user) {
+      return Swal.fire({
+        title: "You Need to Login",
+        text: "You Need to Login To Make This Action",
+        icon: "info",
+        showCancelButton: true,
+        showConfirmButton: true
+      })
+        .then((res) => { if (res.value) router.push("/login") })
+    };
 
     await likePost(data.id)
-      .then((res) => {
-
-        handelGetLikes()
-      })
+      .then((res) => { handelGetLikes() })
   }
 
   const handelDisLike = async () => {
+    if (!user) {
+      return Swal.fire({
+        title: "You Need to Login",
+        text: "You Need to Login To Make This Action",
+        icon: "info",
+        showCancelButton: true,
+        showConfirmButton: true
+      })
+        .then((res) => { if (res.value) router.push("/login") })
+    };
 
     await dislikePost(data.id)
-      .then((res) => {
-        handelGetLikes()
-      })
+      .then((res) => { handelGetLikes() })
   }
 
   const getKeywords = (): string => {
@@ -92,7 +112,7 @@ export default function Post({ data }: IPostProps) {
           <Box className="min-w-[95vw] p-4 mb-10 mt-4" >
             <CssBaseline />
             <article>
-              <MainFeaturedPost image={`/uploads/${data.backgroundImage}`} title={data.title} />
+              <MainFeaturedPost image={data.backgroundImage} title={data.title} />
 
               <Grid className="inline-flex flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
 
@@ -293,7 +313,7 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
       blogName: postData.author.blogName as string,
       backgroundImage: postData.backgroundImage,
       name: postData.author.firstName + " " + postData.author.lastName,
-      AvatarUrl: postData.author.profile ? `/uploads/${postData.author.profile}` : "/images/user-placeholder.png",
+      AvatarUrl: postData.author.profile || "/images/user-placeholder.png",
       createdAt: moment(postData.createdAt).format("ll"),
       tags: postData.tags,
       category: postData.category.name,

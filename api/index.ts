@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ICommentData } from '../types/comment';
 import { ICreatePostData, IUpdatePostData, SortByType } from '../types/post';
-import { IChangeBlogName, IChangePassword, IUpdateProfileGeneralInformation } from '../types/profile';
+import { IChangeBlogName, IChangePassword, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
 import { ILogin, ISingUp, IUser } from '../types/user';
 
 let baseURL = 'http://localhost:3000/api'
@@ -83,10 +83,6 @@ await API.get(`posts/${category ? `?category=${category}&` : "?"}&length=${true}
 export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) => 
 await API.get(`posts/${category ? `?category=${category}&` : "?"}skip=${skip}&take=${take}&sort=${sort}`);
 
-export const uploadProfileImage = async (files: File[]) => {
-    let formData = new FormData();
-    for (let i = 0; i < files.length; i++) { formData.set(`file${i}`, files[i]) }
-    return await API.postForm("/upload", formData)
-}
+export const uploadProfileImage = async (data: IUploadAvatar) => await API.post("/upload", data)
 
 export const viewedPost = async (id: number) => await API.put(`views/?id=${id}`);

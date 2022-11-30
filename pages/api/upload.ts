@@ -1,31 +1,8 @@
-import formidable from "formidable";
-import fs from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../libs/prisma";
+import Storage from "../../libs/supabase";
 import { GetUserIdMiddleware } from "../../middleware";
-
-export const config = {
-    api: {
-        bodyParser: false
-    }
-};
-
-interface IFileStream {
-    filepath: string;
-    originalFilename: string;
-}
-
-const ProcessFiles = (Files: any): IFileStream[] => {
-    const data: IFileStream[] = [];
-    let index = 0;
-
-    while (Boolean(Files[`file${index}`])) {
-        data.push(Files[`file${index}`] as IFileStream)
-        index++;
-    }
-
-    return data;
-}
+import { IUploadAvatar } from "../../types/profile";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "POST") {
@@ -33,38 +10,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { error, id } = GetUserIdMiddleware(req);
         if (error) return res.status(400).json({ massage: error })
         if (!id) return res.status(404).json({ massage: "User not found" });
+        const {fileName, base64}: IUploadAvatar = req.body;
+        const storage = new Storage();
 
-        const form = new formidable.IncomingForm();
+        if (!base64 || !fileName) return res.status(401).json({ massages: "No File Found" });
 
-        form.parse(req, async function (err, fields, files) {
+        const isFound = await prisma.user.findUnique({ where: { id: id }, select: { profile: true } });
 
-            const filesArray = ProcessFiles(files)
+        if (isFound?.profile) await storage.deleteFile(isFound.profile.split("/public/public/")[1]);
 
-            if (filesArray.length === 0) return res.status(401).json({ massages: "No File Found" });
-            
-            if (filesArray.length > 1) return res.status(401).json({ massage: "Multiple files Not Allowed" });
+        const {error: storageError, Url} = await storage.uploadFile(base64, fileName)
 
-            const data = fs.readFileSync(filesArray[0].filepath);
+        if (storageError) return res.status(500).json({massages: storageError})
+        
+        if (!Url) return res.status(400).json({massages: "Some Thing went wrong"});
 
-            const name = `${Date.now().toString() + filesArray[0].originalFilename}`;
+        await prisma.user.update({ where: { id: id }, data: { profile: Url } });
 
-            const isFound = await prisma.user.findUnique({ where: { id: id }, select: { profile: true } });
-
-            if (isFound?.profile) fs.unlinkSync(`./public/uploads/${isFound.profile}`);
-
-            // create 'uploads' folder if not exist
-            fs.mkdirSync("./public/uploads", { recursive: true });
-
-            await fs.access(`./public/uploads/${name}`, fs.constants.R_OK, async (err) => {
-                if (err) await fs.writeFileSync(`./public/uploads/${name}`, data);
-            })
-
-            fs.unlinkSync(filesArray[0].filepath);
-
-            await prisma.user.update({ where: { id: id }, data: { profile: name } });
-
-            return res.status(200).json({ massage: "Success uploading avatar", name });
-        });
-
+        return res.status(200).json({ massage: "Success uploading avatar", name: Url });
     }
 };
