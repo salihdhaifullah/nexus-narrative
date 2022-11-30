@@ -76,7 +76,7 @@ export default function Header() {
   }
 
   return (
-    <header className="min-w-[100vw]">
+    <header>
       <Search open={open} setOpen={setOpen} search={search} setSearch={setSearch} />
       <Toolbar className="flex justify-between" sx={{ borderBottom: 1, borderColor: 'divider' }}> 
       <SideBarHead />

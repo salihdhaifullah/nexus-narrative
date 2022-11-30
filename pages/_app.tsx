@@ -18,14 +18,13 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   }, [])
 
   return (
-
     <div className="flex flex-col bg-slate-100 min-h-[100vh]">
       <TokenHandler />
       <NextNProgress />
       {isBrowser ? (
         <>
           <Header />
-          <div className="mb-4 min-h-[68vh] min-w-[100vw]">
+          <div className="mb-4 min-h-[68vh] min-w-[95vw]">
           <Component {...pageProps} />
           </div>
           <Copyright />

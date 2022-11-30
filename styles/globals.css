@@ -39,12 +39,16 @@ a {
   @apply text-sm
 }
 
+.custom-html-style > table {
+  @apply block my-10 min-w-full border-0 !important;
+}
 
 .custom-html-style > h6 {
   @apply text-xs
 }
-.custom-html-style > p > img{
-  @apply my-6 
+
+.custom-html-style > p > img {
+  @apply my-6
 }
 
 .custom-html-style > ol {

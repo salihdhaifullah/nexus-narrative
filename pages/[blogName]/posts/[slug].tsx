@@ -108,11 +108,10 @@ export default function Post({ data }: IPostProps) {
             <meta name="keywords" content={getKeywords()}></meta>
           </Head>
 
-          <Box className="min-w-[95vw] p-4 mb-10 mt-4" >
-            <article className='w-full block'>
+            <article className='w-full block max-w-full p-4 mb-10 mt-4' >
               <MainFeaturedPost image={data.backgroundImage} title={data.title} />
 
-              <div className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
+              <Grid className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
 
                 <Main post={data.content} />
 
@@ -127,7 +126,7 @@ export default function Post({ data }: IPostProps) {
                   createdAt={data.createdAt}
                 />
 
-              </div>
+              </Grid>
 
 
               <Grid className="flex-col mt-20 border p-4 w-fit rounded-md border-blue-600 bg-blue-100 shadow-lg shadow-blue-400 hover:shadow-blue-400 hover:shadow-xl">
@@ -209,7 +208,6 @@ export default function Post({ data }: IPostProps) {
               </Box>
 
             </article>
-          </Box>
 
         </>
       ) : (
