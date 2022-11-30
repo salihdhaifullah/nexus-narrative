@@ -31,6 +31,10 @@ a {
   @apply hidden !important
 }
 
+.make-width-fit {
+  width: -webkit-fill-available !important;
+}
+
 .custom-html-style > h5 {
   @apply text-sm
 }

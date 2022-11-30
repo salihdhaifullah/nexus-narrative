@@ -10,7 +10,6 @@ import FeaturedPost from '../../../components/FeaturedPost';
 import Main from '../../../components/Main';
 import Sidebar from '../../../components/Sidebar';
 
-import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -110,11 +109,10 @@ export default function Post({ data }: IPostProps) {
           </Head>
 
           <Box className="min-w-[95vw] p-4 mb-10 mt-4" >
-            <CssBaseline />
-            <article>
+            <article className='w-full block'>
               <MainFeaturedPost image={data.backgroundImage} title={data.title} />
 
-              <Grid className="inline-flex flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
+              <div className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
 
                 <Main post={data.content} />
 
@@ -129,7 +127,7 @@ export default function Post({ data }: IPostProps) {
                   createdAt={data.createdAt}
                 />
 
-              </Grid>
+              </div>
 
 
               <Grid className="flex-col mt-20 border p-4 w-fit rounded-md border-blue-600 bg-blue-100 shadow-lg shadow-blue-400 hover:shadow-blue-400 hover:shadow-xl">
