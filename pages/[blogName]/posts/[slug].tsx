@@ -232,7 +232,7 @@ export async function getStaticPaths() {
 
   return {
     paths: slugs,
-    fallback: false
+    fallback: "blocking"
   };
 }
 
@@ -323,5 +323,5 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 
   const data = JSON.parse(JSON.stringify(serializedData.data))
 
-  return { props: { data } };
+  return { props: { data }, revalidate: 10 };
 }

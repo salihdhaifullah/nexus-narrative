@@ -95,7 +95,7 @@ export async function getStaticPaths() {
         ids.push({ params: { id: item.id.toString() } })
      }
 
-    return { paths: ids, fallback: false };
+    return { paths: ids, fallback: "blocking" };
 };
 
 
@@ -136,7 +136,7 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
         city: user.city || "Not Found"
     }
 
-    return { props: Props };
+    return { props: Props,  revalidate: 10};
 }
 
 

@@ -74,7 +74,7 @@ export async function getStaticPaths() {
       blogsNames.push({ params: { blogName: item.blogName } })
   }
 
-  return { paths: blogsNames, fallback: false };
+  return { paths: blogsNames, fallback: "blocking" };
 }
 
 export async function getStaticProps({params}: {  params: { blogName: string; }} ) {
@@ -104,5 +104,5 @@ export async function getStaticProps({params}: {  params: { blogName: string; }}
 
 const serializedData = {data: JSON.parse(JSON.stringify(data))}
 
-  return { props: serializedData };
+  return { props: serializedData,  revalidate: 10 };
 }
