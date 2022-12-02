@@ -45,6 +45,5 @@ export interface IUserProfileProps {
 }
 
 export interface IUploadAvatar {
-    fileName: string
     base64: string
 }

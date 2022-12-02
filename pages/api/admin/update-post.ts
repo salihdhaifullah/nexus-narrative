@@ -4,6 +4,11 @@ import prisma from '../../../libs/prisma'
 import { GetUserIdMiddleware } from '../../../middleware';
 import Storage from '../../../libs/supabase';
 
+export const config = {
+    api: {
+        bodyParser: { sizeLimit: '4mb' }
+    }
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
@@ -61,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         for (let image of images) {
-            const { error, Url } = await storage.uploadFile(image.base64, image.fileName)
+            const { error, Url } = await storage.uploadFile(image.base64)
             if (error) return res.status(500).json({ massage: "Internal Server Error", error: error })
             filesNames.push(Url);
             content = content.replace(image.preViewUrl, Url)

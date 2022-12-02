@@ -30,7 +30,6 @@ interface IOptions {
 }
 
 interface IImagesData {
-  fileName: string;
   base64: string;
   preViewUrl: string;
 }
@@ -62,7 +61,7 @@ const UpdatePostPage = () => {
       .then((res) => {
         if (!res.data.data) return;
         setText(res.data.data.content)
-        mdEditorRef.current.state.text = res.data.data.content; 
+        mdEditorRef.current.state.text = res.data.data.content;
         mdEditorRef.current.state.html = mdParser(res.data.data.content);
         setCategory(res.data.data.category)
         for (let tag of res.data.data.tags) {
@@ -70,7 +69,7 @@ const UpdatePostPage = () => {
         }
         setTags(tagsData)
         setTitle(res.data.data.title)
-       })
+      })
   }, [postId])
 
 
@@ -117,7 +116,7 @@ const UpdatePostPage = () => {
     const preViewUrl = URL.createObjectURL(file);
     const base64: string = await toBase64(file) as string;
 
-    imagesData.push({ base64, fileName: file.name, preViewUrl })
+    imagesData.push({ base64, preViewUrl })
     setImages(imagesData);
 
     return preViewUrl;
@@ -139,7 +138,7 @@ const UpdatePostPage = () => {
     const data: IUpdatePostData = { title, content: text, images: imagesThatUsed, tags, category: category.name }
 
     await UpdatePost(postId, data)
-      .then((res) => { 
+      .then((res) => {
         Toast.fire(res.data.massage || 'success post Updated', '', 'success')
         router.push(res.data.postUrl)
 
@@ -152,7 +151,14 @@ const UpdatePostPage = () => {
         imagesThatUsed = []
         setIsLoading(false)
       })
-      .catch((err) => { Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error') })
+      .catch((err) => {
+        if (err.response.status === 413) {
+          Toast.fire('request is Too Big try to reduce the size of files', '', 'error')
+        } else {
+          Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error')
+        }
+      });
+
     setIsLoading(false)
   }
 

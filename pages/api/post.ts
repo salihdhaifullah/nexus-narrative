@@ -4,6 +4,13 @@ import { ICreatePostData } from '../../types/post'
 import { GetUserIdMiddleware } from '../../middleware';
 import Storage from '../../libs/supabase'
 
+export const config = {
+    api: {
+        bodyParser: { sizeLimit: '4mb' }
+    }
+}
+
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
         const tags = await prisma.tag.findMany({ select: { name: true } });
@@ -23,6 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (title.length < 8 || description.length < 20 || slug.length < 8 || content.length < 100 || category.length < 1 || tags.length < 2 || !backgroundImage) {
             return res.status(400).json({ massage: "unValid data" });
         }
+
 
         const isValidSlug: boolean = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(slug)
 
@@ -45,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (tags && tags.length) for (let tag of tags) { TagsQuery.push({ where: { name: tag }, create: { name: tag } }) };
 
         for (let image of images) {
-            const { error, Url } = await storage.uploadFile(image.base64, image.fileName)
+            const { error, Url } = await storage.uploadFile(image.base64)
 
             if (error) return res.status(500).json({ massage: "Internal Server Error", error: error })
             filesNames.push(Url);
@@ -54,7 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
 
-        const { error: StorageError, Url: backgroundImageName } = await storage.uploadFile(backgroundImage.base64, backgroundImage.fileName)
+        const { error: StorageError, Url: backgroundImageName } = await storage.uploadFile(backgroundImage.base64)
         if (StorageError) return res.status(500).json({ massage: "Internal Server Error", error: error })
 
 

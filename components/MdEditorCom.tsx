@@ -34,12 +34,10 @@ interface IOptions {
 }
 
 interface IFileData {
-  fileName: string;
   base64: string;
 }
 
 interface IImagesData {
-  fileName: string;
   base64: string;
   preViewUrl: string;
 }
@@ -100,10 +98,10 @@ const MdEditorCom = () => {
 
   const onImageUpload = async (file: File) => {
     const imagesData = images;
-    const preViewUrl =  URL.createObjectURL(file);
-    const base64: string = await toBase64(file) as string;
+    const preViewUrl = URL.createObjectURL(file);
+    const base64: string = await toBase64(file);
 
-    imagesData.push({base64, fileName: file.name, preViewUrl})
+    imagesData.push({ base64, preViewUrl })
     setImages(imagesData);
 
     return preViewUrl;
@@ -115,8 +113,9 @@ const MdEditorCom = () => {
 
     const base64: string = await toBase64(file) as string;
 
-    setBackgroundImage({base64, fileName: file.name});
+    setBackgroundImage({ base64 });
   }
+
 
   const HandelSubmit = async () => {
     let imagesThatUsed = [];
@@ -125,32 +124,40 @@ const MdEditorCom = () => {
 
     setIsLoading(true)
 
-      for (let i = 0; i < images.length; i++) {
-        if (text.includes(images[i].preViewUrl)) imagesThatUsed.push(images[i]);
+    for (let i = 0; i < images.length; i++) {
+      if (text.includes(images[i].preViewUrl)) imagesThatUsed.push(images[i]);
 
-        URL.revokeObjectURL(images[i].preViewUrl);
-      }
-      
-      const data: ICreatePostData = { title, content: text, slug, images: imagesThatUsed, tags, category: category.name, backgroundImage, description }
+      URL.revokeObjectURL(images[i].preViewUrl);
+    }
 
-      await createPost(data)
-        .then((res) => { 
-          Toast.fire(res.data.massage || 'success post created', '', 'success')
-          router.push(res.data.postUrl)
+    const data: ICreatePostData = { title, content: text, slug, images: imagesThatUsed, tags, category: category.name, backgroundImage, description }
 
-          setTitle("")
-          setSlug("")
-          setDescription("")
-          setBackgroundImage(null)
-          setTags([])
-          setCategory({ name: "" })
-          mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
-          mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
-          setText("")
-          imagesThatUsed = []
-        })
-        .catch((err) => { Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error') })
-        setIsLoading(false)
+    await createPost(data)
+      .then((res) => {
+        Toast.fire(res.data.massage || 'success post created', '', 'success')
+        router.push(res.data.postUrl)
+
+        setTitle("")
+        setSlug("")
+        setDescription("")
+        setBackgroundImage(null)
+        setTags([])
+        setCategory({ name: "" })
+        mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
+        mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
+        setText("")
+        imagesThatUsed = []
+      })
+      .catch((err) => {
+        if (err.response.status === 413) {
+          Toast.fire('request is Too Big try to reduce the size of files', '', 'error')
+        } else {
+          Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error')
+        }
+      })
+
+
+    setIsLoading(false)
   }
 
 

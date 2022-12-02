@@ -5,13 +5,11 @@ export interface ICreatePostData {
     category: string
     description: string
     images: {
-        fileName: string
         base64: string
         preViewUrl: string
     }[]
     tags: string[]
     backgroundImage: {
-        fileName: string
         base64: string
     }
 };
@@ -21,7 +19,6 @@ export interface IUpdatePostData {
     content: string
     category: string
     images: {
-        fileName: string
         base64: string
         preViewUrl: string
     }[]

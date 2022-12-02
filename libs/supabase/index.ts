@@ -1,4 +1,6 @@
 import supabase from './config';
+import { randomUUID } from 'crypto';
+
 
 interface IUploadFile {
     error: null | any;
@@ -17,15 +19,15 @@ function base64toBuffer(base64: string) {
 
 class Storage {
 
-    async uploadFile(file: string, fileName: string): Promise<IUploadFile> {
+    async uploadFile(file: string): Promise<IUploadFile> {
         try {
 
-            const fileId = Date.now().toString() + fileName;
+            const fileId = Date.now().toString() + randomUUID() + '.webp';
             const Url = `https://poousylnpfiblvwjmsge.supabase.co/storage/v1/object/public/public/${fileId}`;
 
             const Buffer = await base64toBuffer(file)
 
-            const { error, data } = await supabase.storage.from("public").upload(fileId, Buffer, {contentType: `image/${fileName.split(".")[1]}` });
+            const { error, data } = await supabase.storage.from("public").upload(fileId, Buffer, {contentType: "image/webp" });
             return { error, Url };
 
         } catch (error) {

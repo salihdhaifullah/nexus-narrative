@@ -99,9 +99,6 @@ export async function getStaticPaths() {
 };
 
 
-
-
-
 export async function getStaticProps({ params }: { params: { id: string } }) {
 
     let Props: IUserProfileProps = { userImage: "", about: "", blogName: "", country: "", city: "", phoneNumber: "", title: "", firstName: "", lastName: "", email: "" };
@@ -138,6 +135,3 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
 
     return { props: Props,  revalidate: 10};
 }
-
-
-

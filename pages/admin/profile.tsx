@@ -125,11 +125,16 @@ const Profile = () => {
 
     setIsLoadingAvatar(true);
 
-    const base64 = await toBase64(file) as string;
+    const base64 = await toBase64(file, 160, 120)
 
-    const data: IUploadAvatar = { fileName: file.name, base64 }
+    const MB = 1048576;
 
+    if ((new Blob([base64])).size > (MB + (MB * 0.33)) ) {
+      setIsLoadingAvatar(false);
+      return Toast.fire("File Size is to big", "", 'error')
+    }
 
+    const data: IUploadAvatar = { base64 }
   
     await uploadProfileImage(data)
       .then((res) => {
