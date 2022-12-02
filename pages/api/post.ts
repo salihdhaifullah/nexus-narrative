@@ -5,9 +5,7 @@ import { GetUserIdMiddleware } from '../../middleware';
 import Storage from '../../libs/supabase'
 
 export const config = {
-    api: {
-        bodyParser: { sizeLimit: '4mb' }
-    }
+    api: { bodyParser: { sizeLimit: '4mb' } }
 }
 
 
@@ -15,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "GET") {
         const tags = await prisma.tag.findMany({ select: { name: true } });
         const categories = await prisma.category.findMany({ select: { name: true } });
-        res.status(200).json({ tags, categories })
+        return res.status(200).json({ tags, categories })
     }
 
 

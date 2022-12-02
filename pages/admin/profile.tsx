@@ -127,22 +127,19 @@ const Profile = () => {
 
     const base64 = await toBase64(file, 160, 120)
 
-    const MB = 1048576;
-
-    if ((new Blob([base64])).size > (MB + (MB * 0.33)) ) {
-      setIsLoadingAvatar(false);
-      return Toast.fire("File Size is to big", "", 'error')
-    }
-
     const data: IUploadAvatar = { base64 }
-  
+
     await uploadProfileImage(data)
       .then((res) => {
         setUserImage(res.data.name)
         Toast.fire(res.data.massage, "", 'success')
       })
       .catch((err) => {
-        Toast.fire(err.response.data.massage, "", 'error')
+        if (err.response.status === 413) {
+          Toast.fire('file is Too Big try to reduce the size of files', '', 'error')
+        } else {
+          Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error')
+        }
       });
 
     setIsLoadingAvatar(false)
@@ -159,12 +156,12 @@ const Profile = () => {
             <div>
               {userImage ? (
                 <Image
-                className='rounded-md'
-                src={userImage}
-                alt="user-image"
-                width={120}
-                height={100}
-              />
+                  className='rounded-md'
+                  src={userImage}
+                  alt="user-image"
+                  width={120}
+                  height={100}
+                />
               ) : (
                 <Image
                   className='rounded-md'

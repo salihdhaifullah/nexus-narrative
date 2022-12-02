@@ -6,9 +6,7 @@ import { IUploadAvatar } from "../../types/profile";
 
 export const config = {
     api: {
-        bodyParser: {
-            sizeLimit: '2mb'
-        }
+        bodyParser: { sizeLimit: '2mb' }
     }
 }
 

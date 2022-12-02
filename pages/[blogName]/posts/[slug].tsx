@@ -31,14 +31,18 @@ export default function Post({ data }: IPostProps) {
   const [dislikes, setDislikes] = useState(0);
   const [user] = useGetUser();
   const router = useRouter();
-  
+  const [isLikeLoading, setIsLikeLoading] = useState<boolean>(false);
+  const [isDisLikeLoading, setIsDisLikeLoading] = useState<boolean>(false);
+
+
   const handelGetLikes = useCallback(async () => {
     if (!data.id) return;
     await GetLikes(data.id)
       .then((res) => {
         setLikes(res.data.likes)
         setDislikes(res.data.dislikes)
-      })
+      });
+
   }, [data.id])
 
   const init = useCallback(async () => {
@@ -65,9 +69,11 @@ export default function Post({ data }: IPostProps) {
       })
         .then((res) => { if (res.value) router.push("/login") })
     };
-
+    setIsLikeLoading(true)
     await likePost(data.id)
       .then((res) => { handelGetLikes() })
+    setIsLikeLoading(false)
+
   }
 
   const handelDisLike = async () => {
@@ -82,8 +88,10 @@ export default function Post({ data }: IPostProps) {
         .then((res) => { if (res.value) router.push("/login") })
     };
 
+    setIsDisLikeLoading(true)
     await dislikePost(data.id)
       .then((res) => { handelGetLikes() })
+    setIsDisLikeLoading(false)
   }
 
   const getKeywords = (): string => {
@@ -108,106 +116,114 @@ export default function Post({ data }: IPostProps) {
             <meta name="keywords" content={getKeywords()}></meta>
           </Head>
 
-            <article className='w-full block max-w-full p-4 mb-10 mt-4' >
-              <MainFeaturedPost image={data.backgroundImage} title={data.title} />
+          <article className='w-full block max-w-full p-4 mb-10 mt-4' >
+            <MainFeaturedPost image={data.backgroundImage} title={data.title} />
 
-              <Grid className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
+            <Grid className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
 
-                <Main post={data.content} />
+              <Main post={data.content} />
 
-                <Sidebar
-                  description={data.about}
-                  email={data.email}
-                  name={data.name}
-                  AvatarUrl={data.AvatarUrl}
-                  authorId={data.authorId}
-                  blogName={data.blogName}
-                  category={data.category}
-                  createdAt={data.createdAt}
-                />
+              <Sidebar
+                description={data.about}
+                email={data.email}
+                name={data.name}
+                AvatarUrl={data.AvatarUrl}
+                authorId={data.authorId}
+                blogName={data.blogName}
+                category={data.category}
+                createdAt={data.createdAt}
+              />
 
-              </Grid>
+            </Grid>
 
 
-              <Grid className="flex-col mt-20 border p-4 w-fit rounded-md border-blue-600 bg-blue-100 shadow-lg shadow-blue-400 hover:shadow-blue-400 hover:shadow-xl">
-                <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
-                <div className="mt-4 flex flex-row  gap-2">
+            <Grid className="flex-col mt-20 border p-4 w-fit rounded-md border-blue-600 bg-blue-100 shadow-lg shadow-blue-400 hover:shadow-blue-400 hover:shadow-xl">
+              <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
+              <div className="mt-4 flex flex-row  gap-2">
+                {isLikeLoading ? (
+                  <Button disabled className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400"><CircularProgress className="w-6 h-6 text-white" /></Button>
+                ) : (
                   <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelLike} startIcon={<ThumbUpIcon />}>{likes}</Button>
+                )}
+                {isDisLikeLoading ? (
+                  <Button disabled className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400"> <CircularProgress className="w-6 h-6 text-white" /> </Button>
+                ) : (
                   <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelDisLike} startIcon={<ThumbDownAltIcon />}>{dislikes}</Button>
-                </div>
-              </Grid>
-
-              <Grid container spacing={4} className="flex my-20 justify-center items-center">
-                {data.tags.map((item, index) => (
-                  <Link key={index} href={`/search/?tag=${item.name}`}>
-                    <Chip label={"#" + item.name} className="mr-1 text-base link" variant="outlined" />
-                  </Link>
-                ))}
-              </Grid>
-
-              <hr className='mt-20 mb-20' />
-
-
-              <div className='flex mb-6 justify-start items-start'>
-                <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
+                )}
               </div>
+            </Grid>
 
-              <section className="grid md:grid-cols-2 grid-cols-1  gap-4">
-                <Comments postId={data.id} />
-              </section>
+            <Grid container spacing={4} className="flex my-20 justify-center items-center">
+              {data.tags.map((item, index) => (
+                <Link key={index} href={`/search/?tag=${item.name}`}>
+                  <Chip label={"#" + item.name} className="mr-1 text-base link" variant="outlined" />
+                </Link>
+              ))}
+            </Grid>
 
-              <Box className="mt-[200px] flex-col flex gap-20">
-
-
-                <Box className="flex flex-col min-w-full">
-                  {data.posts.length > 0 ?
-                    <>
-                      <div className='flex mb-2 justify-start items-start'>
-                        <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
-                      </div>
-
-                      <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
-
-                        {data.posts.map((post, index) => (
-                          <div key={index} className="w-full">
-                            <FeaturedPost post={post} />
-                          </div>
-                        ))}
-
-                      </Box>
-
-                    </>
-                    : (null)}
-                </Box>
+            <hr className='mt-20 mb-20' />
 
 
-                <Box className="flex flex-col min-w-full">
+            <div className='flex mb-6 justify-start items-start'>
+              <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
+            </div>
 
-                  {data.PostsRelated.length > 0 ?
-                    <>
+            <section className="grid md:grid-cols-2 grid-cols-1  gap-4">
+              <Comments postId={data.id} />
+            </section>
 
-                      <div className='flex mb-2 justify-start items-start'>
-                        <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
-                      </div>
+            <Box className="mt-[200px] flex-col flex gap-20">
 
-                      <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
 
-                        {data.PostsRelated.map((post, index) => (
-                          <div key={index} className="w-full ">
-                            <FeaturedPost post={post} />
-                          </div>
-                        ))}
+              <Box className="flex flex-col min-w-full">
+                {data.posts.length > 0 ?
+                  <>
+                    <div className='flex mb-2 justify-start items-start'>
+                      <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
+                    </div>
 
-                      </Box>
+                    <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
 
-                    </>
-                    : (null)}
+                      {data.posts.map((post, index) => (
+                        <div key={index} className="w-full">
+                          <FeaturedPost post={post} />
+                        </div>
+                      ))}
 
-                </Box>
+                    </Box>
+
+                  </>
+                  : (null)}
+              </Box>
+
+
+              <Box className="flex flex-col min-w-full">
+
+                {data.PostsRelated.length > 0 ?
+                  <>
+
+                    <div className='flex mb-2 justify-start items-start'>
+                      <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
+                    </div>
+
+                    <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
+
+                      {data.PostsRelated.map((post, index) => (
+                        <div key={index} className="w-full ">
+                          <FeaturedPost post={post} />
+                        </div>
+                      ))}
+
+                    </Box>
+
+                  </>
+                  : (null)}
 
               </Box>
 
-            </article>
+            </Box>
+
+          </article>
 
         </>
       ) : (

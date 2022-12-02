@@ -6,13 +6,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "GET") {
         const id = Number(req.query["id"]);
 
+        const {id: userId, error} = GetUserIdMiddleware(req);
+
+
         if (typeof id !== "number") return res.status(404).json({massage: "Post Not Found"});
         
         const likes = await prisma.like.count({ where: { isLike: true, postId: id } })
             
         const dislikes = await prisma.like.count({ where: { isDislike: true, postId: id } })
 
-        return res.status(200).json({ likes, dislikes })
+        if (userId) {
+            const isLiked = await prisma.like.findFirst({where: {  postId: id, userId: userId }, select: { isDislike: true, isLike: true } });
+            return res.status(200).json({ likes, dislikes, isLiked: isLiked })
+
+        } else {
+            return res.status(200).json({ likes, dislikes })
+        }
     }
 
     if (req.method === "PATCH") {
