@@ -11,7 +11,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (typeof search === 'string') {
 
       const posts = await prisma.post.findMany({
-        where: { OR: [{title: { contains: search }}, {description: search}] },
+        where: { OR: [{title: { contains: search, mode: 'insensitive' }},
+         {description: { contains: search, mode: 'insensitive' }}] },
         select: {
           backgroundImage: true,
           title: true,
@@ -28,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     else if (typeof tag === 'string') {
       
       const posts = await prisma.tag.findFirst({
-        where: { name: { contains: tag } },
+        where: { name: { contains: tag, mode: 'insensitive' } },
         select: {
           posts: {
             select: {
@@ -49,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     else if (typeof category === 'string') {
       const posts = await prisma.post.findMany({
-        where: { category: { name: { contains: category } } },
+        where: { category: { name: { contains: category, mode: 'insensitive' } } },
         select: {
           backgroundImage: true,
           title: true,
