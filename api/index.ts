@@ -27,8 +27,6 @@ export const login = async (data: ILogin) => await API.post("/auth/login", data)
 
 export const Logout = async () => await API.get("/auth/logout")
 
-export const GetToken = async () => await API.get("/auth/refresh-token");
-
 export const GetTagsAndCategories = async () => await API.get("post")
 
 export const createPost = async (data: ICreatePostData) => await API.post("post", data)
@@ -77,10 +75,10 @@ export const GetLikes = async (id: number) => await API.get(`likes?id=${id}`)
 
 export const GetComments = async (id: number) => await API.get(`comments?id=${id}`)
 
-export const GetPostsLength = async (category: string | undefined) => 
+export const GetPostsLength = async (category: string | undefined) =>
 await API.get(`posts/${category ? `?category=${category}&` : "?"}&length=${true}`);
 
-export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) => 
+export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) =>
 await API.get(`posts/${category ? `?category=${category}&` : "?"}skip=${skip}&take=${take}&sort=${sort}`);
 
 export const uploadProfileImage = async (data: IUploadAvatar) => await API.post("/upload", data)
