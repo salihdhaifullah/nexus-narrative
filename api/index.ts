@@ -6,28 +6,16 @@ import { ILogin, ISingUp, IUser } from '../types/user';
 
 let baseURL = 'http://localhost:3000/api'
 let ISSERVER = typeof window === "undefined";
-let isFoundUser: string | null = null;
-let user: IUser | null = null;
 
-if (!ISSERVER) isFoundUser = localStorage.getItem("user");
-if (isFoundUser) user = JSON.parse(isFoundUser);
 if (process.env.NODE_ENV === "production" && !ISSERVER) baseURL = `https://${window.location.host}/api`;
 
 const API = axios.create({ baseURL: baseURL })
-
-API.interceptors.request.use((req) => {
-    if (user && req.headers) req.headers.authorization = `Bearer ${user.token}`;
-    return req
-})
-
 
 export const singUp = async (data: ISingUp) => await API.post(`/auth/sing-up`, data)
 
 export const login = async (data: ILogin) => await API.post("/auth/login", data)
 
 export const Logout = async () => await API.get("/auth/logout")
-
-export const GetToken = async () => await API.get("/auth/refresh-token");
 
 export const GetTagsAndCategories = async () => await API.get("post")
 
@@ -77,10 +65,10 @@ export const GetLikes = async (id: number) => await API.get(`likes?id=${id}`)
 
 export const GetComments = async (id: number) => await API.get(`comments?id=${id}`)
 
-export const GetPostsLength = async (category: string | undefined) => 
-await API.get(`posts/${category ? `?category=${category}&` : "?"}&length=${true}`);
+export const GetPostsLength = async (category: string | undefined) =>
+await API.get(`posts/${category ? `?category=${category}&` : "?"}length=${true}`);
 
-export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) => 
+export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) =>
 await API.get(`posts/${category ? `?category=${category}&` : "?"}skip=${skip}&take=${take}&sort=${sort}`);
 
 export const uploadProfileImage = async (data: IUploadAvatar) => await API.post("/upload", data)

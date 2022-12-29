@@ -4,7 +4,6 @@ export interface IUser {
     email: string;
     lastName: string;
     firstName: string;
-    token: string;
 }
 
 export interface ILogin {

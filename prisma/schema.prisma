@@ -8,8 +8,8 @@ datasource db {
 }
 
 model Category {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  id    Int    @id @default(autoincrement())
+  name  String @unique
   posts Post[]
 }
 
@@ -20,41 +20,42 @@ model Tag {
 }
 
 model Post {
-  id                 Int       @id @default(autoincrement())
-  title              String
-  content            String
-  images             String[]
-  tags               Tag[]
-  author             User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments           Comment[]
-  slug               String    @unique
-  category           Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId         Int
-  authorId           Int
-  createdAt          DateTime  @default(now())
-  backgroundImage    String
-  likes              Like[]  
-  views              Views[]
-  description        String
+  id              Int       @id @default(autoincrement())
+  title           String
+  content         String
+  images          String[]
+  tags            Tag[]
+  author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments        Comment[]
+  slug            String    @unique
+  category        Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId      Int
+  authorId        Int
+  createdAt       DateTime  @default(now())
+  backgroundImage String
+  likes           Like[]
+  views           Views[]
+  description     String
+
+  @@index([title, createdAt(sort: Desc)])
 }
 
-
 model Views {
-  id         Int @id @default(autoincrement())
-  IPAddress String 
-  postId     Int 
-  post       Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  IPAddress String
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
 model Like {
-  id        Int @id @default(autoincrement())
-  userId    Int 
+  id        Int     @id @default(autoincrement())
+  userId    Int
   isLike    Boolean @default(false)
   isDislike Boolean @default(false)
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId    Int 
-  post      Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    Int
+  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -69,11 +70,13 @@ model User {
   posts       Post[]
   profile     String?
   about       String?
-  blogName    String   @unique
+  blogName    String    @unique
   title       String?
   phoneNumber Int?
   country     String?
   city        String?
+
+  @@index([blogName, createdAt(sort: Desc)])
 }
 
 model Comment {

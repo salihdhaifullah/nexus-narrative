@@ -47,7 +47,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ posts });
     }
 
-
     else if (typeof category === 'string') {
       const posts = await prisma.post.findMany({
         where: { category: { name: { contains: category, mode: 'insensitive' } } },
