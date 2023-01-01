@@ -39,7 +39,7 @@ export default function Details(props: IDetailsProps) {
 
             <Box className="flex flex-row items-center justify-center">
               <Typography variant="h6" className="text-gray-800 mr-2">from:  </Typography>
-              <Link href={`/${blogName}`}>
+              <Link href={`/profiles/${authorId}`}>
                 <Typography className="link" variant="h6" gutterBottom> {blogName} </Typography>
               </Link>
             </Box>
@@ -77,7 +77,7 @@ export default function Details(props: IDetailsProps) {
           </Paper>
         )}
 
-        <Typography className="text-lg">author email: {email}</Typography>
+        <Typography className="text-lg mt-1">author email: {email}</Typography>
       </Grid>
     </Box>
   );

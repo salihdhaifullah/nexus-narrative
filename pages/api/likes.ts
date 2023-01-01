@@ -6,21 +6,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "GET") {
         const id = Number(req.query["id"]);
 
-        const {id: userId, error} = GetUserIdMiddleware(req);
+        const { id: userId, error } = GetUserIdMiddleware(req);
 
 
-        if (typeof id !== "number") return res.status(404).json({massage: "Post Not Found"});
-        
-        const likes = await prisma.like.count({ where: { isLike: true, postId: id } })
-            
-        const dislikes = await prisma.like.count({ where: { isDislike: true, postId: id } })
+        if (typeof id !== "number") return res.status(404).json({ massage: "Post Not Found" });
+
+
+        const likes =  prisma.like.count({ where: { isLike: true, postId: id } })
+
+        const dislikes =  prisma.like.count({ where: { isDislike: true, postId: id } })
 
         if (userId) {
-            const isLiked = await prisma.like.findFirst({where: {  postId: id, userId: userId }, select: { isDislike: true, isLike: true } });
-            return res.status(200).json({ likes, dislikes, isLiked: isLiked })
+            const isLiked = prisma.like.findFirst({ where: { postId: id, userId: userId }, select: { isDislike: true, isLike: true } });
+            const [result1, result2, result3] = await Promise.all([likes, dislikes, isLiked])
+            return res.status(200).json({ likes: result1, dislikes: result2, isLiked: result3 })
 
         } else {
-            return res.status(200).json({ likes, dislikes })
+            const [result1, result2] = await Promise.all([likes, dislikes])
+            return res.status(200).json({ likes: result1, dislikes: result2 })
         }
     }
 
@@ -38,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (!user) return res.status(400).json({ massage: "User Not Found" })
 
-        const likes = await prisma.like.findFirst({ where: {  postId: postId, userId: id }, select: { id: true, isDislike: true, isLike: true } })
+        const likes = await prisma.like.findFirst({ where: { postId: postId, userId: id }, select: { id: true, isDislike: true, isLike: true } })
 
         if (req.query["type"] === "like") {
 
@@ -56,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     where: { id: likes.id },
                     data: { isLike: true, isDislike: false }
                 })
-                
+
             } else if (likes.isLike === true) {
                 await prisma.like.update({
                     where: { id: likes.id },

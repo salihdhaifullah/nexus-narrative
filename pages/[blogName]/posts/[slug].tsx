@@ -1,6 +1,5 @@
 import { useEffect, useCallback } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { viewedPost } from '../../../api';
 import { IBLogProps, IPostProps } from '../../../types/post';
 import MainPost from '../../../components/MainPost';
@@ -11,7 +10,6 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress'
-import Chip from '@mui/material/Chip';
 import prisma from '../../../libs/prisma';
 import moment from 'moment';
 import Comments from '../../../components/Comments';
@@ -20,6 +18,17 @@ import Tags from '../../../components/Tags';
 
 
 export default function Index({ data }: { data: IBLogProps }) {
+
+  const DetailsProps = {
+    description: data.about,
+    email: data.email,
+    name: data.name,
+    AvatarUrl: data.AvatarUrl,
+    authorId: data.authorId,
+    blogName: data.blogName,
+    category: data.category,
+    createdAt: data.createdAt
+  }
 
   const init = useCallback(async () => {
     if (!data.id) return;
@@ -55,16 +64,7 @@ export default function Index({ data }: { data: IBLogProps }) {
         <Grid className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
           <Main post={data.content} />
 
-          <Details
-            description={data.about}
-            email={data.email}
-            name={data.name}
-            AvatarUrl={data.AvatarUrl}
-            authorId={data.authorId}
-            blogName={data.blogName}
-            category={data.category}
-            createdAt={data.createdAt}
-          />
+          <Details {...DetailsProps} />
         </Grid>
 
         <IsUseful postId={data.id} />

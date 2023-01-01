@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const commentData = await prisma.comment.create({
             data: {
                 content: comment,
-                author: { connect: { id: id }}, 
+                author: { connect: { id: id }},
                 post: { connect: { id: postId } }
             }
         });
@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (error) return res.status(400).json({ massage: error })
 
         if (!commentId) return res.status(404).json({ massage: "comment Not Found" })
- 
+
 
         const user = await prisma.user.findUnique({ where: { id: id }, select: { id: true } });
 
@@ -64,11 +64,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!user?.id) return res.status(404).json({ massage: "user Not Found" });
 
         if (!comment?.id) return res.status(404).json({ massage: "comment Not Found" });
- 
+
 
 
         await prisma.comment.update({ where: { id: commentId }, data: { content: content } });
-    
+
         return res.status(200).json({ massage: "Comment Successfully Updated" });
+    }
+
+    if (req.method === "GET") {
+        const id = Number(req.query["id"]);
+
+
+        if (typeof id !== "number") return res.status(404).json({massage: "User Not Found"});
+
+        const comments = await prisma.post.findFirst({
+            where: { id: id},
+            select: {
+                comments: {
+                    select: {
+                        createdAt: true,
+                        id: true,
+                        content: true,
+                        authorId: true,
+                        author: { select: { firstName: true, lastName: true, profile: true } }
+                    }
+                }
+            }
+        });
+
+        return res.status(200).json({ comments })
     }
 }

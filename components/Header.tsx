@@ -93,20 +93,20 @@ export default function Header() {
   return (
     <header>
       <Search open={open} setOpen={setOpen} search={search} setSearch={setSearch} />
-      <Toolbar className="min-w-[95vw]" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Toolbar className="min-w-[95vw] h-fit" sx={{ borderBottom: 1, borderColor: 'divider' }}>
 
-        <div className="inline-flex w-full">
-          <IconButton className="mr-2" onClick={() => setOpen(true)}>
+        <div className="inline-flex w-full items-center ">
+          <IconButton className="mr-2 h-fit" onClick={() => setOpen(true)}>
             <SearchIcon />
           </IconButton>
 
           <Box className="inline-flex w-full justify-between">
             {user !== null
-              ? <Button onClick={handelLogout} variant="outlined" size="small"> Logout </Button>
-              : <Button onClick={handelSingUp} variant="outlined" size="small"> Sign up </Button>}
+              ? <Button onClick={handelLogout} variant="outlined" size="small" className="h-fit"> Logout </Button>
+              : <Button onClick={handelSingUp} variant="outlined" size="small" className="h-fit"> Sign up </Button>}
 
             <Link href="/admin/dashboard">
-              <Button onClick={handelSingUp} variant="outlined" size="small"> DashBoard </Button>
+              <Button onClick={handelSingUp} variant="outlined" size="small" className="h-fit"> DashBoard </Button>
             </Link>
           </Box>
         </div>
