@@ -93,23 +93,29 @@ export default function Posts() {
     };
 
     return (
-        <Box className='flex justify-center items-center mb-10'>
-            <div className="flex w-full flex-col px-8 py-6 items-center gap-4 mt-10 justify-center">
+        <Box className='max-w-[100vw]'>
+            <div className="mx-4">
 
-                <Box className="w-full items-start flex justify-between mb-10">
-                    <Link href='/admin/create-post'>
-                        <Button className="shadow-md hover:shadow-xl transition-all hover:shadow-blue-500 shadow-blue-500">
-                            Create a Post
-                        </Button>
-                    </Link>
+                <Box className="w-full items-center text-3xl text-gray-800 font-bold mb-4 flex gap-4">
+                    <Typography variant='h4'>
+                        Posts
+                    </Typography>
                 </Box>
 
                 {!isLoading ?
                     count < 1 ?
                         <Typography variant='h4'>No Posts Found</Typography> : (
                             <Paper className="w-full overflow-auto">
+                                <Link href='/admin/create-post'>
+                                    <Box className="w-fit h-fit border m-1 z-[101] rounded-md">
+                                        <Button className="hover:shadow-lg z-[100] transition-all hover:shadow-blue-500">
+                                            Create a Post
+                                        </Button>
+                                    </Box>
+                                </Link>
                                 <TableContainer>
                                     <Table stickyHeader aria-label="sticky table">
+
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell className="text-base">slug</TableCell>
