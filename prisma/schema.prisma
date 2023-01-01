@@ -11,12 +11,16 @@ model Category {
   id    Int    @id @default(autoincrement())
   name  String @unique
   posts Post[]
+
+  @@index([name(sort: Desc)])
 }
 
 model Tag {
   id    Int    @id @default(autoincrement())
   name  String @unique
   posts Post[]
+
+  @@index([name(sort: Desc)])
 }
 
 model Post {
@@ -45,7 +49,9 @@ model Views {
   IPAddress String
   postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  monthAndYear String
+
+  @@index([monthAndYear(sort: Desc)])
 }
 
 model Like {

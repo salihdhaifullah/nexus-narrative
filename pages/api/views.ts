@@ -24,10 +24,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (view?.id) return res.status(200).json({ massage: "all Ready Viewed" })
 
+        const CurrentDate = new Date()
         const data = await prisma.views.create({
             data: {
                 post: { connect: { id: postId } },
-                IPAddress: UserIPAddress
+                IPAddress: UserIPAddress,
+                monthAndYear: `${CurrentDate.getFullYear()}-${CurrentDate.getMonth()}`
             }
         });
 
