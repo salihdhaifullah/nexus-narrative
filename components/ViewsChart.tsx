@@ -1,4 +1,3 @@
-import React from 'react'
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import Typography from '@mui/material/Typography';

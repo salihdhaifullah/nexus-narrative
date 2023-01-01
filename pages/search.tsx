@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Head from 'next/head'
-import FeaturedPost from '../components/FeaturedPost'
+import Post from '../components/Post'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import { generalSearch, SearchByCategory, SearchByTag } from '../api'
-import { IFeaturedPostProps } from '../types/post'
+import { IPostProps } from '../types/post'
 import { CircularProgress } from '@mui/material'
 import { useRouter } from 'next/router'
 
 
 const Search = () => {
-    const [posts, setPosts] = useState<IFeaturedPostProps[] | null>(null);
+    const [posts, setPosts] = useState<IPostProps[] | null>(null);
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [tag, setTag] = useState("")
@@ -31,19 +31,19 @@ const Search = () => {
         if (search) await generalSearch(search)
         .then((res) => {
             setPosts(res.data.posts);
-            if (res.data.posts) setIsLoading(false)    
+            if (res.data.posts) setIsLoading(false)
         })
 
         else if (tag) await SearchByTag(tag)
         .then((res) => {
             setPosts(res.data.posts.posts);
-            if (res.data.posts.posts) setIsLoading(false)    
+            if (res.data.posts.posts) setIsLoading(false)
         })
 
         else if (category) await SearchByCategory(category)
         .then((res) => {
             setPosts(res.data.posts);
-            if (res.data.posts) setIsLoading(false)    
+            if (res.data.posts) setIsLoading(false)
         })
     }, [category, search, tag])
 
@@ -58,7 +58,7 @@ const Search = () => {
             <Head>
                 <title>{search || tag || category}</title>
                 <meta name="description" content={search || tag || category} />
-                <meta name="keywords" content={tag} />
+                <meta name="keywords" content={search || tag || category} />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
@@ -70,7 +70,7 @@ const Search = () => {
 
                                     {posts.map((post) => (
                                         <div key={post.title} className="w-full">
-                                            <FeaturedPost key={post.title} post={post} />
+                                            <Post key={post.title} post={post} />
                                         </div>
                                     ))}
                                 </Box>
