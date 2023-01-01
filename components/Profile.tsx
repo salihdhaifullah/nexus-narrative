@@ -8,11 +8,11 @@ import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress'
 
-import { ChangeBlogName, ChangePassword, GetProfileData, UpdateProfileGeneralInformation, uploadProfileImage } from '../../api';
-import { IUserProfileData, IUpdateProfileGeneralInformation, IUploadAvatar } from '../../types/profile'
-import { countries } from '../../static';
-import Toast from '../../functions/sweetAlert';
-import toBase64 from '../../functions/toBase64';
+import { ChangeBlogName, ChangePassword, GetProfileData, UpdateProfileGeneralInformation, uploadProfileImage } from '../api';
+import { IUserProfileData, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile'
+import { countries } from '../static';
+import Toast from '../functions/sweetAlert';
+import toBase64 from '../functions/toBase64';
 
 
 const Profile = () => {

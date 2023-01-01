@@ -39,12 +39,6 @@ export const likePost = async (id: number) => await API.patch(`likes?type=like&i
 
 export const dislikePost = async (id: number) => await API.patch(`likes?type=dislike&id=${id}`)
 
-export const getBlogDataS = async (blogName: string) => await API.get(`blog?blogName=${blogName}`);
-
-export const getBlogDataHome = async (blogName: string) => await API.get(`blog?blogName=${blogName}&home=true`);
-
-export const getPostsRelated = async (category: string) => await API.put(`blog?category=${category}`);
-
 export const generalSearch = async (query: string) => await API.get(`search?search=${query}`)
 
 export const SearchByTag = async (tag: string) => await API.get(`search?tag=${tag}`)

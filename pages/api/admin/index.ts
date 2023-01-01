@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const skip = Number(req.query["skip"]);
         const take = Number(req.query["take"]);
-        
+
 
         if (typeof skip !== "number") return res.status(404).json({ massage: "skip is not a number" });
         if (typeof take !== "number") return res.status(404).json({ massage: "take is not a number" });
@@ -26,18 +26,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             skip: skip,
             take: take,
             select: {
+                blogName: true,
                 posts: {
                     select: {
                         slug: true,
-                        _count: { select: {views: true} },
+                        _count: { select: { views: true } },
                         title: true,
-                        id: true
+                        id: true,
+                        createdAt: true,
+                        likes: { select: { isLike: true, isDislike: true } }
                     }
-                },
-                blogName: true
+                }
             }
         });
 
         return res.status(200).json({ data })
     }
+
 }
