@@ -1,6 +1,8 @@
 import React from 'react'
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 Chart.register(
     CategoryScale,
@@ -61,11 +63,19 @@ export const data = {
 
 const ViewsChart = () => {
     return (
-        <div className='flex  flex-col justify-center items-center'>
-            <div className="overflow-auto">
-            <Line className="h-[400px] bg-white shadow-lg rounded-md border w-auto" options={{ responsive: true }} data={data} />
+        <Box className='max-w-[100vw]'>
+            <div className="mx-4">
+                <Box className="w-full items-center text-3xl text-gray-800 font-bold mb-4 flex gap-4">
+                    <Typography variant='h4'>
+                        Views
+                    </Typography>
+                </Box>
+
+                <div className="bg-white w-full h-full shadow-lg rounded-md border p-4 mx-4">
+                    <Line className="w-full h-full" options={{ responsive: true }} data={data} />
+                </div>
             </div>
-        </div>
+        </Box>
     )
 }
 
