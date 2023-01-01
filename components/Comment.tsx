@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { deleteComment } from '../api';
 import moment from 'moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -23,7 +23,7 @@ const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, set
   const [isCanUpdateAndDelete, setIsCanUpdateAndDelete] = useState(false)
 
   useEffect(() => {
-    if (user?.id && Number(user?.id) === Number(comment.authorId)) setIsCanUpdateAndDelete(true); 
+    if (user?.id && Number(user?.id) === Number(comment.authorId)) setIsCanUpdateAndDelete(true);
   }, [comment.authorId, user?.id])
 
   const handelDelete = async (id: number) => {
@@ -41,12 +41,12 @@ const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, set
   }
 
   return (
-    <div className="h-fit p-4 mt-4 rounded-md bg-white shadow-md">
+    <div className="h-fit p-4 mt-4 max-w-[500px] rounded-md bg-white shadow-md">
       <div className="mb-2 flex">
 
         {isOpen && (
           <span className="relative z-10">
-            <div className="absolute flex flex-col top-10 rounded-md bg-white transition-all shadow-md p-4">
+            <div className="absolute flex flex-col top-10 rounded-md bg-white transition-all shadow-md p-2">
               <span
                 onClick={() => handelDelete(comment.id)}
                 className="cursor-pointer hover:bg-gray-200 px-3 py-[6px] text-base  mb-2">Delete</span>

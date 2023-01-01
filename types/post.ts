@@ -26,7 +26,7 @@ export interface IUpdatePostData {
 };
 
 
-export interface IFeaturedPostProps {
+export interface IPostProps {
     backgroundImage: string;
     title: string;
     slug: string;
@@ -57,14 +57,9 @@ export interface IBLogProps {
 
     id: number;
     slug: string;
-    posts: IFeaturedPostProps[];
-    PostsRelated: IFeaturedPostProps[];
+    posts: IPostProps[];
+    PostsRelated: IPostProps[];
     authorId: number;
-}
-
-
-export interface IPostProps {
-    data: IBLogProps;
 }
 
 export type SortByType = "CreateAt" | "Views" | "Likes"

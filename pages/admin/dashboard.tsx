@@ -1,4 +1,3 @@
-import React from 'react'
 import ViewsChart from '../../components/ViewsChart'
 import Posts from '../../components/Posts'
 import Profile from '../../components/Profile'

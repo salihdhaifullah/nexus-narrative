@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export interface ISidebarProps {
+export interface IDetailsProps {
   description: string;
   email: string;
   name: string;
@@ -18,39 +18,41 @@ export interface ISidebarProps {
   isNotShow?: boolean;
 }
 
-export default function Sidebar(props: ISidebarProps) {
+export default function Details(props: IDetailsProps) {
   const { authorId, blogName, category, createdAt, description, email, name, AvatarUrl, isNotShow } = props;
 
   return (
-    <Box className="flex w-fit flex-col gap-6 p-4">
+    <Box className="flex flex-col sm:flex-row lg:flex-col lg:h-fit justify-evenly w-full lg:w-fit gap-6 p-4">
 
       {!isNotShow && (
         <>
-          <Box className="flex flex-col gap-4 h-fit">
+          <Box className="flex flex-col gap-4 md:w-full md:justify-center items-start h-fit md:h-full">
 
-            <Typography className="text-lg">published at: {createdAt}</Typography>
-            <Typography className="text-lg" component="div">
-              category:
+            <Typography className="text-gray-800" variant="h6">published at: {createdAt}</Typography>
+
+            <Box className="flex flex-row items-center justify-center">
+            <Typography variant="h6" className="text-gray-800 mr-2">category:  </Typography>
               <Link href={`/search?category=${category}`}>
-                <a className="text-lg ml-1 font-bold link">{category}</a>
+                <Typography className="link" variant="h6" gutterBottom> {category} </Typography>
               </Link>
-            </Typography>
+            </Box>
 
-            <Link href={`/${blogName}`}>
-              <Typography className="link" variant="h6" gutterBottom>
-                <p className="text-black inline-block no-underline cursor-default mr-2">from </p> {blogName}
-              </Typography>
-            </Link>
+            <Box className="flex flex-row items-center justify-center">
+              <Typography variant="h6" className="text-gray-800 mr-2">from:  </Typography>
+              <Link href={`/${blogName}`}>
+                <Typography className="link" variant="h6" gutterBottom> {blogName} </Typography>
+              </Link>
+            </Box>
+
           </Box>
-          
+
           <Divider />
         </>
       )}
 
 
 
-      <Grid item xs={12} md={4} className="bg-white w-full rounded-md shadow-md h-fit p-4">
-
+      <Grid item xs={12} md={4} className="bg-white border border-gray-300 w-full rounded-md shadow-md h-fit p-4">
 
         <div className='inline-flex items-center'>
           <Image
@@ -75,9 +77,7 @@ export default function Sidebar(props: ISidebarProps) {
           </Paper>
         )}
 
-
-        <Typography className="text-lg "> connect to author |</Typography>
-        <Typography className="text-lg">{email}</Typography>
+        <Typography className="text-lg">author email: {email}</Typography>
       </Grid>
     </Box>
   );

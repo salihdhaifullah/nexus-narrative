@@ -1,13 +1,10 @@
 import Box from '@mui/material/Box';
-import FeaturedPost from '../../components/FeaturedPost';
-import Sidebar from '../../components/Sidebar';
+import Post from '../../components/Post';
+import Details from '../../components/Details';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import { IFeaturedPostProps } from '../../types/post';
+import { IPostProps } from '../../types/post';
 import prisma from '../../libs/prisma';
-
-
-
 
 
 interface IProps {
@@ -18,8 +15,7 @@ interface IProps {
     firstName: string;
     lastName: string;
     profile: string | null;
-
-    posts: IFeaturedPostProps[] 
+    posts: IPostProps[];
   }
 }
 
@@ -34,7 +30,7 @@ export default function Index({ data }: IProps) {
               <div className="flex flex-col md:grid grid-cols-5 grid-flow-dense gap-10 my-16">
 
               <div className="col-span-2">
-                  <Sidebar
+                  <Details
                     isNotShow={true}
                     description={data?.about || "Not Found"}
                     email={data.email}
@@ -48,7 +44,7 @@ export default function Index({ data }: IProps) {
 
                   {data?.posts.length > 0 ? data?.posts.map((post, index) => (
                     <div key={index} className="mb-4">
-                      <FeaturedPost post={post} />
+                      <Post post={post} />
                     </div>
                   )) : (
                     <Typography className="mb-4 underLine" variant='h5' component='h1'> Sorry No Posts Found </Typography>
@@ -104,5 +100,5 @@ export async function getStaticProps({params}: {  params: { blogName: string; }}
 
 const serializedData = {data: JSON.parse(JSON.stringify(data))}
 
-  return { props: serializedData,  revalidate: 10 };
+  return { props: serializedData, revalidate: 10 };
 }

@@ -108,6 +108,13 @@ export default function Posts() {
                     count < 1 ?
                         <Typography variant='h4'>No Posts Found</Typography> : (
                             <Paper className="w-full overflow-auto">
+                                <Link href='/admin/create-post'>
+                                    <Box className="w-fit h-fit border m-1 z-[101] rounded-md">
+                                        <Button className="hover:shadow-lg z-[100] transition-all hover:shadow-blue-500">
+                                            Create a Post
+                                        </Button>
+                                    </Box>
+                                </Link>
                                 <TableContainer>
                                     <Table stickyHeader aria-label="sticky table">
                                         <TableHead>

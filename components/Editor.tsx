@@ -44,7 +44,7 @@ interface IImagesData {
 
 const filter = createFilterOptions<FilmOptionType>();
 
-const MdEditorCom = () => {
+const Editor = () => {
   const mdEditorRef: any = useRef();
   const router = useRouter()
 
@@ -164,8 +164,8 @@ const MdEditorCom = () => {
 
   return (
     <>
-      <div className={`fixed bottom-[40px] right-[40px] z-10 rounded-full shadow-md  
-      ${isValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-400 cursor-not-allowed hover:bg-gray-300"} 
+      <div className={`fixed bottom-[40px] right-[40px] z-10 rounded-full shadow-md
+      ${isValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-400 cursor-not-allowed hover:bg-gray-300"}
       text-white`}>
 
         {(isLoading) ? (
@@ -354,4 +354,4 @@ const MdEditorCom = () => {
   );
 }
 
-export default MdEditorCom;
+export default Editor;
