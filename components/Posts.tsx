@@ -97,11 +97,21 @@ export default function Posts() {
 
             <div className="flex w-full flex-col items-start gap-4 mt-10 justify-start">
 
-            <h1 className='text-3xl text-gray-800 font-bold mb-4'>Posts</h1>
+                <h1 className='text-3xl text-gray-800 font-bold mb-4'>Posts</h1>
 
                 {!isLoading ?
-                    count < 1 ?
-                        <Typography variant='h4'>No Posts Found</Typography> : (
+                    count < 1 ? (
+                        <>
+                            <Link href='/admin/create-post'>
+                                <Box className="w-fit h-fit border m-1 z-[101] rounded-md">
+                                    <Button className="hover:shadow-lg z-[100] transition-all hover:shadow-blue-500">
+                                        Create a Post
+                                    </Button>
+                                </Box>
+                            </Link>
+                            <Typography variant='h4'>No Posts Found</Typography>
+                        </>
+                    ) : (
                             <Paper className="w-full overflow-auto">
                                 <Link href='/admin/create-post'>
                                     <Box className="w-fit h-fit border m-1 z-[101] rounded-md">

@@ -74,3 +74,5 @@ export const viewedPost = async (id: number) => await API.get(`/views/?id=${id}`
 export const GetBlogPosts = async (blogName: string) => await API.get(`/blog?blog-name=${blogName}`)
 
 export const GetViewsChart = async () => await API.get("/admin/dashboard")
+
+export const demoAccount = async () => await API.get("/auth/demo")
