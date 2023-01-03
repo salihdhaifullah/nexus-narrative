@@ -1,49 +1,34 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
-
-import { dislikePost, GetLikes, likePost, viewedPost } from '../../../api';
-import { IFeaturedPostProps, IPostProps } from '../../../types/post';
-
-import MainFeaturedPost from '../../../components/MainFeaturedPost';
-import FeaturedPost from '../../../components/FeaturedPost';
+import { viewedPost } from '../../../api';
+import { IBLogProps, IPostProps } from '../../../types/post';
+import MainPost from '../../../components/MainPost';
+import Post from '../../../components/Post';
 import Main from '../../../components/Main';
-import Sidebar from '../../../components/Sidebar';
-
+import Details from '../../../components/Details';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress'
-import Chip from '@mui/material/Chip';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import prisma from '../../../libs/prisma';
 import moment from 'moment';
 import Comments from '../../../components/Comments';
-import useGetUser from '../../../hooks/useGetUser';
-import Swal from 'sweetalert2';
-import { useRouter } from 'next/router';
+import IsUseful from '../../../components/IsUseful';
+import Tags from '../../../components/Tags';
 
 
-export default function Post({ data }: IPostProps) {
-  const [likes, setLikes] = useState(0)
-  const [dislikes, setDislikes] = useState(0);
-  const [user] = useGetUser();
-  const router = useRouter();
-  const [isLikeLoading, setIsLikeLoading] = useState<boolean>(false);
-  const [isDisLikeLoading, setIsDisLikeLoading] = useState<boolean>(false);
+export default function Index({ data }: { data: IBLogProps }) {
 
-
-  const handelGetLikes = useCallback(async () => {
-    if (!data.id) return;
-    await GetLikes(data.id)
-      .then((res) => {
-        setLikes(res.data.likes)
-        setDislikes(res.data.dislikes)
-      });
-
-  }, [data.id])
+  const DetailsProps = {
+    description: data.about,
+    email: data.email,
+    name: data.name,
+    AvatarUrl: data.AvatarUrl,
+    authorId: data.authorId,
+    blogName: data.blogName,
+    category: data.category,
+    createdAt: data.createdAt
+  }
 
   const init = useCallback(async () => {
     if (!data.id) return;
@@ -54,46 +39,6 @@ export default function Post({ data }: IPostProps) {
     init()
   }, [init])
 
-  useEffect(() => {
-    handelGetLikes()
-  }, [handelGetLikes])
-
-  const handelLike = async () => {
-    if (!user) {
-      return Swal.fire({
-        title: "You Need to Login",
-        text: "You Need to Login To Make This Action",
-        icon: "info",
-        showCancelButton: true,
-        showConfirmButton: true
-      })
-        .then((res) => { if (res.value) router.push("/login") })
-    };
-    setIsLikeLoading(true)
-    await likePost(data.id)
-      .then((res) => { handelGetLikes() })
-    setIsLikeLoading(false)
-
-  }
-
-  const handelDisLike = async () => {
-    if (!user) {
-      return Swal.fire({
-        title: "You Need to Login",
-        text: "You Need to Login To Make This Action",
-        icon: "info",
-        showCancelButton: true,
-        showConfirmButton: true
-      })
-        .then((res) => { if (res.value) router.push("/login") })
-    };
-
-    setIsDisLikeLoading(true)
-    await dislikePost(data.id)
-      .then((res) => { handelGetLikes() })
-    setIsDisLikeLoading(false)
-  }
-
   const getKeywords = (): string => {
     let text = "";
 
@@ -102,135 +47,75 @@ export default function Post({ data }: IPostProps) {
     }
 
     text = text + data.category;
-
     return text;
   }
 
-  return (
+  return data ? (
     <>
-      {data ? (
-        <>
-          <Head>
-            <title>{data.title}</title>
-            <meta name="description" content={data.description}></meta>
-            <meta name="keywords" content={getKeywords()}></meta>
-          </Head>
+      <Head>
+        <title>{data.title}</title>
+        <meta name="description" content={data.description}></meta>
+        <meta name="keywords" content={getKeywords()}></meta>
+      </Head>
 
-          <article className='w-full block max-w-full p-4 mb-10 mt-4' >
-            <MainFeaturedPost image={data.backgroundImage} title={data.title} />
+      <article className='w-full block max-w-full p-4 mb-10 mt-4' >
+        <MainPost image={data.backgroundImage} title={data.title} />
 
-            <Grid className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
+        <Grid className="inline-flex make-width-fit flex-row flex-wrap-reverse lg:flex-nowrap gap-2">
+          <Main post={data.content} />
 
-              <Main post={data.content} />
+          <Details {...DetailsProps} />
+        </Grid>
 
-              <Sidebar
-                description={data.about}
-                email={data.email}
-                name={data.name}
-                AvatarUrl={data.AvatarUrl}
-                authorId={data.authorId}
-                blogName={data.blogName}
-                category={data.category}
-                createdAt={data.createdAt}
-              />
+        <IsUseful postId={data.id} />
+        <Tags tags={data.tags} />
+        <Comments postId={data.id} />
 
-            </Grid>
+        <Box className="mt-[200px] flex-col flex gap-20">
 
+          <Box className="flex flex-col min-w-full">
+            {data.posts.length < 1 ? null : (
+              <Box>
+                <div className='flex mb-2 justify-start items-start'>
+                  <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
+                </div>
 
-            <Grid className="flex-col mt-20 border p-4 w-fit rounded-md border-blue-600 bg-blue-100 shadow-lg shadow-blue-400 hover:shadow-blue-400 hover:shadow-xl">
-              <Typography variant='h5' component="h2">Did You Find This Content Usefully ?</Typography>
-              <div className="mt-4 flex flex-row  gap-2">
-                {isLikeLoading ? (
-                  <Button disabled className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400"><CircularProgress className="w-6 h-6 text-white" /></Button>
-                ) : (
-                  <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelLike} startIcon={<ThumbUpIcon />}>{likes}</Button>
-                )}
-                {isDisLikeLoading ? (
-                  <Button disabled className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400"> <CircularProgress className="w-6 h-6 text-white" /> </Button>
-                ) : (
-                  <Button className="border border-gray-800 rounded-md bg-blue-300 hover:bg-blue-400" onClick={handelDisLike} startIcon={<ThumbDownAltIcon />}>{dislikes}</Button>
-                )}
-              </div>
-            </Grid>
+                <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
 
-            <Grid container spacing={4} className="flex my-20 justify-center items-center">
-              {data.tags.map((item, index) => (
-                <Link key={index} href={`/search/?tag=${item.name}`}>
-                  <Chip label={"#" + item.name} className="mr-1 text-base link" variant="outlined" />
-                </Link>
-              ))}
-            </Grid>
+                  {data.posts.map((post, index) => (
+                    <div key={index} className="w-full"> <Post post={post} /> </div>
+                  ))}
 
-            <hr className='mt-20 mb-20' />
-
-
-            <div className='flex mb-6 justify-start items-start'>
-              <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
-            </div>
-
-            <section className="grid md:grid-cols-2 grid-cols-1  gap-4">
-              <Comments postId={data.id} />
-            </section>
-
-            <Box className="mt-[200px] flex-col flex gap-20">
-
-
-              <Box className="flex flex-col min-w-full">
-                {data.posts.length > 0 ?
-                  <>
-                    <div className='flex mb-2 justify-start items-start'>
-                      <Typography className="mb-4 underLine" variant='h5' component='h1'> Posts From The author </Typography>
-                    </div>
-
-                    <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
-
-                      {data.posts.map((post, index) => (
-                        <div key={index} className="w-full">
-                          <FeaturedPost post={post} />
-                        </div>
-                      ))}
-
-                    </Box>
-
-                  </>
-                  : (null)}
+                </Box>
               </Box>
+            )}
+          </Box>
 
 
-              <Box className="flex flex-col min-w-full">
+          <Box className="flex flex-col min-w-full">
 
-                {data.PostsRelated.length > 0 ?
-                  <>
+            {data.PostsRelated.length < 1 ? null : (
+              <Box>
+                <div className='flex mb-2 justify-start items-start'>
+                  <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
+                </div>
 
-                    <div className='flex mb-2 justify-start items-start'>
-                      <Typography variant='h5' className="my-4 underLine" component='h1'> Posts Related to the topic </Typography>
+                <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
+                  {data.PostsRelated.map((post, index) => (
+                    <div key={index} className="w-full ">
+                      <Post post={post} />
                     </div>
-
-                    <Box className="gap-4 grid w-full grid-cols-1 sm:grid-cols-2 ">
-
-                      {data.PostsRelated.map((post, index) => (
-                        <div key={index} className="w-full ">
-                          <FeaturedPost post={post} />
-                        </div>
-                      ))}
-
-                    </Box>
-
-                  </>
-                  : (null)}
-
+                  ))}
+                </Box>
               </Box>
+            )}
 
-            </Box>
+          </Box>
+        </Box>
+      </article>
 
-          </article>
-
-        </>
-      ) : (
-        <CircularProgress />
-      )}
     </>
-  );
+  ) : <CircularProgress />
 }
 
 
@@ -311,7 +196,7 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 
 
 
-  let serializedData: IPostProps | { data: null } = { data: null };
+  let serializedData: { data: IBLogProps } | { data: null } = { data: null };
 
   if (!postData) return;
   serializedData = {
@@ -331,8 +216,8 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
       category: postData.category.name,
       postId: postData.id,
       slug: params.slug,
-      posts: postData.author.posts as IFeaturedPostProps[],
-      PostsRelated: PostsRelated as IFeaturedPostProps[],
+      posts: postData.author.posts as IPostProps[],
+      PostsRelated: PostsRelated as IPostProps[],
       authorId: postData.author.id
     }
   }

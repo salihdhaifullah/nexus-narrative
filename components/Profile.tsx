@@ -156,6 +156,7 @@ const Profile = () => {
           </Typography>
         </Box>
 
+        <h1 className='text-3xl text-gray-800 font-bold mb-4'>Settings</h1>
         <div className=' gap-6 grid-flow-dense grid-cols-10 flex-wrap flex flex-col grid-rows-6 lg:grid'>
 
           <div className='flex justify-start h-fit lg:w-full col-span-3 row-span-2 bg-white rounded-md shadow-md p-6'>

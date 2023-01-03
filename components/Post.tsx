@@ -6,25 +6,25 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import moment from 'moment';
 import Link from 'next/link';
-import { IFeaturedPostProps } from '../types/post';
+import { IPostProps } from '../types/post';
 
-export default function FeaturedPost(props: {post: IFeaturedPostProps }) {
+export default function Post(props: {post: IPostProps }) {
   const { post } = props;
 
   return (
     <div className="w-full flex">
       <Grid item className="w-full">
-        
+
         <Link href={`/${post.author.blogName}/posts/${post.slug}`}>
           <CardActionArea>
             <Card className="flex w-full">
 
               <CardContent className="flex-1">
 
-                <Typography component="h2" variant="h5"> 
+                <Typography component="h2" variant="h5">
                   {post.title}
                 </Typography>
-                
+
                 <Typography component="p" variant="body2">
                   {moment(post.createdAt).format('ll')}
                 </Typography>
@@ -49,7 +49,7 @@ export default function FeaturedPost(props: {post: IFeaturedPostProps }) {
               />
             </Card>
           </CardActionArea>
-        
+
         </Link>
       </Grid>
     </div>

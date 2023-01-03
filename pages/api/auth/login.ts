@@ -9,9 +9,10 @@ import { ILogin } from '../../../types/user';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === "POST") {
-        const { email, password } = req.body as ILogin;
-        const UserData = await prisma.user.findUnique({ where: { email: email } });
+
         try {
+            const { email, password } = req.body as ILogin;
+            const UserData = await prisma.user.findUnique({ where: { email: email } });
 
             if (!UserData) return res.status(400).json({ error: `user with this email ${email} dose not exist` })
 
@@ -48,7 +49,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             return res.status(200).json({ data, massage: "login success" })
 
         } catch (error) {
-            return res.status(500).json({ massage: 'server error', error });
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
         }
 
     };

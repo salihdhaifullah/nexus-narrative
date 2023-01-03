@@ -3,25 +3,20 @@ import type { AppProps } from 'next/app';
 import Header from '../components/Header'
 import Copyright from '../components/Copyright'
 import NextNProgress from 'nextjs-progressbar';
-import { useEffect, useState } from 'react'
 import Loader from "../components/Loader";
+import { useRouter } from "next/router";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-
-  const [isBrowser, setIsBrowser] = useState(false);
-
-  useEffect(() => {
-    setIsBrowser(true)
-  }, [])
+  const router = useRouter()
 
   return (
     <div className="flex flex-col bg-slate-100 min-h-[100vh]">
       <NextNProgress />
-      {isBrowser ? (
+      {!router.isFallback ? (
         <>
           <Header />
           <div className="mb-4 min-h-[68vh] min-w-[95vw]">
-          <Component {...pageProps} />
+            <Component {...pageProps} />
           </div>
           <Copyright />
         </>

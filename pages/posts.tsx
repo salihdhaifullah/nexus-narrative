@@ -2,10 +2,10 @@ import Typography from '@mui/material/Typography'
 import FormControl from '@mui/material/FormControl'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
-import React, { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { GetPosts, GetPostsLength, GetTagsAndCategories } from '../api'
-import { IFeaturedPostProps, SortByType } from '../types/post'
-import FeaturedPost from '../components/FeaturedPost'
+import { IPostProps, SortByType } from '../types/post'
+import Post from '../components/Post'
 import NavigateNextOutlinedIcon from '@mui/icons-material/NavigateNextOutlined';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import InputLabel from '@mui/material/InputLabel'
@@ -15,7 +15,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 
 
 const Posts = () => {
-  const [posts, setPosts] = useState<IFeaturedPostProps[]>([]);
+  const [posts, setPosts] = useState<IPostProps[]>([]);
   const [skip, setSkip] = useState(0);
   const [take, setTake] = useState(5);
   const [filter, setFilter] = useState<string | undefined>(undefined);
@@ -143,7 +143,7 @@ const Posts = () => {
           <Box className="gap-4 grid w-full grid-cols-1 mb-10 sm:grid-cols-2 ">
             {posts.map((post, index) => (
               <div key={index} className="w-full">
-                <FeaturedPost post={post} />
+                <Post post={post} />
               </div>
             ))}
           </Box>
