@@ -32,10 +32,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             if (!["Likes", "Views", "CreateAt"].includes(sort)) return res.status(404).json({ massage: "Sort unValid" })
 
-            let orderBy: { likes: { _count: "asc"; }; } | { views: { _count: "desc"; }; } | { createdAt: "desc" } = { createdAt: "desc" };
+            let orderBy: { likes: { _count: "desc"; }; } | { views: { _count: "desc"; }; } | { createdAt: "desc" } = { createdAt: "desc" };
 
             switch (sort) {
-                case "Likes": orderBy = { likes: { _count: "asc" } }
+                case "Likes": orderBy = { likes: { _count: "desc" } }
                     break;
                 case "Views": orderBy = { views: { _count: "desc" } }
                     break;
