@@ -15,6 +15,7 @@ import useGetUser from '../hooks/useGetUser';
 import { Logout } from '../api';
 import { useRouter } from 'next/router';
 import Swal from 'sweetalert2';
+import Typography  from '@mui/material/Typography';
 
 interface ISearchProps {
   open: boolean;
@@ -102,13 +103,17 @@ export default function Header() {
 
           <Box className="inline-flex w-full justify-between">
             {user !== null
-              ? <Button onClick={handelLogout} variant="outlined" size="small" className="h-fit"> Logout </Button>
-              : <Button onClick={handelSingUp} variant="outlined" size="small" className="h-fit"> Sign up </Button>}
+              ? <Button onClick={handelLogout} variant="text" size="small" className="h-fit"> Logout </Button>
+              : <Button onClick={handelSingUp} variant="text" size="small" className="h-fit"> Sign up </Button>}
 
             <Link href="/admin/dashboard">
-              <Button onClick={handelSingUp} variant="outlined" size="small" className="h-fit"> DashBoard </Button>
+              <Button variant="text" size="small" className="h-fit"> DashBoard </Button>
             </Link>
           </Box>
+
+          <Link href="/posts">
+            <Button variant="text" size="small" className="h-fit ml-2"> Posts </Button>
+          </Link>
         </div>
 
       </Toolbar>

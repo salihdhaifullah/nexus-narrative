@@ -11,15 +11,16 @@ import { GetUserIdMiddleware } from '../../../middleware';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === "POST") {
-        const { password, email, firstName, lastName }: ISingUp = req.body;
-
-        if (!lastName || !password || !email || !firstName) return res.status(400).json({ massage: "InValid Data" });
-        if (!(password.length > 6) && !(lastName.length > 3) && !(firstName.length > 3) && !(email.length > 8))
-            return res.status(400).json({ massage: 'unValid Fields' });
-
-        const user = await prisma.user.findFirst({ where: { email: email }, select: { email: true } });
 
         try {
+
+            const { password, email, firstName, lastName }: ISingUp = req.body;
+
+            if (!lastName || !password || !email || !firstName) return res.status(400).json({ massage: "InValid Data" });
+            if (!(password.length > 6) && !(lastName.length > 3) && !(firstName.length > 3) && !(email.length > 8))
+                return res.status(400).json({ massage: 'unValid Fields' });
+
+            const user = await prisma.user.findFirst({ where: { email: email }, select: { email: true } });
 
             if (user?.email) return res.status(400).json({ error: "user already exist try login", user })
 
@@ -62,13 +63,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             return res.status(200).json({ data, massage: "sing up success" })
 
         } catch (error) {
-            return res.status(500).json({ massage: 'server error', error })
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
         }
     }
 
     if (req.method === "PATCH") {
-        const data: IChangePassword = req.body;
         try {
+            const data: IChangePassword = req.body;
             const { error, id } = GetUserIdMiddleware(req);
             if (error) return res.status(400).json({ massage: error });
             if (typeof id !== "number") return res.status(404).json({ massage: "User Not Found" })
@@ -88,7 +90,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
             return res.status(200).json({ massage: 'Success' });
         } catch (error) {
-            return res.status(500).json({ massage: error });
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
         }
 
     }

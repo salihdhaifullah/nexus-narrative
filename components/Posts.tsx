@@ -93,16 +93,11 @@ export default function Posts() {
     };
 
     return (
-        <Box className='flex justify-center items-center mb-10'>
-            <div className="flex w-full flex-col px-8 py-6 items-center gap-4 mt-10 justify-center">
+        <Box className='flex flex-col justify-center items-center mx-4 mb-10'>
 
-                <Box className="w-full items-start flex justify-between mb-10">
-                    <Link href='/admin/create-post'>
-                        <Button className="shadow-md hover:shadow-xl transition-all hover:shadow-blue-500 shadow-blue-500">
-                            Create a Post
-                        </Button>
-                    </Link>
-                </Box>
+            <div className="flex w-full flex-col items-start gap-4 mt-10 justify-start">
+
+            <h1 className='text-3xl text-gray-800 font-bold mb-4'>Posts</h1>
 
                 {!isLoading ?
                     count < 1 ?

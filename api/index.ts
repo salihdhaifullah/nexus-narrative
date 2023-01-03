@@ -39,11 +39,13 @@ export const likePost = async (id: number) => await API.patch(`/likes?type=like&
 
 export const dislikePost = async (id: number) => await API.patch(`/likes?type=dislike&id=${id}`)
 
-export const generalSearch = async (query: string) => await API.get(`/search?search=${query}`)
+export const generalSearch = async (search: string, skip: number, take: number) => await API.get(`/search?search=${search}&skip=${skip}&take=${take}`)
 
-export const SearchByTag = async (tag: string) => await API.get(`/search?tag=${tag}`)
+export const SearchByTag = async (tag: string, skip: number, take: number) => await API.get(`/search?tag=${tag}&skip=${skip}&take=${take}`)
 
-export const SearchByCategory = async (category: string) => await API.get(`/search?category=${category}`)
+export const SearchByCategory = async (category: string, skip: number, take: number) => await API.get(`/search?category=${category}&skip=${skip}&take=${take}`)
+
+export const GetSearchLength = async (type: "category" | "tag" | "search", value: string) => await API.get(`/search?${type}=${value}&get-length=${true}`)
 
 export const GetPostsPageData = async (skip: number, take: number) => await API.get(`/admin/?skip=${skip}&take=${take}`)
 
@@ -60,7 +62,7 @@ export const GetLikes = async (id: number) => await API.get(`/likes?id=${id}`)
 export const GetComments = async (id: number) => await API.get(`/comment?id=${id}`)
 
 export const GetPostsLength = async (category: string | undefined) =>
-await API.get(`/posts/${category ? `?category=${category}&` : "?"}length=${true}`);
+await API.get(`/post/${category ? `?category=${category}&` : "?"}length=${true}`);
 
 export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) =>
 await API.get(`/post/${category ? `?category=${category}&` : "?"}skip=${skip}&take=${take}&sort=${sort}`);
@@ -70,3 +72,5 @@ export const uploadProfileImage = async (data: IUploadAvatar) => await API.post(
 export const viewedPost = async (id: number) => await API.get(`/views/?id=${id}`);
 
 export const GetBlogPosts = async (blogName: string) => await API.get(`/blog?blog-name=${blogName}`)
+
+export const GetViewsChart = async () => await API.get("/admin/dashboard")

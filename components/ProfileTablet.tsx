@@ -26,9 +26,6 @@ const ProfileTablet = ({ userImage, firstName, lastName, title, about, phoneNumb
                         <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{blogName}</strong>
                             <hr className='my-2' />
                         </h2>
-                        <Link href={`/${blogName}`}>
-                            <a className='text-blue-600 hover:text-blue-500 hover:underline text-base'>{blogName}</a>
-                        </Link>
                     </Box>
                 </Box>
 

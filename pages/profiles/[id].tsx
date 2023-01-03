@@ -1,8 +1,5 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import { IUserProfileProps } from '../../types/profile';
 import prisma from '../../libs/prisma';
-import { useRouter } from 'next/router';
 import Box from '@mui/material/Box'
 import Post from '../../components/Post';
 import Typography from '@mui/material/Typography';
@@ -10,6 +7,7 @@ import { IPostProps } from './../../types/post';
 import { useCallback, useEffect, useState } from 'react';
 import ProfileTablet from './../../components/ProfileTablet';
 import { GetBlogPosts } from '../../api';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Profile = (data: IUserProfileProps) => {
 
@@ -17,9 +15,11 @@ const Profile = (data: IUserProfileProps) => {
     const [posts, setPosts] = useState<IPostProps[]>([]);
 
     const init = useCallback(async () => {
+        setIsLoading(true)
         await GetBlogPosts(data.blogName)
             .then((res) => { setPosts(res.data.posts) })
             .catch((err) => { console.log(err) })
+        setIsLoading(false)
     }, [data.blogName])
 
     useEffect(() => {
@@ -28,8 +28,13 @@ const Profile = (data: IUserProfileProps) => {
 
     return (
         <div className='w-full h-fit mb-10'>
-                <Box>
-                    <ProfileTablet {...data} />
+            <Box>
+                <ProfileTablet {...data} />
+                {isLoading ? (
+                    <div className="w-full h-full flex justify-center items-center">
+                        <CircularProgress />
+                    </div>
+                ) : (
                     <div className="flex flex-col gap-y-4 justify-center items-center mx-2">
                         {posts.length < 1
                             ? <Typography className="mb-4 ml-4 underLine w-fit" variant='h5' component='h1'> Sorry No Posts Found </Typography>
@@ -37,7 +42,9 @@ const Profile = (data: IUserProfileProps) => {
                                 <div key={index} className="w-full sm:w-[600px]"> <Post post={post} /> </div>
                             ))}
                     </div>
-                </Box>
+                )}
+
+            </Box>
         </div>
     )
 }

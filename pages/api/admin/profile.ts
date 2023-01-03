@@ -36,7 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             return res.status(200).json({ user })
         } catch (error) {
-            return res.status(500).json({ error });
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
         }
     }
     if (req.method === "PATCH") {
@@ -73,7 +74,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             return res.status(200).json({ massage: 'Success to update Profile' })
         } catch (error) {
-            return res.status(500).json({ massage: 'Server Error', error });
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
         }
     }
 
@@ -101,8 +103,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             return res.status(200).json({ massage: 'Success' })
         } catch (error) {
-            return res.status(500).json({ error });
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
         }
     }
-    
+
 }
