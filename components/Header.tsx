@@ -15,7 +15,7 @@ import useGetUser from '../hooks/useGetUser';
 import { Logout } from '../api';
 import { useRouter } from 'next/router';
 import Swal from 'sweetalert2';
-import Typography  from '@mui/material/Typography';
+import Typography from '@mui/material/Typography';
 
 interface ISearchProps {
   open: boolean;
@@ -81,14 +81,14 @@ export default function Header() {
         if (!res.value) return;
         await Logout();
         localStorage.clear();
-        await router.push("/login")
+        router.push("/login")
         router.reload()
       })
 
   }
 
-  const handelSingUp = async () => {
-    await router.push("/sing-up")
+  const handelSingUp = () => {
+    router.push("/sing-up")
   }
 
   return (
@@ -106,9 +106,11 @@ export default function Header() {
               ? <Button onClick={handelLogout} variant="text" size="small" className="h-fit"> Logout </Button>
               : <Button onClick={handelSingUp} variant="text" size="small" className="h-fit"> Sign up </Button>}
 
-            <Link href="/admin/dashboard">
-              <Button variant="text" size="small" className="h-fit"> DashBoard </Button>
-            </Link>
+            {user === null ? null : (
+              <Link href="/admin/dashboard">
+                <Button variant="text" size="small" className="h-fit"> DashBoard </Button>
+              </Link>
+            )}
           </Box>
 
           <Link href="/posts">
