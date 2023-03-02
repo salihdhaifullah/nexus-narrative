@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import { createPost, GetTagsAndCategories, UpdatePost } from '../api';
+import { createPost } from '../api';
 import { ICreatePostData } from '../types/post';
 import { Button, CircularProgress } from '@mui/material';
 import BackupIcon from '@mui/icons-material/Backup';
@@ -16,57 +16,35 @@ import 'react-markdown-editor-lite/lib/index.css';
 import 'highlight.js/styles/github.css';
 import mdParser from '../libs/markdown';
 import createResizedImage from '../utils/image-resizer';
+import Head from 'next/head'
+import { GetServerSidePropsContext } from 'next';
+import { GetUserId } from '../utils/auth';
+import prisma from '../libs/prisma';
 
+interface IOption { name: string, inputValue?: string }
 
-interface HandleEditorChangeProps {
-  html: string
-  text: string
-}
+interface IImagesData { base64: string, preViewUrl: string }
 
+interface ICategory { inputValue?: string, name: string }
 
-interface IOptions {
-  name: string
-  inputValue?: string
-}
+const categoryFilter = createFilterOptions<ICategory>();
+const tagFilter = createFilterOptions<string>();
 
-interface IFileData {
-  base64: string;
-}
-
-interface IImagesData {
-  base64: string;
-  preViewUrl: string;
-}
-
-interface ICategory {
-  inputValue?: string;
-  name: string;
-}
-
-const filter = createFilterOptions<ICategory>();
-const filter1 = createFilterOptions<string>();
-
-const Editor = () => {
+const CreatePost = ({tagsOptions, categoriesOptions}: {tagsOptions: IOption[] | null, categoriesOptions: IOption[] | null} ) => {
   const mdEditorRef: any = useRef();
   const router = useRouter()
-
-  const [tagsOptions, setTagsOptions] = useState<IOptions[]>([])
-  const [categoriesOptions, setCategoriesOptions] = useState<IOptions[]>([])
-
 
   const [text, setText] = useState<string>("");
   const [title, setTitle] = useState("")
   const [slug, setSlug] = useState("")
   const [description, setDescription] = useState("")
   const [tags, setTags] = useState<string[]>([])
-  const [category, setCategory] = useState<FilmOptionType | null>(null)
-  const [backgroundImage, setBackgroundImage] = useState<IFileData | null>(null)
+  const [category, setCategory] = useState<ICategory | null>(null)
+  const [backgroundImage, setBackgroundImage] = useState<{base64: string} | null>(null)
   const [images, setImages] = useState<IImagesData[]>([])
   const [isValidSlug, setIsValidSlug] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  const handleEditorChange = ({ html, text }: HandleEditorChangeProps) => setText(text);
 
   useEffect(() => {
     if (backgroundImage && title.length >= 8 && slug.length >= 8 && text.length >= 100 && (category && category.name.length >= 2) && tags.length >= 1) {
@@ -74,29 +52,6 @@ const Editor = () => {
     } else setIsValid(false);
   }, [backgroundImage, category, slug, tags, text, title])
 
-
-  useEffect(() => {
-    const test = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(slug)
-    setIsValidSlug(test)
-  }, [slug])
-
-  const init = useCallback(async () => {
-    await GetTagsAndCategories()
-      .then((res) => {
-        if (!res.data.categories.length) return;
-        setCategoriesOptions(res.data.categories)
-        setTagsOptions(res.data.tags)
-      });
-  }, [])
-
-  useEffect(() => {
-    init()
-  }, [init])
-
-
-  useEffect(() => {
-    setIsLoading(false)
-  }, [])
 
   const onImageUpload = async (file: File) => {
     const imagesData = images;
@@ -122,7 +77,6 @@ const Editor = () => {
   const HandelSubmit = async () => {
     let imagesThatUsed = [];
     if (!isValid) return;
-    if (!backgroundImage || !category?.name) return;
 
     setIsLoading(true)
 
@@ -132,23 +86,13 @@ const Editor = () => {
       URL.revokeObjectURL(images[i].preViewUrl);
     }
 
-    const data: ICreatePostData = { title, content: text, slug, images: imagesThatUsed, tags, category: category.name, backgroundImage, description }
+
+    const data: ICreatePostData = { title, content: text, slug, images: imagesThatUsed, tags, category: category?.name as string, backgroundImage, description } as ICreatePostData
 
     await createPost(data)
       .then((res) => {
         Toast.fire(res.data.massage || 'success post created', '', 'success')
         router.push(res.data.postUrl)
-
-        setTitle("")
-        setSlug("")
-        setDescription("")
-        setBackgroundImage(null)
-        setTags([])
-        setCategory({ name: "" })
-        mdEditorRef.current.state.text = ""; // this is the textarea input state from MdEditor component
-        mdEditorRef.current.state.html = ""; // this is the textarea input state from MdEditor component
-        setText("")
-        imagesThatUsed = []
       })
       .catch((err) => {
         if (err.response.status === 413) {
@@ -156,29 +100,24 @@ const Editor = () => {
         } else {
           Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error')
         }
+
+        setIsLoading(false)
       })
-
-
-    setIsLoading(false)
   }
-
-
 
   return (
     <>
+    <Head>
+        <title>Create Post</title>
+    </Head>
       <div className={`fixed bottom-[40px] right-[40px] z-10 rounded-full shadow-md
       ${isValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-400 cursor-not-allowed hover:bg-gray-300"}
       text-white`}>
 
-        {(isLoading) ? (
-          <div className='text-white px-2.5 py-1.5 text-[16px]'>
-            <CircularProgress className='text-white ' />
-          </div>
-        ) : (
-          <div className='px-2 py-5 text-[16px]' onClick={HandelSubmit}>
-            Submit
-          </div>
-        )}
+        <div onClick={() => isLoading ? undefined : HandelSubmit} className='p-2 h-16 w-16 flex items-center justify-center'>
+          {isLoading ? <CircularProgress className='text-white h-10 w-10' /> : <p className="text-[16px]">Submit</p>}
+        </div>
+
       </div>
       <Container>
         <Box className='px-6 my-2 rounded-md shadow-md bg-white py-4'>
@@ -194,33 +133,29 @@ const Editor = () => {
                 label="title"
                 name="title"
                 autoFocus
+                error={title.length < 8}
+                helperText={title.length < 8 ? "min length of title is 8" : undefined}
               />
-              {(title.length < 8) && (
-                <p className="text-red-600 text-sm font-light">
-                  min length of title is 8
-                </p>
-              )}
+
             </div>
 
             <div className="w-full flex-1 sm:ml-2 mb-2 sm:mb-0">
               <TextField
                 value={slug}
-                onChange={(event) => setSlug(event.target.value)}
+                onChange={(event) => {
+                  const test = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(event.target.value)
+                  setIsValidSlug(test)
+                  setSlug(event.target.value)
+                 }}
                 required
                 fullWidth
                 id="slug"
                 label="slug"
                 name="slug"
+                error={slug.length < 8 || !isValidSlug}
+                helperText={slug.length < 8 ? "min length of slug is 8" : !isValidSlug ? "unValid slug, use only numbers and letters with dash as space" : undefined}
               />
-              {(slug.length < 8) ? (
-                <p className="text-red-600 text-sm font-light">
-                  min length of slug is 8
-                </p>
-              ) : (!isValidSlug) && (
-                <p className="text-red-600 text-sm font-light">
-                  unValid slug, use only numbers and letters with dash as space
-                </p>
-              )}
+
             </div>
 
           </Box>
@@ -228,29 +163,6 @@ const Editor = () => {
           <Stack className="flex flex-col sm:flex-row w-full flex-wrap mb-4">
 
             <div className='w-full flex-col sm:w-auto flex-[2] flex mb-2 sm:mb-0'>
-              {/* <Autocomplete
-                className='w-full sm:w-auto flex-[2] flex mb-2 sm:mb-0'
-                multiple
-                id="tags-filled"
-                options={tagsOptions.map((option) => option.name)}
-                freeSolo
-                value={tags}
-                onChange={(event, value) => setTags(value)}
-                renderTags={(value: readonly string[], getTagProps) =>
-                  value.map((option: string, index: number) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="tags"
-                    placeholder="tag"
-                  />
-                )}
-
-              /> */}
 
               <Autocomplete
                 className='w-full sm:w-auto flex-[2] flex mb-2 sm:mb-0'
@@ -259,14 +171,14 @@ const Editor = () => {
                 clearOnBlur
                 handleHomeEndKeys
                 filterOptions={(options, params) => {
-                  const filtered = filter1(options, params);
+                  const filtered = tagFilter(options, params);
                   const { inputValue } = params;
                   const isExisting = options.some((option) => inputValue === option);
                   if (inputValue !== '' && !isExisting) filtered.push(inputValue);
                   return filtered;
                 }}
                 id="tags"
-                options={tagsOptions.map((option) => option.name)}
+                options={tagsOptions ? tagsOptions.map((option) => option.name) : []}
                 freeSolo
                 value={tags}
                 onChange={(event, value) => setTags(value)}
@@ -286,12 +198,6 @@ const Editor = () => {
                   />
                 )}
               />
-
-              {(tags.length < 2) && (
-                <p className="text-red-600 text-sm font-light">
-                  use at latest two tags
-                </p>
-              )}
             </div>
 
 
@@ -305,7 +211,7 @@ const Editor = () => {
                   else setCategory(newValue);
                 }}
                 filterOptions={(options, params) => {
-                  const filtered = filter(options, params);
+                  const filtered = categoryFilter(options, params);
                   const { inputValue } = params;
                   const isExisting = options.some((option) => inputValue === option.name);
                   if (inputValue !== '' && !isExisting) filtered.push({ inputValue, name: `Add "${inputValue}"` });
@@ -315,7 +221,7 @@ const Editor = () => {
                 clearOnBlur
                 handleHomeEndKeys
                 id="free-solo-with-text-demo"
-                options={categoriesOptions}
+                options={categoriesOptions || []}
                 getOptionLabel={(option) => {
                   if (typeof option === 'string') return option;
                   if (option.inputValue) return option.inputValue;
@@ -325,20 +231,15 @@ const Editor = () => {
                 sx={{ width: 300 }}
                 freeSolo
                 renderInput={(params) => (
-                  <TextField {...params} label="category" />
+                  <TextField
+                    {...params}
+                    label="category"
+                    error={!category || category?.name?.length < 2}
+                    helperText={!category || category?.name?.length < 2 ? "min length of category is 2 characters" : undefined} />
                 )}
+
               />
-
-              {(!category || category?.name?.length < 2) && (
-                <p className="text-red-600 text-sm font-light">
-                  min length of category is 2 characters
-                </p>
-              )}
             </div>
-
-
-
-
           </Stack>
 
           <div className="flex  min-w-full">
@@ -378,9 +279,10 @@ const Editor = () => {
           ref={mdEditorRef}
           style={{ height: '500px' }}
           renderHTML={text => mdParser(text)}
-          onChange={handleEditorChange}
+          onChange={({ text }: { text: string }) => setText(text)}
           onImageUpload={onImageUpload}
         />
+
         {(text.length < 100) && (
           <p className="text-red-600 text-sm font-light">
             min length of content is 100 characters
@@ -388,7 +290,29 @@ const Editor = () => {
         )}
       </Container>
     </>
-  );
+  )
 }
 
-export default Editor;
+export default CreatePost;
+
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+
+  // @ts-ignore
+  const {id, error} = GetUserId(context.req)
+
+  if (error || !id) return { notFound: true }
+
+ const [tagsOptions, categoriesOptions] = await prisma.$transaction([
+  prisma.tag.findMany({
+    select: { name: true }
+  }),
+  prisma.category.findMany({
+    select: { name: true }
+  }),
+ ])
+
+ const props = {tagsOptions, categoriesOptions}
+
+ return { props }
+}

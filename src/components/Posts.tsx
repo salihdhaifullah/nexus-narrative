@@ -102,7 +102,7 @@ export default function Posts() {
                 {!isLoading ?
                     count < 1 ? (
                         <>
-                            <Link href='/admin/create-post'>
+                            <Link href='/create-post'>
                                 <Box className="w-fit h-fit border m-1 z-[101] rounded-md">
                                     <Button className="hover:shadow-lg z-[100] transition-all hover:shadow-blue-500">
                                         Create a Post
@@ -113,7 +113,7 @@ export default function Posts() {
                         </>
                     ) : (
                             <Paper className="w-full overflow-auto">
-                                <Link href='/admin/create-post'>
+                                <Link href='/create-post'>
                                     <Box className="w-fit h-fit border m-1 z-[101] rounded-md">
                                         <Button className="hover:shadow-lg z-[100] transition-all hover:shadow-blue-500">
                                             Create a Post
@@ -150,7 +150,7 @@ export default function Posts() {
                                                     <TableCell align="right">{post.likes.filter((item) => item.isLike === true).length}</TableCell>
                                                     <TableCell align="right">{post.likes.filter((item) => item.isDislike === true).length}</TableCell>
 
-                                                    <Link href={`/admin/update-post/?id=${post.id}`}>
+                                                    <Link href={`/update-post/?id=${post.id}`}>
                                                         <TableCell align="right">
                                                             <Button className="bg-green-500 text-white shadow-md lowercase p-0 shadow-green-500">Edit</Button>
                                                         </TableCell>

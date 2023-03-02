@@ -219,3 +219,4 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 
   return { props: { data }, revalidate: 10 };
 }
+

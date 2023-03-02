@@ -1,9 +1,9 @@
 import "../styles/globals.css";
 import type { AppProps } from 'next/app';
-import Header from '../components/Header'
-import Copyright from '../components/Copyright'
+import Header from '../components/main/Header'
+import Copyright from '../components/main/Copyright'
 import NextNProgress from 'nextjs-progressbar';
-import Loader from "../components/Loader";
+import Loader from "../components/utils/Loader";
 import { useRouter } from "next/router";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {

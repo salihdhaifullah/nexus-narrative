@@ -31,7 +31,7 @@ export default function Post(props: {post: IPostProps }) {
 
                 {post.description ? (
                   <Typography component="p" variant="body2">
-                    {post.description.substring(0, 30)}
+                    {post.description.substring(0, 30)}...
                   </Typography>
                 ) : null}
 
@@ -43,7 +43,7 @@ export default function Post(props: {post: IPostProps }) {
 
               <CardMedia
                 component="img"
-                sx={{ width: 100 }}
+                sx={{ width: 200 }}
                 image={post.backgroundImage}
                 alt={post.title}
               />

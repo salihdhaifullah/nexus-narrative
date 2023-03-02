@@ -51,13 +51,16 @@ a {
 }
 
 .custom-html-style > ol {
-  list-style-type: decimal !important;
+ @apply list-decimal
 }
-
 
 .custom-html-style > ol > li {
   display: list-item !important;
   text-align: -webkit-match-parent !important;
+}
+
+.custom-html-style > ul {
+  @apply list-disc
 }
 
 @tailwind base;
@@ -91,6 +94,8 @@ a {
   left: 8px;
   animation: lds-ellipsis2 0.6s infinite;
 }
+
+
 
 .lds-ellipsis div:nth-child(3) {
   left: 32px;

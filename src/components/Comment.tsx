@@ -6,6 +6,7 @@ import useGetUser from '../hooks/useGetUser';
 import { IComment } from '../types/comment';
 import Toast from '../utils/sweetAlert';
 import dateFormat from '../utils/dateFormat';
+import useIsClickOut from '../hooks/useIsClickOut';
 
 interface ICommentProps {
   comment: IComment;
@@ -21,6 +22,7 @@ const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, set
   const [user] = useGetUser()
   const [isOpen, setIsOpen] = useState(false);
   const [isCanUpdateAndDelete, setIsCanUpdateAndDelete] = useState(false)
+  const [eleCallback] = useIsClickOut(setIsOpen)
 
   useEffect(() => {
     if (user?.id && Number(user?.id) === Number(comment.authorId)) setIsCanUpdateAndDelete(true);
@@ -45,7 +47,7 @@ const Comment = ({ setChangeComments, changeComments, comment, scrollToForm, set
       <div className="mb-2 flex">
 
         {isOpen && (
-          <span className="relative z-10">
+          <span ref={eleCallback} className="relative z-10">
             <div className="absolute flex flex-col top-10 rounded-md bg-white transition-all shadow-md p-2">
               <span
                 onClick={() => handelDelete(comment.id)}

@@ -11,8 +11,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Link from 'next/link';
-import useGetUser from '../hooks/useGetUser';
-import { Logout } from '../api';
+import useGetUser from '../../hooks/useGetUser';
+import { Logout } from '../../api';
 import { useRouter } from 'next/router';
 import Swal from 'sweetalert2';
 import Typography from '@mui/material/Typography';
@@ -105,7 +105,7 @@ export default function Header() {
 
 
             {user === null ? null : (
-              <Link href="/admin/dashboard">
+              <Link href="/dashboard">
                 <Button variant="text" size="small" className="h-fit"> DashBoard </Button>
               </Link>
             )}
