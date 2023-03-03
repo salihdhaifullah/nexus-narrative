@@ -2,30 +2,29 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import Box from '@mui/material/Box'
-import { IUserProfileProps } from '../types/profile'
+import { IUserProfileProps } from '../../types/profile'
 
-const ProfileTablet = ({ userImage, firstName, lastName, title, about, phoneNumber, country, city, blogName, email }: IUserProfileProps) => {
+const ProfileTemplate = ({ userImage, firstName, lastName, title, about, phoneNumber, country, city, blogName, email }: IUserProfileProps) => {
     return (
         <div className="m-4 mb-[120px]">
             <div className='gap-4 flex-wrap flex flex-col'>
 
-                <Box className="w-full h-full flex gap-6 flex-wrap md:flex-nowrap justify-evenly">
-                    <Box className='flex justify-start h-full w-full bg-white rounded-md shadow-md p-6'>
-                        <div>
+                <Box className="w-full h-full flex justify-start items-center">
+                    <Box className='flex justify-center gap-8 h-full w-fit bg-white rounded-md shadow-md p-6'>
+                        <div className="justify-start">
 
-                            <Image className='rounded-md' src={userImage} alt="Picture of the author" width={120} height={100} />
+                            <Image className='rounded-md w-[120px]' src={userImage} alt="Picture of the author" width={120} height={100} />
 
                             <h1 className='text-2xl text-gray-800 font-bold'>{firstName + " " + lastName}</h1>
                             {title !== "Not Found" ? (<h2 className='text-gray-600 mt-2'>{title}</h2>) : null}
                         </div>
-                    </Box>
 
-                    <Box className="flex flex-col gap-y-auto w-full h-full justify-start bg-white rounded-md shadow-md p-6">
-                        <h1 className='text-xl text-start text-gray-800 font-bold mb-4'>Blog Information</h1>
+                        <Box className="flex flex-col justify-center items-center min-h-full">
+                            <h1 className='text-xl text-start text-gray-800 font-bold mb-4'>Blog Information</h1>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{blogName}</strong>
-                            <hr className='my-2' />
-                        </h2>
+                            <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{blogName}</strong>
+                            </h2>
+                        </Box>
                     </Box>
                 </Box>
 
@@ -73,4 +72,4 @@ const ProfileTablet = ({ userImage, firstName, lastName, title, about, phoneNumb
     )
 }
 
-export default ProfileTablet
+export default ProfileTemplate;

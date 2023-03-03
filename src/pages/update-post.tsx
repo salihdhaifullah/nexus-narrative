@@ -283,7 +283,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     })
   ])
 
-  if (data?.authorId !== userId) return { notFound: true }
+  if (!data) return { notFound: true }
+  if (data.authorId !== userId) return { notFound: true }
 
 
   const props = { tagsOptions, categoriesOptions, data, postId: id }

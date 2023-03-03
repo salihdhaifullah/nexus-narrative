@@ -62,4 +62,18 @@ export interface IBLogProps {
     authorId: number;
 }
 
+export interface IPost {
+    slug: string
+    _count: {
+        views: number
+    }
+    title: string
+    id: number
+    createAt: Date;
+    likes: {
+        isLike: boolean
+        isDislike: boolean
+    }[]
+}
+
 export type SortByType = "CreateAt" | "Views" | "Likes"

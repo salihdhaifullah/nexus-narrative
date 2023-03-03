@@ -1,11 +1,11 @@
 import { IUserProfileProps } from '../../types/profile';
 import prisma from '../../libs/prisma';
 import Box from '@mui/material/Box'
-import Post from '../../components/Post';
+import Post from '../../components/utils/Post';
 import Typography from '@mui/material/Typography';
 import { IPostProps } from './../../types/post';
 import { useCallback, useEffect, useState } from 'react';
-import ProfileTablet from './../../components/ProfileTablet';
+import ProfileTemplate from '../../components/utils/ProfileTemplate';
 import { GetBlogPosts } from '../../api';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -29,7 +29,7 @@ const Profile = (data: IUserProfileProps) => {
     return (
         <div className='w-full h-fit mb-10'>
             <Box>
-                <ProfileTablet {...data} />
+                <ProfileTemplate {...data} />
                 {isLoading ? (
                     <div className="w-full h-full flex justify-center items-center">
                         <CircularProgress />

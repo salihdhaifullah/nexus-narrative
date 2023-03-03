@@ -9,23 +9,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const { id: userId, error } = GetUserId(req);
 
-
             if (typeof id !== "number") return res.status(404).json({ massage: "Post Not Found" });
 
-
-            const likes = prisma.like.count({ where: { isLike: true, postId: id } })
-
-            const dislikes = prisma.like.count({ where: { isDislike: true, postId: id } })
+            const transactions = [
+                prisma.like.count({ where: { isLike: true, postId: id } }),
+                prisma.like.count({ where: { isDislike: true, postId: id } })
+            ]
 
             if (userId) {
-                const isLiked = prisma.like.findFirst({ where: { postId: id, userId: userId }, select: { isDislike: true, isLike: true } });
-                const [result1, result2, result3] = await Promise.all([likes, dislikes, isLiked])
-                return res.status(200).json({ likes: result1, dislikes: result2, isLiked: result3 })
+                const [likes, dislikes, isLiked] = await prisma.$transaction([
+                    ...transactions,
+                    prisma.like.findFirst({ where: { postId: id, userId: userId }, select: { isDislike: true, isLike: true } })
+                ])
+                return res.status(200).json({ likes, dislikes, isLiked })
 
             } else {
-                const [result1, result2] = await Promise.all([likes, dislikes])
-                return res.status(200).json({ likes: result1, dislikes: result2 })
+                const [likes, dislikes] = await prisma.$transaction(transactions)
+
+                return res.status(200).json({ likes, dislikes })
             }
+
         } catch (error) {
             console.log(error)
             return res.status(500).json({ massage: "internal Server Error" })
@@ -39,14 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const postId = Number(req.query["id"]);
             const { error, id } = GetUserId(req)
 
-            if (error) return res.status(400).json({ massage: error });
-            if (typeof id !== "number") return res.status(400).json({ massage: "User Not Found" });
-
+            if (typeof id !== "number" || error) return res.status(400).json({ massage: "User Not Found" });
             if (typeof postId !== "number") return res.status(400).json({ massage: "Post Not Found" });
-
-            const user = await prisma.user.findFirst({ where: { id: id }, select: { id: true } });
-
-            if (!user) return res.status(400).json({ massage: "User Not Found" })
 
             const likes = await prisma.like.findFirst({ where: { postId: postId, userId: id }, select: { id: true, isDislike: true, isLike: true } })
 
@@ -119,6 +116,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log(error)
             return res.status(500).json({ massage: "internal Server Error" })
         }
-
     }
 }

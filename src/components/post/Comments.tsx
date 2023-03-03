@@ -2,12 +2,13 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import { IComment } from '../types/comment';
-import { CreateComment, GetComments, updateComment } from '../api';
+import { IComment } from '../../types/comment';
+import { CreateComment, GetComments, updateComment } from '../../api';
 import Comment from './Comment';
-import useGetUser from '../hooks/useGetUser';
+import useGetUser from '../../hooks/useGetUser';
 import { useRouter } from 'next/router';
 import Swal from 'sweetalert2';
+import { CircularProgress } from '@mui/material';
 
 
 const Comments = ({ postId }: { postId: number }) => {
@@ -56,11 +57,11 @@ const Comments = ({ postId }: { postId: number }) => {
         if (!idToUpdate) {
             await CreateComment({ postId: Number(postId), comment: commentState })
                 .catch((err) => { })
-                .finally(() => { setIsLoading(true) })
+                .finally(() => { setIsLoading(false) })
         } else {
             await updateComment(idToUpdate, commentState)
                 .catch((err) => { })
-                .finally(() => { setIsLoading(true) })
+                .finally(() => { setIsLoading(false) })
             setIdToUpdate(null)
         }
         setChangeComments(!changeComments)
@@ -81,8 +82,8 @@ const Comments = ({ postId }: { postId: number }) => {
                 <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
             </div>
 
-            <section className={`${!comments?.length ? "max-w-[500px]" : "lg:grid-cols-2 gap-10"} grid grid-cols-1`}>
-                <div className="rounded-lg max-w-[500px] h-fit shadow-lg bg-white p-3 " ref={formRef}>
+            <section className="flex flex-col w-full lg:flex-row gap-10 justify-center items-center">
+                <div className="rounded-lg w-[500px] h-fit shadow-lg bg-white p-3 " ref={formRef}>
                     <div className="mb-2">
                         <label htmlFor="comment" className="text-lg text-gray-600">add a comment</label>
                         <textarea
@@ -94,7 +95,9 @@ const Comments = ({ postId }: { postId: number }) => {
                             placeholder=""></textarea>
                     </div>
                     <div className="justify-evenly flex items-center">
-                        <Button onClick={handelCreateOrUpdateComment} className="px-3 py-2 hover:text-blue-600 hover:border-blue-600 hover:border hover:bg-blue-100 text-sm text-white bg-blue-600 rounded"> Comment </Button>
+                        <Button onClick={() => isLoading ? undefined : handelCreateOrUpdateComment()} className="px-3 py-2 hover:text-blue-600 hover:border-blue-600 hover:border hover:bg-blue-100 text-sm text-white bg-blue-600 rounded">
+                        {isLoading ? <CircularProgress className="w-6 h-6 text-inherit" /> : "Comment"}
+                        </Button>
                         <Button onClick={() => setComment("")}
                             className="px-3 py-2 text-sm bg-blue-100 hover:text-white border-blue-600 hover:bg-blue-600 text-blue-600 border rounded">
                             Cancel

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../libs/prisma'
-import { ICreatePostData, SortByType } from '../../types/post'
+import { ICreatePostData, IUpdatePostData, SortByType } from '../../types/post'
 import { GetUserId } from '../../utils/auth';
 import Storage from '../../libs/supabase'
 
@@ -10,21 +10,81 @@ export const config = {
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+
+    if (req.method === 'PATCH') {
+        try {
+            const storage = new Storage();
+            let { title, content, images, tags, category }: IUpdatePostData = req.body;
+
+            if (title.length < 8 || content.length < 100 || category.length < 2 || tags.length < 2) return res.status(400).json({ massage: "unValid data" });
+
+            const postId = Number(req.query["id"]);
+            const TagsQuery = []
+            const filesNames = []
+
+            const { error, id } = GetUserId(req);
+
+            if (typeof id !== "number" || error) return res.status(400).json({ massage: "User Not Found" });
+
+            if (typeof postId !== 'number') return res.status(400).json({ massage: "Post Not Find" });
+
+            const isFound = await prisma.post.findFirst({
+                where: { authorId: id, id: postId },
+                select: { images: true, id: true, slug: true, author: { select: { blogName: true } } }
+            })
+
+
+            if (!isFound?.id) return res.status(404).json({ massage: "Not Found Post" });
+
+
+            for (let image of isFound?.images) {
+                if (!content.includes(image)) {
+                    await storage.deleteFile(image.split("/public/public/")[1]);
+                } else {
+                    filesNames.push(image)
+                };
+            }
+
+            for (let image of images) {
+                const { error, Url } = await storage.uploadFile(image.base64)
+                if (error) return res.status(500).json({ massage: "Internal Server Error", error: error })
+                filesNames.push(Url);
+                content = content.replace(image.preViewUrl, Url)
+            }
+
+
+            if (tags && tags.length) {
+                for (let tag of tags) {
+                    TagsQuery.push({ where: { name: tag.trim() }, create: { name: tag.trim() } })
+                }
+            }
+
+            await prisma.post.update({
+                where: { id: postId },
+                data: {
+                    tags: { connectOrCreate: TagsQuery },
+                    title: title,
+                    content: content,
+                    images: filesNames,
+                    category: {
+                        connectOrCreate: { where: { name: category.trim() }, create: { name: category.trim() } }
+                    }
+                }
+            });
+
+            return res.status(200).json({ massage: "post Successfully Updated", postUrl: `/${isFound.author.blogName}/posts/${isFound.slug}` });
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
+        }
+    }
+
     if (req.method === 'GET') {
 
         try {
             const category = req.query["category"];
 
             const filterQuery = typeof category === "string" ? { where: { category: { name: category } } } : null;
-
-            if (req.query["length"]) {
-                let length;
-
-                if (!filterQuery) length = await prisma.post.count()
-                else length = await prisma.post.count(filterQuery)
-
-                return res.status(200).json({ length })
-            }
 
             const skip = Number(req.query["skip"]);
             const take = Number(req.query["take"]);
@@ -49,7 +109,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             let posts;
             if (filterQuery) {
                 posts = await prisma.post.findMany({
-
                     orderBy: orderBy,
                     where: filterQuery.where,
                     skip: skip,
@@ -111,9 +170,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const { error, id } = GetUserId(req)
 
-            if (error) return res.status(400).json({ massage: error });
-
-            if (typeof id !== "number") return res.status(400).json({ massage: "User Not Found" });
+            if (typeof id !== "number" || error) return res.status(400).json({ massage: "User Not Found" });
 
             const user = await prisma.user.findFirst({ where: { id: id }, select: { id: true, blogName: true } });
 
@@ -123,7 +180,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             if (isSlugUnique?.id) return res.status(400).json({ massage: "slug is already taken" })
 
-            if (tags && tags.length) for (let tag of tags) { TagsQuery.push({ where: { name: tag }, create: { name: tag } }) };
+            if (tags && tags.length) for (let tag of tags) { TagsQuery.push({ where: { name: tag.trim() }, create: { name: tag.trim() } }) };
 
             for (let image of images) {
                 const { error, Url } = await storage.uploadFile(image.base64)
@@ -146,7 +203,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     title: title,
                     content: content,
                     images: filesNames || [],
-                    category: { connectOrCreate: { where: { name: category }, create: { name: category } } },
+                    category: { connectOrCreate: { where: { name: category.trim() }, create: { name: category.trim() } } },
                     slug: slug,
                     author: { connect: { id: id } },
                     description: description
@@ -168,11 +225,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const postId = Number(req.query["id"])
             const storage = new Storage();
 
-            if (typeof Number(postId) !== 'number') return res.status(400).json({ massage: "postId Not Valid" })
+            if (typeof postId !== 'number') return res.status(400).json({ massage: "postId Not Valid" })
 
             const { error, id } = GetUserId(req)
-            if (typeof id !== "number") return res.status(400).json({ massage: "User Not Found" });
-            if (error) return res.status(400).json({ massage: error });
+            if (typeof id !== "number" || error) return res.status(400).json({ massage: "User Not Found" });
 
             const post = await prisma.post.findUnique({
                 where: { id: postId },
@@ -180,9 +236,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
 
             if (!post?.id) return res.status(400).json({ massage: "Post Not Found" })
-
             if (post.authorId !== id) return res.status(403).json({ massage: "UnAuthorized To Delete This Post" });
-
 
             await storage.deleteFile(post.backgroundImage.split("/public/public/")[1]);
 
@@ -190,7 +244,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await storage.deleteFile(image.split("/public/public/")[1]);
             }
 
-            await prisma.post.delete({ where: { id: Number(postId) } });
+            await prisma.post.delete({ where: { id: postId } });
 
             return res.status(200).json({ massage: "post Successfully Deleted" });
         } catch (error) {

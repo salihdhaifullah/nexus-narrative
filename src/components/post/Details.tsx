@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Link from 'next/link';
 import Image from 'next/image';
-import dateFormat from '../utils/dateFormat';
+import dateFormat from '../../utils/dateFormat';
 
 export interface IDetailsProps {
   description: string;

@@ -17,7 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const category: string | any = req.query["category"];
       const skip = Number(req.query["skip"])
       const take = Number(req.query["take"])
-      const getLength = req.query["get-length"];
 
       let searchQuery: TSearchQuery = { OR: [{ title: { contains: search, mode: 'insensitive' } }, { description: { contains: search, mode: 'insensitive' } }] }
 
@@ -26,28 +25,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       else if (typeof category === 'string') searchQuery = { category: { name: { contains: category, mode: 'insensitive' } } };
 
 
-      if (getLength) {
-        const posts = await prisma.post.count({ where: searchQuery });
-        return res.status(200).json({ posts });
-      } else {
-        if (typeof skip !== 'number' || typeof take !== 'number') return res.status(400).json({ massage: "Bad Request" });
+      if (typeof skip !== 'number' || typeof take !== 'number') return res.status(400).json({ massage: "Bad Request" });
 
-        const posts = await prisma.post.findMany({
-          where: searchQuery,
-          skip: skip,
-          take: take,
-          select: {
-            backgroundImage: true,
-            title: true,
-            description: true,
-            slug: true,
-            createdAt: true,
-            author: { select: { blogName: true } }
-          }
-        });
+      const posts = await prisma.post.findMany({
+        where: searchQuery,
+        skip: skip,
+        take: take,
+        select: {
+          backgroundImage: true,
+          title: true,
+          description: true,
+          slug: true,
+          createdAt: true,
+          author: { select: { blogName: true } }
+        }
+      });
 
-        return res.status(200).json({ posts });
-      }
+      return res.status(200).json({ posts });
+
     } catch (error) {
       console.log(error)
       return res.status(500).json({ massage: "internal Server Error" })

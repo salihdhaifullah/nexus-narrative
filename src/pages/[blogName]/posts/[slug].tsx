@@ -2,18 +2,18 @@ import { useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import { viewedPost } from '../../../api';
 import { IBLogProps, IPostProps } from '../../../types/post';
-import MainPost from '../../../components/MainPost';
-import Post from '../../../components/Post';
+import MainPost from '../../../components/post/MainPost';
+import Post from '../../../components/utils/Post';
 import Main from '../../../components/Main';
-import Details from '../../../components/Details';
+import Details from '../../../components/post/Details';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress'
 import prisma from '../../../libs/prisma';
-import Comments from '../../../components/Comments';
+import Comments from '../../../components/post/Comments';
 import IsUseful from '../../../components/IsUseful';
-import Tags from '../../../components/Tags';
+import Tags from '../../../components/post/Tags';
 
 
 export default function Index({ data }: { data: IBLogProps }) {

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import Head from 'next/head'
-import Post from '../components/Post'
+import Post from '../components/utils/Post'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
-import { generalSearch, GetSearchLength, SearchByCategory, SearchByTag } from '../api'
+import { generalSearch, SearchByCategory, SearchByTag } from '../api'
 import { IPostProps } from '../types/post'
 import { CircularProgress } from '@mui/material'
 import { useRouter } from 'next/router'
@@ -30,42 +30,6 @@ const Search = () => {
         setTag(window.location.href.split("?tag=")[1])
         setCategory(window.location.href.split("?category=")[1])
     }, [router])
-
-
-    const init = useCallback(async () => {
-        if (search) {
-            await GetSearchLength("search", search)
-                .then((res) => {
-                    const pages = [];
-                    for (let i = 0; i < Math.ceil(res.data.posts / take); i++) { pages.push(i) };
-                    setPostsPages(pages)
-                })
-                .catch((err) => { console.error(err) });
-        }
-        else if (tag) {
-            await GetSearchLength("tag", tag)
-                .then((res) => {
-                    const pages = [];
-                    for (let i = 0; i < Math.ceil(res.data.posts / take); i++) { pages.push(i) };
-                    setPostsPages(pages)
-                })
-                .catch((err) => { console.error(err) });
-        }
-        else if (category) {
-            await GetSearchLength("category", category)
-                .then((res) => {
-                    const pages = [];
-                    for (let i = 0; i < Math.ceil(res.data.posts / take); i++) { pages.push(i) };
-                    setPostsPages(pages)
-                })
-                .catch((err) => { console.error(err) });
-        }
-    }, [category, search, tag])
-
-
-    useEffect(() => {
-        init()
-    }, [init])
 
     const handelNextPage = () => {
         const page = (activePage + 1);

@@ -14,7 +14,7 @@ export interface IUserProfileData {
 export interface IUpdateProfileGeneralInformation {
     country: string | null
     city: string | null
-    firstName: string 
+    firstName: string
     lastName: string
     email: string
     phoneNumber: number | null
@@ -46,4 +46,9 @@ export interface IUserProfileProps {
 
 export interface IUploadAvatar {
     base64: string
+}
+
+export interface IViews {
+    _count: number;
+    monthAndYear: string
 }

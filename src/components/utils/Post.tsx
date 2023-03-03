@@ -5,8 +5,8 @@ import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Link from 'next/link';
-import { IPostProps } from '../types/post';
-import dateFormat from '../utils/dateFormat';
+import { IPostProps } from '../../types/post';
+import dateFormat from '../../utils/dateFormat';
 
 export default function Post(props: {post: IPostProps }) {
   const { post } = props;

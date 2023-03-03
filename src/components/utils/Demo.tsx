@@ -1,7 +1,7 @@
-import { demoAccount } from '../api';
+import { demoAccount } from '../../api';
 import { Button, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
-import Toast from '../utils/sweetAlert';
+import Toast from '../../utils/sweetAlert';
 import { useState } from 'react';
 
 const Demo = () => {

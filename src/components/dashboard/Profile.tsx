@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Swal from 'sweetalert2';
 import Button from '@mui/material/Button';
@@ -7,82 +7,48 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress'
-import Typography from '@mui/material/Typography'
+import { ChangeBlogName, ChangePassword, UpdateProfileGeneralInformation, uploadProfileImage } from '../../api';
+import { IUserProfileData, IUpdateProfileGeneralInformation } from '../../types/profile'
+import { countries } from '../../utils/countries';
+import Toast from '../../utils/sweetAlert';
+import createResizedImage from '../../utils/image-resizer';
 
-import { ChangeBlogName, ChangePassword, GetProfileData, UpdateProfileGeneralInformation, uploadProfileImage } from '../api';
-import { IUserProfileData, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile'
-import { countries } from '../utils/countries';
-import Toast from '../utils/sweetAlert';
-import createResizedImage from '../utils/image-resizer';
+const Profile = ({ profile }: { profile: IUserProfileData }) => {
+  const [userImage, setUserImage] = useState(profile.profile || "")
+  const [about, setAbout] = useState(profile.about || "")
+  const [blogName, setBlogName] = useState(profile.blogName || "")
+  const [country, setCountry] = useState(profile.country || "")
+  const [city, setCity] = useState(profile.city || "")
+  const [phoneNumber, setPhoneNumber] = useState(profile.phoneNumber?.toString() || "")
+  const [title, setTitle] = useState(profile.title || "")
+  const [firstName, setFirstName] = useState(profile.firstName)
+  const [lastName, setLastName] = useState(profile.lastName)
+  const [email, setEmail] = useState(profile.email)
+  const [countryDefault, setCountryDefault] = useState<any>(countries.find((item) => item.label === country))
 
-const Profile = () => {
-  const [userImage, setUserImage] = useState("")
-  const [about, setAbout] = useState("")
-  const [blogName, setBlogName] = useState("")
-  const [country, setCountry] = useState("")
-  const [city, setCity] = useState("")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [title, setTitle] = useState("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
-  const [countryDefault, setCountryDefault] = useState<any>(null)
-  const [isValidBlogName, setIsValidBlogName] = useState(false)
 
+  const [isValidBlogName, setIsValidBlogName] = useState(true)
 
   const [isLoadingInfo, setIsLoadingInfo] = useState(false)
   const [isLoadingBlogName, setIsLoadingBlogName] = useState(false)
   const [isLoadingAvatar, setIsLoadingAvatar] = useState(false)
   const [isLoadingPassword, setIsLoadingPassword] = useState(false)
 
-  const init = useCallback(async () => {
-    await GetProfileData().then((data) => {
-      const profile: IUserProfileData | null = data.data.user;
-      if (!profile) return;
 
-      setUserImage(profile.profile || "");
-      setAbout(profile.about || "");
-      setBlogName(profile.blogName || "");
-      setCountry(profile.country || "");
-      setCity(profile.city || "");
-      setPhoneNumber(profile.phoneNumber?.toString() || "");
-      setTitle(profile.title || "");
 
-      setFirstName(profile.firstName);
-      setLastName(profile.lastName)
-      setEmail(profile.email)
-
-      setCountryDefault(countries.find((item) => item.label === country))
-    });
-  }, []);
-
-  useEffect(() => {
-    setCountryDefault(countries.find((item) => item.label === country))
-  }, [country])
-
-  useEffect(() => {
-    init()
-  }, [init])
-
-  useEffect(() => {
-    const test = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(blogName)
-    setIsValidBlogName(test)
-  }, [blogName])
 
   const HandelUpdateProfileGeneralInformation = async () => {
     if (!lastName.length || !firstName.length || !email.length) return Toast.fire("firstName, lastName, Email are required", "", 'error');
     setIsLoadingInfo(true)
 
-
     const data: IUpdateProfileGeneralInformation = { country, city, firstName, lastName, email, phoneNumber: Number(phoneNumber) || null, title, about };
 
     await UpdateProfileGeneralInformation(data)
       .then((res) => { Toast.fire(res.data.message, "", 'success') })
-      .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') });
-    init()
-    setIsLoadingInfo(false)
+      .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') })
+      .finally(() => { setIsLoadingInfo(false) })
   }
 
 
@@ -90,14 +56,9 @@ const Profile = () => {
     setIsLoadingBlogName(true)
     if (!blogName) return;
     await ChangeBlogName({ blogName: blogName })
-      .then((res) => {
-        Toast.fire(res.data.massage, "", 'success')
-      })
-      .catch((err) => {
-        Toast.fire(err.response.data.massage, "", 'error')
-      });
-    init()
-    setIsLoadingBlogName(false)
+      .then((res) => { Toast.fire(res.data.massage, "", 'success') })
+      .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') })
+      .finally(() => { setIsLoadingBlogName(false) })
   }
 
   const HandelChangePassword = async () => {
@@ -111,25 +72,18 @@ const Profile = () => {
 
         await ChangePassword({ currentPassword, newPassword })
           .then((res) => { Toast.fire(res.data.massage, "", 'success') })
-          .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') });
-
-        init();
-        setIsLoadingPassword(false)
+          .catch((err) => { Toast.fire(err.response.data.massage, "", 'error') })
+          .finally(() => { setIsLoadingPassword(false) })
       });
   }
 
   const handelUploadAvatar = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target?.files ? event.target.files[0] : null;
-
     if (!file) return Toast.fire("No File Selected", "", 'warning');
-
     setIsLoadingAvatar(true);
-
     const base64 = await createResizedImage(file)
 
-    const data: IUploadAvatar = { base64 }
-
-    await uploadProfileImage(data)
+    await uploadProfileImage({ base64 })
       .then((res) => {
         setUserImage(res.data.name)
         Toast.fire(res.data.massage, "", 'success')
@@ -140,42 +94,25 @@ const Profile = () => {
         } else {
           Toast.fire(err.response.data.massage || 'Some Thing Wrong!', '', 'error')
         }
-      });
-
-    setIsLoadingAvatar(false)
+      })
+      .finally(() => { setIsLoadingAvatar(false) })
   }
 
   return (
-    <div className='max-w-[100vw] '>
+    <div className='max-w-[100vw] mt-10'>
       <div className="mx-4">
-
-        <Box className="w-full items-center text-3xl text-gray-800 font-bold mb-4 flex gap-4">
-          <Typography variant='h4' className='text-3xl text-gray-800 font-bold my-4'>
-            Settings
-          </Typography>
-        </Box>
-
         <div className=' gap-6 grid-flow-dense grid-cols-10 flex-wrap flex flex-col grid-rows-6 lg:grid'>
 
           <div className='flex justify-start h-fit lg:w-full col-span-3 row-span-2 bg-white rounded-md shadow-md p-6'>
             <div>
-              {userImage ? (
-                <Image
-                  className='rounded-md'
-                  src={userImage}
-                  alt="user-image"
-                  width={120}
-                  height={100}
-                />
-              ) : (
-                <Image
-                  className='rounded-md'
-                  src="/images/user-placeholder.png"
-                  alt="user-placeholder"
-                  width={120}
-                  height={100}
-                />
-              )}
+
+              <Image
+                className='rounded-md'
+                src={userImage || "/images/user-placeholder.png"}
+                alt="user-image"
+                width={120}
+                height={100}
+              />
 
               <h1 className='text-2xl text-gray-800 font-bold'>{firstName + " " + lastName}</h1>
               {title && (<h2 className='text-gray-600'>{title}</h2>)}
@@ -253,17 +190,20 @@ const Profile = () => {
           <div className="flex flex-col h-fit lg:w-full col-span-3 row-span-2 bg-white rounded-md shadow-md p-6">
             <h1 className='text-xl text-start text-gray-800 font-bold mb-4'>Blog Name</h1>
 
-            <TextField value={blogName} onChange={(event) => setBlogName(event.target.value)} id="Blog Name" name="Blog Name" label="Blog Name" variant="outlined" />
+            <TextField value={blogName}
+              onChange={(event) => {
+                const test = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(event.target.value)
+                setIsValidBlogName(test)
+                setBlogName(event.target.value)
+              }}
+              error={!isValidBlogName}
+              helperText={isValidBlogName ? undefined : "unValid blog Name, use only numbers and letters with dash as space"}
+              id="Blog Name" name="Blog Name" label="Blog Name" variant="outlined" />
 
             <div className="flex w-full items-start mt-4">
               <Button onClick={handelChangeBlogName} disabled={isLoadingBlogName || !isValidBlogName} size="small" className='w-fit bg-blue-600 text-white' variant='contained'>
                 {isLoadingBlogName ? (<CircularProgress className='text-white  w-5 h-5' />) : "Save"}
               </Button>
-              {isValidBlogName ? null : (
-                <p className="text-red-600 text-center text-sm font-light">
-                  unValid blog Name, use only numbers and letters with dash as space
-                </p>
-              )}
             </div>
 
           </div>

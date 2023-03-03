@@ -1,5 +1,5 @@
-import { DeletePost, GetPagesNumber, GetPostsPageData } from '../api';
-import Toast from '../utils/sweetAlert';
+import { DeletePost } from '../../api';
+import Toast from '../../utils/sweetAlert';
 import { useEffect, useState, ChangeEvent, useCallback } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -16,55 +16,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import dateFormat from '../utils/dateFormat';
+import dateFormat from '../../utils/dateFormat';
+import { IPost } from '../../types/post';
 
-interface IPost {
-    slug: string
-    _count: {
-        views: number
-    }
-    title: string
-    id: number
-    createAt: Date;
-    likes: {
-        isLike: boolean
-        isDislike: boolean
-    }[]
-}
 
-export default function Posts() {
-    const [isLoading, setIsLoading] = useState(true);
+
+export default function Posts({postsInit}: {postsInit: IPost[]}) {
+    const [isLoading, setIsLoading] = useState(false);
     const [blogName, setBlogName] = useState("");
-    const [posts, setPosts] = useState<IPost[]>([])
+    const [posts, setPosts] = useState<IPost[]>(postsInit)
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [count, setCount] = useState(0);
-
-    const init = useCallback(async () => {
-        await GetPagesNumber()
-            .then((res) => { setCount(res.data.length) })
-            .catch((err) => { console.error(err) });
-    }, [])
-
-    const getPostsPagination = useCallback(async () => {
-        setIsLoading(true)
-        await GetPostsPageData((page * rowsPerPage), rowsPerPage)
-            .then((res) => {
-                setPosts(res.data.data.posts)
-                if (!blogName) setBlogName(res.data.data.blogName)
-            })
-        setIsLoading(false)
-
-    }, [page, rowsPerPage])
-
-    useEffect(() => {
-        getPostsPagination()
-    }, [getPostsPagination])
-
-    useEffect(() => {
-        init()
-    }, [init])
-
+    const [count, setCount] = useState(postsInit.length);
 
     const handelDelete = async (postId: number) => {
         Swal.fire({
@@ -136,7 +99,7 @@ export default function Posts() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {posts.map((post) => (
+                                            {posts?.length && posts.map((post) => (
                                                 <TableRow key={post.slug} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                                     <Link href={`/${blogName}/posts/${post.slug}`}>
                                                         <TableCell className="link text-blue-700" component="th" scope="row">

@@ -22,7 +22,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import FormControl from '@mui/material/FormControl';
 import Toast from '../utils/sweetAlert';
 import { useRouter } from 'next/router';
-import Demo from '../components/Demo';
+import Demo from '../components/utils/Demo';
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState('')

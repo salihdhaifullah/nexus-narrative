@@ -41,7 +41,7 @@ model Post {
   views           Views[]
   description     String
 
-  @@index([title, createdAt(sort: Desc)])
+  @@index([title, description, createdAt(sort: Desc)])
 }
 
 model Views {
@@ -50,8 +50,6 @@ model Views {
   postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   monthAndYear String
-
-  @@index([monthAndYear(sort: Desc)])
 }
 
 model Like {
