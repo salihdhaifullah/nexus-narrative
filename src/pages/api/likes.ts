@@ -1,117 +1,91 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../libs/prisma'
 import { GetUserId } from '../../utils/auth';
+import { Prisma } from '@prisma/client';
+
+
+const handleLikes = async (like: { id: number, isLike: boolean, isDislike: boolean } | null, postId: number, userId: number, type: "like" | "dislike") => {
+    if (!like) {
+        let data: Prisma.LikeCreateInput = {
+            user: { connect: { id: userId } },
+            post: { connect: { id: postId } }
+        }
+
+        let data2: Prisma.PostUpdateInput = {}
+
+        data[type === "like" ? "isLike" : "isDislike"] = true
+        data2[type === "like" ? "likesCount" : "dislikesCount"] = { increment: 1 }
+
+        await prisma.$transaction([
+            prisma.like.create({ data: data }),
+            prisma.post.update({ where: { id: postId }, data: data2 })
+        ])
+
+        return;
+    }
+
+
+    const data: Prisma.LikeUpdateInput = {}
+    const data2: Prisma.PostUpdateInput = {}
+
+    data["isLike"] = type === "like" ? !like.isLike : false
+    data["isDislike"] = type === "like" ? false : !like.isDislike
+
+    if (type === "like") {
+        data2["likesCount"] = like.isLike ? { decrement: 1 } : { increment: 1 }
+        data2["dislikesCount"] = like.isDislike ? { decrement: 1 } : undefined
+    } else {
+        data2["likesCount"] = like.isLike ? { decrement: 1 } : undefined
+        data2["dislikesCount"] = like.isDislike ? { decrement: 1 } : { increment: 1 }
+    }
+
+    await prisma.$transaction([
+        prisma.like.update({ where: { id: like.id }, data: data }),
+        prisma.post.update({ where: { id: postId }, data: data2 })
+    ])
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
         try {
             const id = Number(req.query["id"]);
 
-            const { id: userId, error } = GetUserId(req);
-
             if (typeof id !== "number") return res.status(404).json({ massage: "Post Not Found" });
 
-            const transactions = [
-                prisma.like.count({ where: { isLike: true, postId: id } }),
-                prisma.like.count({ where: { isDislike: true, postId: id } })
-            ]
+            const data = await prisma.post.findUnique({
+                where: {id: id},
+                select: {
+                    likesCount: true,
+                    dislikesCount: true
+                }
+            })
 
-            if (userId) {
-                const [likes, dislikes, isLiked] = await prisma.$transaction([
-                    ...transactions,
-                    prisma.like.findFirst({ where: { postId: id, userId: userId }, select: { isDislike: true, isLike: true } })
-                ])
-                return res.status(200).json({ likes, dislikes, isLiked })
-
-            } else {
-                const [likes, dislikes] = await prisma.$transaction(transactions)
-
-                return res.status(200).json({ likes, dislikes })
-            }
-
+            return res.status(200).json({ likes: data?.likesCount, dislikes: data?.dislikesCount })
         } catch (error) {
             console.log(error)
             return res.status(500).json({ massage: "internal Server Error" })
         }
-
     }
 
     if (req.method === "PATCH") {
         try {
 
             const postId = Number(req.query["id"]);
-            const { error, id } = GetUserId(req)
+            const { error, id: userId } = GetUserId(req)
 
-            if (typeof id !== "number" || error) return res.status(400).json({ massage: "User Not Found" });
+            if (typeof userId !== "number" || error) return res.status(400).json({ massage: "User Not Found" });
             if (typeof postId !== "number") return res.status(400).json({ massage: "Post Not Found" });
 
-            const likes = await prisma.like.findFirst({ where: { postId: postId, userId: id }, select: { id: true, isDislike: true, isLike: true } })
+            const likes = await prisma.like.findFirst({ where: { postId: postId, userId: userId }, select: { id: true, isDislike: true, isLike: true } })
 
-            if (req.query["type"] === "like") {
+            const type = req.query["type"]
+            const typeOptions = ["like", "dislike"]
 
-                if (!likes) {
-                    await prisma.like.create({
-                        data: {
-                            isLike: true,
-                            user: { connect: { id: id } },
-                            post: { connect: { id: postId } }
-                        }
-                    })
+            if (typeof type !== "string" || !typeOptions.includes(type)) return res.status(400).json({ massage: "Bad Request" });
 
-                } else if (likes.isDislike === true) {
-                    await prisma.like.update({
-                        where: { id: likes.id },
-                        data: { isLike: true, isDislike: false }
-                    })
+            await handleLikes(likes, postId, userId, type as "like" | "dislike")
 
-                } else if (likes.isLike === true) {
-                    await prisma.like.update({
-                        where: { id: likes.id },
-                        data: { isLike: false, isDislike: false }
-                    })
-                } else {
-                    await prisma.like.update({
-                        where: { id: likes.id },
-                        data: { isLike: true, isDislike: false }
-                    })
-                }
-
-
-                return res.status(200).json({ massage: "Success" })
-            }
-
-            if (req.query["type"] === "dislike") {
-
-                if (!likes) {
-                    await prisma.like.create({
-                        data: {
-                            isDislike: true,
-                            user: { connect: { id: id } },
-                            post: { connect: { id: postId } }
-                        }
-                    })
-
-                } else if (likes.isLike === true) {
-                    await prisma.like.update({
-                        where: { id: likes.id },
-                        data: { isLike: false, isDislike: true }
-                    })
-
-                } else if (likes.isDislike === true) {
-                    await prisma.like.update({
-                        where: { id: likes.id },
-                        data: { isLike: false, isDislike: false }
-                    })
-                } else {
-                    await prisma.like.update({
-                        where: { id: likes.id },
-                        data: { isLike: false, isDislike: true }
-                    })
-                }
-
-                return res.status(200).json({ massage: "Success" })
-            }
-
+            return res.status(200).json({ massage: "Success" })
         } catch (error) {
             console.log(error)
             return res.status(500).json({ massage: "internal Server Error" })

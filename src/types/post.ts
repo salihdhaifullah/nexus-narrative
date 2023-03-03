@@ -63,16 +63,19 @@ export interface IBLogProps {
 }
 
 export interface IPost {
-    slug: string
-    _count: {
-        views: number
-    }
-    title: string
-    id: number
-    createAt: Date;
-    likes: {
-        isLike: boolean
-        isDislike: boolean
+    blogName: string;
+    posts: {
+        slug: string
+        _count: {
+            views: number
+        }
+        title: string
+        id: number
+        createAt: Date;
+        likes: {
+            isLike: boolean
+            isDislike: boolean
+        }[]
     }[]
 }
 

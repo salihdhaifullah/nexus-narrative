@@ -19,15 +19,14 @@ import Divider from '@mui/material/Divider';
 import dateFormat from '../../utils/dateFormat';
 import { IPost } from '../../types/post';
 
-
-
-export default function Posts({postsInit}: {postsInit: IPost[]}) {
+export default function Posts({postsInit}: {postsInit: IPost}) {
     const [isLoading, setIsLoading] = useState(false);
-    const [blogName, setBlogName] = useState("");
-    const [posts, setPosts] = useState<IPost[]>(postsInit)
+    const [posts, setPosts] = useState(postsInit.posts)
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [count, setCount] = useState(postsInit.length);
+    const [count, setCount] = useState(postsInit.posts.length);
+
+    useEffect(() => { console.log(postsInit) }, [postsInit])
 
     const handelDelete = async (postId: number) => {
         Swal.fire({
@@ -101,14 +100,14 @@ export default function Posts({postsInit}: {postsInit: IPost[]}) {
                                         <TableBody>
                                             {posts?.length && posts.map((post) => (
                                                 <TableRow key={post.slug} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                    <Link href={`/${blogName}/posts/${post.slug}`}>
+                                                    <Link href={`/${postsInit.blogName}/posts/${post.slug}`}>
                                                         <TableCell className="link text-blue-700" component="th" scope="row">
                                                             {post.slug}
                                                         </TableCell>
                                                     </Link>
                                                     <TableCell align="right">{post._count.views}</TableCell>
                                                     <TableCell align="right">{post.title}</TableCell>
-                                                    <TableCell align="right">{dateFormat(post.createAt)}</TableCell>
+                                                    <TableCell align="right">{dateFormat(Date(post.createAt))}</TableCell>
 
                                                     <TableCell align="right">{post.likes.filter((item) => item.isLike === true).length}</TableCell>
                                                     <TableCell align="right">{post.likes.filter((item) => item.isDislike === true).length}</TableCell>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { dislikePost, GetLikes, likePost } from '../api';
+import { dislikePost, GetLikes, likePost } from '../../api';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -9,7 +9,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/router';
-import useGetUser from '../hooks/useGetUser';
+import useGetUser from '../../hooks/useGetUser';
 
 const IsUseful = ({ postId }: { postId: number }) => {
     const [isLikeLoading, setIsLikeLoading] = useState<boolean>(false);
@@ -18,6 +18,18 @@ const IsUseful = ({ postId }: { postId: number }) => {
     const [dislikes, setDislikes] = useState(0);
     const [user] = useGetUser();
     const router = useRouter();
+
+    const handelGetLikes = useCallback(async () => {
+        if (!postId) return;
+        await GetLikes(postId)
+            .then((res) => {
+                setLikes(res.data.likes)
+                setDislikes(res.data.dislikes)
+            })
+            .catch((err) => { });
+    }, [postId])
+
+    useEffect(() => { handelGetLikes() }, [handelGetLikes])
 
     const handelLike = async () => {
         if (!user) {
@@ -35,8 +47,6 @@ const IsUseful = ({ postId }: { postId: number }) => {
             .then((res) => { handelGetLikes() })
             .catch((err) => { })
             .finally(() => { setIsLikeLoading(false)  })
-
-
     }
 
     const handelDisLike = async () => {
@@ -57,21 +67,6 @@ const IsUseful = ({ postId }: { postId: number }) => {
             .catch((err) => { })
             .finally(() => { setIsDisLikeLoading(false) })
     }
-
-
-    const handelGetLikes = useCallback(async () => {
-        if (!postId) return;
-        await GetLikes(postId)
-            .then((res) => {
-                setLikes(res.data.likes)
-                setDislikes(res.data.dislikes)
-            })
-            .catch((err) => { });
-    }, [postId])
-
-    useEffect(() => {
-        handelGetLikes()
-    }, [handelGetLikes])
 
 
     return (

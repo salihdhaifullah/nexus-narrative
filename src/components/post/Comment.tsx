@@ -1,12 +1,12 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { deleteComment } from '../api';
+import { deleteComment } from '../../api';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import useGetUser from '../hooks/useGetUser';
-import { IComment } from '../types/comment';
-import Toast from '../utils/sweetAlert';
-import dateFormat from '../utils/dateFormat';
-import useIsClickOut from '../hooks/useIsClickOut';
+import useGetUser from '../../hooks/useGetUser';
+import { IComment } from '../../types/comment';
+import Toast from '../../utils/sweetAlert';
+import dateFormat from '../../utils/dateFormat';
+import useIsClickOut from '../../hooks/useIsClickOut';
 
 interface ICommentProps {
   comment: IComment;

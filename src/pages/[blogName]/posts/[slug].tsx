@@ -4,7 +4,7 @@ import { viewedPost } from '../../../api';
 import { IBLogProps, IPostProps } from '../../../types/post';
 import MainPost from '../../../components/post/MainPost';
 import Post from '../../../components/utils/Post';
-import Main from '../../../components/Main';
+import Main from '../../../components/post/Main';
 import Details from '../../../components/post/Details';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress'
 import prisma from '../../../libs/prisma';
 import Comments from '../../../components/post/Comments';
-import IsUseful from '../../../components/IsUseful';
+import IsUseful from '../../../components/post/IsUseful';
 import Tags from '../../../components/post/Tags';
 
 

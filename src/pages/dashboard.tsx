@@ -7,8 +7,9 @@ import prisma from '../libs/prisma'
 import { IUserProfileData } from '../types/profile';
 import { IPost } from './../types/post';
 import { IViews } from './../types/profile';
+import { PrismaClient } from '@prisma/client';
 
-const Dashboard = ({ profile, postsTable, views }: { profile: IUserProfileData | null, postsTable: IPost[] | null, views: IViews[] | null }) => {
+const Dashboard = ({ profile, postsTable, views }: { profile: IUserProfileData | null, postsTable: IPost | null, views: IViews[] | null }) => {
   return (
     <div className="flex flex-col gap-y-20">
       {profile ? <Profile profile={profile} /> : null}
@@ -55,11 +56,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           title: true,
           id: true,
           createdAt: true,
-          likes: { select: { isLike: true, isDislike: true } }
+          likes: {
+            select: {
+              isLike: true,
+              isDislike: true
+            }
+          }
         }
       }
     }
   });
+
 
   const views = await prisma.views.groupBy({
     by: ["monthAndYear"],

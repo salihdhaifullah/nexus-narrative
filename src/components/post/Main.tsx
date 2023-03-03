@@ -1,7 +1,7 @@
 import Container from '@mui/material/Container';
 import 'react-markdown-editor-lite/lib/index.css';
 import 'highlight.js/styles/github.css';
-import mdParser from '../libs/markdown';
+import mdParser from '../../libs/markdown';
 
 export default function Main(props: {post: string;}) {
   const { post } = props;
