@@ -41,13 +41,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const { error, id } = GetUserId(req);
             if (typeof id !== "number" || error) return res.status(404).json({ massage: "User Not Found" });
 
-            const blogName = data.blogName.toLowerCase()
+            const blogName = data.blogName
 
             const isMatch = new RegExp("^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$").test(blogName);
 
             if (!isMatch) return res.status(400).json({ massage: "unValid Blog Name" });
 
-            const isFoundSameName = await prisma.user.findFirst({ where: { blogName: blogName }, select: { id: true } });
+            const isFoundSameName = await prisma.user.findFirst({ where: { blogName: blogName, NOT: {id: id} }, select: { id: true } });
 
             if (isFoundSameName) return res.status(400).json({ massage: "blog Name Is All ready exist" });
 

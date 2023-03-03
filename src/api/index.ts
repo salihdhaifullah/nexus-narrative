@@ -57,3 +57,5 @@ export const uploadProfileImage = async (data: IUploadAvatar) => await API.post(
 export const viewedPost = async (id: number) => await API.get(`/views/?id=${id}`);
 
 export const demoAccount = async () => await API.get("/auth/demo")
+
+export const getPostsTable = async (blogName: string, page: number, take: number) => await API.get(`/posts/?blog-name=${blogName}&page=${page}&take=${take}`)

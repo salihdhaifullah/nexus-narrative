@@ -7,7 +7,6 @@ import prisma from '../libs/prisma'
 import { IUserProfileData } from '../types/profile';
 import { IPost } from './../types/post';
 import { IViews } from './../types/profile';
-import { PrismaClient } from '@prisma/client';
 
 const Dashboard = ({ profile, postsTable, views }: { profile: IUserProfileData | null, postsTable: IPost | null, views: IViews[] | null }) => {
   return (
@@ -28,54 +27,48 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   if (error || typeof userId !== "number") return { notFound: true }
 
-  const profile = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      profile: true,
-      about: true,
-      blogName: true,
-      country: true,
-      city: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      phoneNumber: true,
-      title: true
-    }
-  })
-
-  const postsTable = await prisma.user.findFirst({
-    where: { id: userId },
-    select: {
-      blogName: true,
-      posts: {
-        take: 10,
-        select: {
-          slug: true,
-          _count: { select: { views: true } },
-          title: true,
-          id: true,
-          createdAt: true,
-          likes: {
-            select: {
-              isLike: true,
-              isDislike: true
-            }
+  const [profile, postsTable, views] = await prisma.$transaction([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        profile: true,
+        about: true,
+        blogName: true,
+        country: true,
+        city: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phoneNumber: true,
+        title: true
+      }
+    }),
+    prisma.user.findFirst({
+      where: { id: userId },
+      select: {
+        blogName: true,
+        _count: { select: { posts: true} },
+        posts: {
+          take: 10,
+          select: {
+            slug: true,
+            _count: { select: { views: true } },
+            title: true,
+            id: true,
+            createdAt: true,
+            likesCount: true,
+            dislikesCount: true
           }
         }
       }
-    }
-  });
-
-
-  const views = await prisma.views.groupBy({
-    by: ["monthAndYear"],
-    orderBy: { monthAndYear: "asc" },
-    where: { post: { authorId: userId } },
-    _count: true
-  })
-
-  console.log(views)
+    }),
+    prisma.views.groupBy({
+      by: ["monthAndYear"],
+      orderBy: { monthAndYear: "asc" },
+      where: { post: { authorId: userId } },
+      _count: true
+    }),
+  ])
 
   if (!profile) return { notFound: true }
 

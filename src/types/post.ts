@@ -64,6 +64,7 @@ export interface IBLogProps {
 
 export interface IPost {
     blogName: string;
+    _count: {posts: number};
     posts: {
         slug: string
         _count: {
@@ -72,10 +73,8 @@ export interface IPost {
         title: string
         id: number
         createAt: Date;
-        likes: {
-            isLike: boolean
-            isDislike: boolean
-        }[]
+        likesCount: number
+        dislikesCount: number
     }[]
 }
 
