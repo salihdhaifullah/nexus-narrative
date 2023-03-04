@@ -31,19 +31,6 @@ export interface IChangePassword {
     newPassword: string
 }
 
-export interface IUserProfileProps {
-    userImage: string
-    about: string
-    blogName: string
-    country: string
-    city: string
-    phoneNumber: string
-    title: string
-    firstName: string
-    lastName: string
-    email: string
-}
-
 export interface IUploadAvatar {
     base64: string
 }

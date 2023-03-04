@@ -1,49 +1,79 @@
-import { IUserProfileProps } from '../../types/profile';
 import prisma from '../../libs/prisma';
 import Box from '@mui/material/Box'
 import Post from '../../components/utils/Post';
-import Typography from '@mui/material/Typography';
 import { IPostProps } from './../../types/post';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import ProfileTemplate from '../../components/utils/ProfileTemplate';
-import { GetBlogPosts } from '../../api';
 import CircularProgress from '@mui/material/CircularProgress';
+import { getProfilePosts } from '../../api';
+import { GetServerSidePropsContext } from 'next';
 
-const Profile = (data: IUserProfileProps) => {
+interface IProfile {
+    user: {
+        profile: string | null;
+        firstName: string;
+        lastName: string;
+        title: string | null;
+        about: string | null;
+        email: string;
+        blogName: string;
+        phoneNumber: number | null;
+        country: string | null;
+        city: string | null;
+        _count: { posts: number };
+    };
+    profileId: number
+}
+
+const Profile = (props: IProfile) => {
 
     const [isLoading, setIsLoading] = useState(false)
+    const [isLoadingRow, setIsLoadingRow] = useState(false)
     const [posts, setPosts] = useState<IPostProps[]>([]);
+    const [page, setPage] = useState(0)
 
-    const init = useCallback(async () => {
-        setIsLoading(true)
-        await GetBlogPosts(data.blogName)
-            .then((res) => { setPosts(res.data.posts) })
+    const handelLoadPosts = async (init?: boolean) => {
+        init ? setIsLoading(true) : setIsLoadingRow(false)
+        await getProfilePosts(props.profileId, page)
+            .then((res) => {
+                setPosts((prev) => [...prev, ...res.data.posts])
+                setPage((prev) => (prev + 1))
+            })
             .catch((err) => { console.log(err) })
-        setIsLoading(false)
-    }, [data.blogName])
+            .finally(() => { init ? setIsLoading(true) : setIsLoadingRow(false) })
+    }
+
+    useEffect(() => { handelLoadPosts() }, [])
+
+    const [state, setState] = useState(false)
+    const [ele, setEle] = useState<Element | null>(null)
+    const observer = useRef<IntersectionObserver | null>(null)
+
+    const eleCallBack = useCallback((node: HTMLDivElement) => { setEle(node) }, [])
 
     useEffect(() => {
-        init()
-    }, [init])
+        observer.current = new IntersectionObserver((entries) => { setState(entries[0].isIntersecting) })
+    }, [])
+
+    useEffect(() => { if (ele) observer.current?.observe(ele) }, [ele])
+
+    useEffect(() => {
+        if (posts.length !== props.user._count.posts && !isLoadingRow && state) handelLoadPosts();
+    }, [state])
 
     return (
         <div className='w-full h-fit mb-10'>
             <Box>
-                <ProfileTemplate {...data} />
-                {isLoading ? (
-                    <div className="w-full h-full flex justify-center items-center">
-                        <CircularProgress />
-                    </div>
-                ) : (
+                <ProfileTemplate data={props.user} />
+
+                {isLoading ? <div className="w-full h-full flex justify-center items-center"> <CircularProgress /> </div> : (
                     <div className="flex flex-col gap-y-4 justify-center items-center mx-2">
-                        {posts.length < 1
-                            ? <Typography className="mb-4 ml-4 underLine w-fit" variant='h5' component='h1'> Sorry No Posts Found </Typography>
-                            : posts.map((post, index) => (
-                                <div key={index} className="w-full sm:w-[600px]"> <Post post={post} /> </div>
-                            ))}
+                        {posts.length > 0 ? posts.map((post, index) => (<div key={index} className="w-full sm:w-[600px]"> <Post post={post} /> </div>)) : null}
                     </div>
                 )}
 
+                {isLoadingRow ? <div className="w-full h-full flex justify-center items-center"> <CircularProgress className="w-12 h-12"/> </div> : null}
+                <div ref={eleCallBack} className="min-h-[200px] w-full "></div>
             </Box>
         </div>
     )
@@ -52,24 +82,13 @@ const Profile = (data: IUserProfileProps) => {
 export default Profile;
 
 
-export async function getStaticPaths() {
-    const ids: { params: { id: string } }[] = [];
-    const data = await prisma.user.findMany({ select: { id: true } });
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+    const profileId = (ctx.params ? Number(ctx.params['id']) : undefined)
 
-    for (let item of data) {
-        ids.push({ params: { id: item.id.toString() } })
-    }
-
-    return { paths: ids, fallback: "blocking" };
-};
-
-
-export async function getStaticProps({ params }: { params: { id: string } }) {
-
-    let Props: IUserProfileProps = { userImage: "", about: "", blogName: "", country: "", city: "", phoneNumber: "", title: "", firstName: "", lastName: "", email: "" };
+    if (typeof profileId !== 'number') return { notFound: true }
 
     const user = await prisma.user.findUnique({
-        where: { id: Number(params.id) },
+        where: { id: profileId },
         select: {
             profile: true,
             firstName: true,
@@ -80,23 +99,12 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
             blogName: true,
             phoneNumber: true,
             country: true,
-            city: true
+            city: true,
+            _count: { select: { posts: true } }
         }
     });
 
-    if (!user) return;
-    Props = {
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        blogName: user.blogName,
-        userImage: user.profile || "/images/user-placeholder.png",
-        phoneNumber: user.phoneNumber?.toString() || "Not Found",
-        about: user.about || "Not Found",
-        title: user.title || "Not Found",
-        country: user.country || "Not Found",
-        city: user.city || "Not Found"
-    }
+    const props = { user, profileId }
 
-    return { props: Props, revalidate: 10 };
+    return { props }
 }

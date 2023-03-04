@@ -59,3 +59,5 @@ export const viewedPost = async (id: number) => await API.get(`/views/?id=${id}`
 export const demoAccount = async () => await API.get("/auth/demo")
 
 export const getPostsTable = async (blogName: string, page: number, take: number, sort?: "views" | "likes" | "dislikes" | "date", title?: string, category?: string) => await API.get(`/posts/?blog-name=${blogName}&page=${page}&take=${take}&sort=${sort || ""}&title=${title || ""}&category=${category || ""}`)
+
+export const getProfilePosts = async (userId: number, page: number) => await API.get(`/profile-posts/?user-id=${userId}&page=${page}`)

@@ -1,30 +1,34 @@
 import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
 import Box from '@mui/material/Box'
-import { IUserProfileProps } from '../../types/profile'
 
-const ProfileTemplate = ({ userImage, firstName, lastName, title, about, phoneNumber, country, city, blogName, email }: IUserProfileProps) => {
+interface IProfileProps {
+    profile: string | null;
+    firstName: string;
+    lastName: string;
+    title: string | null;
+    about: string | null;
+    email: string;
+    blogName: string;
+    phoneNumber: number | null;
+    country: string | null;
+    city: string | null;
+    _count: { posts: number };
+}
+
+const ProfileTemplate = ({ data }: { data: IProfileProps }) => {
     return (
         <div className="m-4 mb-[120px]">
             <div className='gap-4 flex-wrap flex flex-col'>
 
-                <Box className="w-full h-full flex justify-start items-center">
-                    <Box className='flex justify-center gap-8 h-full w-fit bg-white rounded-md shadow-md p-6'>
-                        <div className="justify-start">
+                <Box className="w-full h-full flex justify-center items-center">
+                    <Box className='flex justify-center items-center flex-col gap-8 h-full rounded-lg w-full max-w-[500px] bg-white shadow-md p-6'>
 
-                            <Image className='rounded-md w-[120px]' src={userImage} alt="Picture of the author" width={120} height={100} />
-
-                            <h1 className='text-2xl text-gray-800 font-bold'>{firstName + " " + lastName}</h1>
-                            {title !== "Not Found" ? (<h2 className='text-gray-600 mt-2'>{title}</h2>) : null}
+                        <div className="bg-white w-[150px] h-[150px] p-4 rounded-full shadow-lg border">
+                            <Image className='object-center' src={data.profile || "/images/user-placeholder.png"} alt="Picture of the author" width={120} height={100} />
                         </div>
 
-                        <Box className="flex flex-col justify-center items-center min-h-full">
-                            <h1 className='text-xl text-start text-gray-800 font-bold mb-4'>Blog Information</h1>
-
-                            <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{blogName}</strong>
-                            </h2>
-                        </Box>
+                        <h1 className='text-2xl text-gray-800 font-bold'>{data.firstName + " " + data.lastName}</h1>
+                        {data.title ? <h2 className='text-gray-600 mt-2'>{data.title}</h2> : null}
                     </Box>
                 </Box>
 
@@ -33,39 +37,41 @@ const ProfileTemplate = ({ userImage, firstName, lastName, title, about, phoneNu
 
                     <div className='grid w-full grid-cols-1 md:grid-cols-2 mt-8 gap-4'>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>first Name: <strong>{firstName}</strong>
+                        <h2 className='text-gray-700 text-lg mt-1'>first Name: <strong>{data.firstName}</strong>
                             <hr className='my-2' />
                         </h2>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>last Name: <strong>{lastName}</strong>
+                        <h2 className='text-gray-700 text-lg mt-1'>last Name: <strong>{data.lastName}</strong>
                             <hr className='my-2' />
                         </h2>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>about: <strong>{about}</strong>
+                        <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{data.blogName}</strong>
                             <hr className='my-2' />
                         </h2>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>title: <strong>{title}</strong>
+                        <h2 className='text-gray-700 text-lg mt-1'>about: <strong>{data.about || "Not Found"}</strong>
                             <hr className='my-2' />
                         </h2>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>phone Number: <strong>{phoneNumber}</strong>
+                        <h2 className='text-gray-700 text-lg mt-1'>title: <strong>{data.title || "Not Found"}</strong>
                             <hr className='my-2' />
                         </h2>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>country: <strong>{country}
+                        <h2 className='text-gray-700 text-lg mt-1'>phone Number: <strong>{data.phoneNumber || "Not Found"}</strong>
+                            <hr className='my-2' />
+                        </h2>
+
+                        <h2 className='text-gray-700 text-lg mt-1'>country: <strong>{data.country || "Not Found"}
                             <hr className='my-2' />
                         </strong> </h2>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>city: <strong>{city}</strong>
+                        <h2 className='text-gray-700 text-lg mt-1'>city: <strong>{data.city || "Not Found"}</strong>
                             <hr className='my-2' />
                         </h2>
-                        <h2 className='text-gray-700 text-lg mt-1'>email: <strong>{email}</strong> </h2>
+                        <h2 className='text-gray-700 text-lg mt-1'>email: <strong>{data.email}</strong> </h2>
 
                     </div>
                 </div>
-
-
 
             </div>
         </div>
