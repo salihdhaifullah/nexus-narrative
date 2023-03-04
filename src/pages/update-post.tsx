@@ -125,7 +125,7 @@ const UpdatePostPage = ({ tagsOptions, categoriesOptions, data, postId }: { tags
               ${isValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-400 cursor-not-allowed hover:bg-gray-300"}
               text-white`}>
 
-        <div onClick={() => isLoading ? undefined : HandelSubmit} className='p-2 h-16 w-16 flex items-center justify-center'>
+        <div onClick={() => isLoading ? undefined : HandelSubmit()} className='p-2 h-16 w-16 flex items-center justify-center'>
           {isLoading ? <CircularProgress className='text-white h-10 w-10' /> : <p className="text-[16px]">Submit</p>}
         </div>
       </div>

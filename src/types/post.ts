@@ -70,6 +70,7 @@ export interface IPost {
         _count: {
             views: number
         }
+        category: { name: string }
         title: string
         id: number
         createAt: Date;

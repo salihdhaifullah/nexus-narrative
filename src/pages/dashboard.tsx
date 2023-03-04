@@ -8,12 +8,12 @@ import { IUserProfileData } from '../types/profile';
 import { IPost } from './../types/post';
 import { IViews } from './../types/profile';
 
-const Dashboard = ({ profile, postsTable, views }: { profile: IUserProfileData | null, postsTable: IPost | null, views: IViews[] | null }) => {
+const Dashboard = ({ profile, postsTable, views, categories }: { profile: IUserProfileData | null, postsTable: IPost | null, views: IViews[] | null, categories: { name: string }[] }) => {
   return (
     <div className="flex flex-col gap-y-20">
       {profile ? <Profile profile={profile} /> : null}
       {(views && views.length > 0) ? <ViewsChart views={views} /> : null}
-      {postsTable ? <Posts postsInit={postsTable} /> : null}
+      {postsTable ? <Posts postsInit={postsTable} categories={categories} /> : null}
     </div>
   )
 }
@@ -27,7 +27,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   if (error || typeof userId !== "number") return { notFound: true }
 
-  const [profile, postsTable, views] = await prisma.$transaction([
+  const [profile, postsTable, views, categories] = await prisma.$transaction([
     prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -47,12 +47,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       where: { id: userId },
       select: {
         blogName: true,
-        _count: { select: { posts: true} },
+        _count: { select: { posts: true } },
         posts: {
           take: 10,
           select: {
             slug: true,
             _count: { select: { views: true } },
+            category: { select: { name: true } },
             title: true,
             id: true,
             createdAt: true,
@@ -68,11 +69,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       where: { post: { authorId: userId } },
       _count: true
     }),
+    prisma.category.findMany({ select: { name: true } })
   ])
 
   if (!profile) return { notFound: true }
 
-  const props = JSON.parse(JSON.stringify({ profile, postsTable, views }))
+  const props = JSON.parse(JSON.stringify({ profile, postsTable, views, categories }))
 
   return { props }
 }

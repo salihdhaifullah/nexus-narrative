@@ -21,7 +21,7 @@ export const Logout = async () => await API.get("/auth/logout")
 
 export const createPost = async (data: ICreatePostData) => await API.post("/post", data)
 
-export const UpdatePost = async (id: number, data: IUpdatePostData) => await API.post(`/post/?id=${id}`, data)
+export const UpdatePost = async (id: number, data: IUpdatePostData) => await API.patch(`/post/?id=${id}`, data)
 
 export const DeletePost = async (id: number) => await API.delete(`/post/?id=${id}`)
 
@@ -58,4 +58,4 @@ export const viewedPost = async (id: number) => await API.get(`/views/?id=${id}`
 
 export const demoAccount = async () => await API.get("/auth/demo")
 
-export const getPostsTable = async (blogName: string, page: number, take: number) => await API.get(`/posts/?blog-name=${blogName}&page=${page}&take=${take}`)
+export const getPostsTable = async (blogName: string, page: number, take: number, sort?: "views" | "likes" | "dislikes" | "date", title?: string, category?: string) => await API.get(`/posts/?blog-name=${blogName}&page=${page}&take=${take}&sort=${sort || ""}&title=${title || ""}&category=${category || ""}`)
