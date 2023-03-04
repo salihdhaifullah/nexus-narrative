@@ -12,19 +12,13 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <div className="flex flex-col bg-slate-100 min-h-[100vh]">
       <NextNProgress />
-      {!router.isFallback ? (
-        <>
-          <Header />
+      <Header />
+      {router.isFallback ? <Loader /> : (
           <div className="mb-4 min-h-[68vh] min-w-[95vw]">
             <Component {...pageProps} />
           </div>
-          <Copyright />
-        </>
-      ) : (
-        <div className="min-w-[100vw] min-h-[100vh] flex text-blue-600 items-center justify-center">
-          <Loader />
-        </div>
       )}
+      <Copyright />
     </div>
   );
 }

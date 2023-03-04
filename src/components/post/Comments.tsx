@@ -75,15 +75,15 @@ const Comments = ({ postId }: { postId: number }) => {
     }
 
     return (
-        <Box className="md:mx-10">
+        <Box>
             <hr className='mt-20 mb-20' />
 
             <div className='flex mb-6 justify-start items-start'>
                 <Typography variant='h5' className="underLine" component="h2">Comments Section</Typography>
             </div>
 
-            <section className="flex flex-col w-full lg:flex-row gap-10 justify-center items-center">
-                <div className="rounded-lg w-[500px] h-fit shadow-lg bg-white p-3 " ref={formRef}>
+            <section className="flex flex-col w-full gap-10 justify-center items-center">
+                <div className="rounded-lg w-full h-fit shadow-lg bg-white p-3" ref={formRef}>
                     <div className="mb-2">
                         <label htmlFor="comment" className="text-lg text-gray-600">add a comment</label>
                         <textarea

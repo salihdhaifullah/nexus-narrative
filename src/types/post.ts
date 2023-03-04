@@ -38,30 +38,6 @@ export interface IPostProps {
 }
 
 
-export interface IBLogProps {
-    content: string;
-    about: string;
-    email: string;
-    title: string;
-    description: string;
-    blogName: string;
-    backgroundImage: string;
-    name: string;
-    AvatarUrl: string;
-    createdAt: string;
-    tags: {
-        name: string;
-    }[];
-    category: string;
-    postId: number;
-
-    id: number;
-    slug: string;
-    posts: IPostProps[];
-    PostsRelated: IPostProps[];
-    authorId: number;
-}
-
 export interface IPost {
     blogName: string;
     _count: {posts: number};

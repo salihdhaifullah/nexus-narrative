@@ -44,10 +44,9 @@ const ViewsChart = ({ views }: { views: IViews[] }) => {
     })
 
     return (
-        <Box className="h-full mx-4 overflow-x-auto">
-            <h1 className='text-3xl text-gray-800 font-bold mb-4 '>Views</h1>
-
-            <div className='flex min-h-[500px] min-w-[900px] w-fit h-full shadow-lg rounded-md border bg-white p-3 flex-col justify-center items-center'>
+        <Box className="h-full flex justify-center items-center">
+            <div className='flex min-h-[500px] min-w-[900px] w-fit h-full shadow-lg rounded-md border bg-white p-3 flex-col'>
+                <h1 className='text-3xl text-gray-800 font-bold mb-4'>Views</h1>
                 <Line className="overflow-x-auto" data={data} />
             </div>
         </Box>

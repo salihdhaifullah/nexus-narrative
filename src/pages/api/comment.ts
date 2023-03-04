@@ -104,6 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 where: { id: id },
                 select: {
                     comments: {
+                        orderBy: {createdAt: "desc"},
                         select: {
                             createdAt: true,
                             id: true,
