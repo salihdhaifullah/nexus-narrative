@@ -83,25 +83,28 @@ const Comments = ({ postId }: { postId: number }) => {
             </div>
 
             <section className="flex flex-col w-full gap-10 justify-center items-center">
-                <div className="rounded-lg w-full h-fit shadow-lg bg-white p-3" ref={formRef}>
-                    <div className="mb-2">
-                        <label htmlFor="comment" className="text-lg text-gray-600">add a comment</label>
-                        <textarea
-                            value={commentState}
-                            onChange={(event) => setComment(event.target.value)}
-                            id="comment"
-                            className="min-h-[10rem] min-w-full p-2 border rounded focus:outline-none focus:ring-gray-300 focus:ring-1"
-                            name="comment"
-                            placeholder=""></textarea>
-                    </div>
-                    <div className="justify-evenly flex items-center">
-                        <Button onClick={() => isLoading ? undefined : handelCreateOrUpdateComment()} className="px-3 py-2 hover:text-blue-600 hover:border-blue-600 hover:border hover:bg-blue-100 text-sm text-white bg-blue-600 rounded">
-                        {isLoading ? <CircularProgress className="w-6 h-6 text-inherit" /> : "Comment"}
-                        </Button>
-                        <Button onClick={() => setComment("")}
-                            className="px-3 py-2 text-sm bg-blue-100 hover:text-white border-blue-600 hover:bg-blue-600 text-blue-600 border rounded">
-                            Cancel
-                        </Button>
+
+                <div className="w-full flex items-center justify-start">
+                    <div className="rounded-lg w-fit h-fit shadow-lg bg-white py-3 px-6" ref={formRef}>
+                        <div className="mb-2">
+                            <label htmlFor="comment" className="text-lg text-gray-600">add a comment</label>
+                            <textarea
+                                value={commentState}
+                                onChange={(event) => setComment(event.target.value)}
+                                id="comment"
+                                className="min-h-[10rem] min-w-full p-2 border rounded focus:outline-none focus:ring-gray-300 focus:ring-1"
+                                name="comment"
+                                placeholder=""></textarea>
+                        </div>
+                        <div className="justify-evenly flex items-center">
+                            <Button onClick={() => isLoading ? undefined : handelCreateOrUpdateComment()} className="px-3 py-2 hover:text-blue-600 hover:border-blue-600 hover:border hover:bg-blue-100 text-sm text-white bg-blue-600 rounded">
+                                {isLoading ? <CircularProgress className="w-6 h-6 text-inherit" /> : "Comment"}
+                            </Button>
+                            <Button onClick={() => setComment("")}
+                                className="px-3 py-2 text-sm bg-blue-100 hover:text-white border-blue-600 hover:bg-blue-600 text-blue-600 border rounded">
+                                Cancel
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
