@@ -57,5 +57,3 @@ export interface IPost {
         dislikesCount: number
     }[]
 }
-
-export type SortByType = "CreateAt" | "Views" | "Likes"

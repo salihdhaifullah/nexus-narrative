@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import Image from 'next/image'
 import Swal from 'sweetalert2';
 import Button from '@mui/material/Button';

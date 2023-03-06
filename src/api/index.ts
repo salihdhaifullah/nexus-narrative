@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ICommentData } from '../types/comment';
-import { ICreatePostData, IUpdatePostData, SortByType } from '../types/post';
-import { IChangeBlogName, IChangePassword, IUpdateProfileGeneralInformation, IUploadAvatar } from '../types/profile';
+import { ICreatePostData, IUpdatePostData } from '../types/post';
+import { IChangePassword, IUpdateProfileGeneralInformation } from '../types/profile';
 import { ILogin, ISingUp } from '../types/user';
 
 let baseURL = 'http://localhost:3000/api'
@@ -35,7 +35,7 @@ export const updateComment = async (id: number, content: string) => await API.pa
 
 export const UpdateProfileGeneralInformation = async (data: IUpdateProfileGeneralInformation) => await API.patch("/profile", data)
 
-export const ChangeBlogName = async (data: IChangeBlogName) => await API.put("/profile", data)
+export const ChangeBlogName = async (data: { blogName: string }) => await API.put("/profile", data)
 
 export const GetLikes = async (id: number) => await API.get(`/likes?id=${id}`)
 
@@ -43,16 +43,10 @@ export const likePost = async (id: number) => await API.patch(`/likes?type=like&
 
 export const dislikePost = async (id: number) => await API.patch(`/likes?type=dislike&id=${id}`)
 
-export const generalSearch = async (search: string, skip: number, take: number) => await API.get(`/search?search=${search}&skip=${skip}&take=${take}`)
-
-export const SearchByTag = async (tag: string, skip: number, take: number) => await API.get(`/search?tag=${tag}&skip=${skip}&take=${take}`)
-
-export const SearchByCategory = async (category: string, skip: number, take: number) => await API.get(`/search?category=${category}&skip=${skip}&take=${take}`)
-
 export const GetPosts = async (page: number, category?: string, tag?: string, search?: string, sort?: string) =>
 await API.get(`/post/?page=${page}&category=${category || ""}&tag=${tag || ""}&search=${search || ""}&sort=${sort || ""}`);
 
-export const uploadProfileImage = async (data: IUploadAvatar) => await API.post("/upload", data)
+export const uploadProfileImage = async (data: {base64: string}) => await API.post("/upload", data)
 
 export const viewedPost = async (id: number) => await API.get(`/views/?id=${id}`);
 

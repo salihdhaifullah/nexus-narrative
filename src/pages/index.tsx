@@ -1,11 +1,9 @@
-import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Box from '@mui/material/Box';
 
-const Home: NextPage = () => {
-
+const Index = () => {
   return (
     <>
       <Head>
@@ -35,7 +33,7 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Index;
 
 
 

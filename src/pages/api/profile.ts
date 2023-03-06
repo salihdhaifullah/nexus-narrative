@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../libs/prisma'
 import { GetUserId } from '../../utils/auth'
-import { IChangeBlogName, IUpdateProfileGeneralInformation } from '../../types/profile';
+import { IUpdateProfileGeneralInformation } from '../../types/profile';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "PUT") {
         try {
-            const data: IChangeBlogName = req.body
+            const data: { blogName: string } = req.body
             const { error, id } = GetUserId(req);
             if (typeof id !== "number" || error) return res.status(404).json({ massage: "User Not Found" });
 

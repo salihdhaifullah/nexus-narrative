@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../libs/prisma";
 import Storage from "../../libs/supabase";
 import { GetUserId } from "../../utils/auth";
-import { IUploadAvatar } from "../../types/profile";
 
 export const config = {
     api: {
@@ -18,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const { error, id } = GetUserId(req);
             if (!id || error) return res.status(404).json({ massage: "User not found" });
 
-            const { base64 }: IUploadAvatar = req.body;
+            const { base64 }: {base64: string} = req.body;
             const storage = new Storage();
 
             if (!base64) return res.status(401).json({ massages: "No File Found" });

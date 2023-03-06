@@ -1,16 +1,12 @@
 import Typography from '@mui/material/Typography'
-import FormControl from '@mui/material/FormControl'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { GetPosts } from '../api'
-import { IPostProps, SortByType } from '../types/post'
+import { IPostProps } from '../types/post'
 import Post from '../components/utils/Post'
 import FilterListIcon from '@mui/icons-material/FilterList';
 import DoneIcon from '@mui/icons-material/Done';
-import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
 import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';

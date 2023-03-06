@@ -8,6 +8,7 @@ import prisma from '../../../libs/prisma';
 import Comments from '../../../components/post/Comments';
 import IsUseful from '../../../components/post/IsUseful';
 import Tags from '../../../components/post/Tags';
+import { GetServerSidePropsContext } from 'next';
 
 interface IProps {
   data: {
@@ -45,7 +46,7 @@ export default function Index({ data }: IProps) {
   const getKeywords = (): string => {
     let text = "";
     for (let tag of data.tags) { text += (tag.name + ", ") }
-    text += data.category;
+    text += data.category.name;
     return text;
   }
 
@@ -60,8 +61,8 @@ export default function Index({ data }: IProps) {
       <article className='w-full block max-w-full p-4 mb-10 mt-4' >
         <MainPost image={data.backgroundImage} title={data.title} />
 
-
           <Main
+            description={data.description}
             post={data.content}
             createdAt={data.createdAt}
             category={data.category.name}
@@ -78,25 +79,13 @@ export default function Index({ data }: IProps) {
   )
 }
 
-export async function getStaticPaths() {
-  const slugs: { params: { slug: string, blogName: string } }[] = []
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const slug = ctx.query["slug"]
 
-  const data = await prisma.post.findMany({ select: { slug: true, author: { select: { blogName: true } } } });
-
-  for (let item of data) {
-    slugs.push({ params: { slug: item.slug, blogName: item.author.blogName } })
-  }
-
-  return {
-    paths: slugs,
-    fallback: "blocking"
-  };
-}
-
-export async function getStaticProps({ params }: { params: { slug: string } }) {
+  if (typeof slug !== "string") return { notFound: true }
 
   const postData = await prisma.post.findFirst({
-    where: { slug: params.slug },
+    where: { slug: slug },
     select: {
       author: {
         select: {
@@ -126,4 +115,3 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 
   return { props: { data } };
 }
-

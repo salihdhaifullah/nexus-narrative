@@ -3,7 +3,6 @@ import prisma from '../../libs/prisma'
 import { GetUserId } from '../../utils/auth';
 import { Prisma } from '@prisma/client';
 
-
 const handleLikes = async (like: { id: number, isLike: boolean, isDislike: boolean } | null, postId: number, userId: number, type: "like" | "dislike") => {
     if (!like) {
         let data: Prisma.LikeCreateInput = {
@@ -49,15 +48,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "GET") {
         try {
             const id = Number(req.query["id"]);
-
             if (typeof id !== "number") return res.status(404).json({ massage: "Post Not Found" });
 
             const data = await prisma.post.findUnique({
                 where: {id: id},
-                select: {
-                    likesCount: true,
-                    dislikesCount: true
-                }
+                select: { likesCount: true, dislikesCount: true }
             })
 
             return res.status(200).json({ likes: data?.likesCount, dislikes: data?.dislikesCount })

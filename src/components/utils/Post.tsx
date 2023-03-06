@@ -35,7 +35,7 @@ export default function Post({ post }: { post: IPostProps }) {
 
 
                   <Typography component="p" variant="body2">
-                    {post.description}
+                    {post.description.length > 150 ? `${post.description.substring(0, 150)}...` : post.description}
                   </Typography>
 
 

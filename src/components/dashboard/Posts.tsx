@@ -13,14 +13,12 @@ import Button from '@mui/material/Button';
 import Link from 'next/link';
 import Swal from 'sweetalert2';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import dateFormat from '../../utils/dateFormat';
 import { IPost } from '../../types/post';
 import Dialog from '@mui/material/Dialog';
 import Chip from '@mui/material/Chip';
-import DialogTitle from '@mui/material/DialogTitle';
 import FilterListIcon from '@mui/icons-material/FilterList'
 import DoneIcon from '@mui/icons-material/Done'
 

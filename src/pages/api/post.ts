@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../libs/prisma'
-import { ICreatePostData, IUpdatePostData, SortByType } from '../../types/post'
+import { ICreatePostData, IUpdatePostData } from '../../types/post'
 import { GetUserId } from '../../utils/auth';
 import Storage from '../../libs/supabase'
 import { Prisma } from '@prisma/client';

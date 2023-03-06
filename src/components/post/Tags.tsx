@@ -1,4 +1,3 @@
-import React from 'react'
 import Grid from "@mui/material/Grid"
 import Chip from "@mui/material/Chip"
 import Link from 'next/link'

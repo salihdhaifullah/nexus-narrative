@@ -22,17 +22,9 @@ export interface IUpdateProfileGeneralInformation {
     about: string | null
 }
 
-export interface IChangeBlogName {
-    blogName: string
-}
-
 export interface IChangePassword {
     currentPassword: string
     newPassword: string
-}
-
-export interface IUploadAvatar {
-    base64: string
 }
 
 export interface IViews {
