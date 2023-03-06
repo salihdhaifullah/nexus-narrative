@@ -35,6 +35,9 @@ export interface IPostProps {
     author: {
       blogName: string;
     };
+    _count: { comments: number };
+    likesCount: number;
+    dislikesCount: number;
 }
 
 

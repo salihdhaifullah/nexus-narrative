@@ -33,17 +33,17 @@ const Profile = (props: IProfile) => {
     const [page, setPage] = useState(0)
 
     const handelLoadPosts = async (init?: boolean) => {
-        init ? setIsLoading(true) : setIsLoadingRow(false)
+        init ? setIsLoading(true) : setIsLoadingRow(true)
         await getProfilePosts(props.profileId, page)
             .then((res) => {
                 setPosts((prev) => [...prev, ...res.data.posts])
                 setPage((prev) => (prev + 1))
             })
             .catch((err) => { console.log(err) })
-            .finally(() => { init ? setIsLoading(true) : setIsLoadingRow(false) })
+            .finally(() => { init ? setIsLoading(false) : setIsLoadingRow(false) })
     }
 
-    useEffect(() => { handelLoadPosts() }, [])
+    useEffect(() => { handelLoadPosts(true) }, [])
 
     const [state, setState] = useState(false)
     const [ele, setEle] = useState<Element | null>(null)
@@ -72,7 +72,7 @@ const Profile = (props: IProfile) => {
                     </div>
                 )}
 
-                {!isLoadingRow ? <div className="w-full h-[150px] flex justify-center items-center"> <CircularProgress className="w-12 h-12"/> </div> : null}
+                {!isLoadingRow ? null : <div className="w-full h-[150px] flex justify-center items-center"> <CircularProgress className="w-12 h-12"/> </div>}
                 <div ref={eleCallBack} className="min-h-[200px] w-full "></div>
             </Box>
         </div>

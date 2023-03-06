@@ -20,6 +20,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     slug: true,
                     description: true,
                     createdAt: true,
+                    likesCount: true,
+                    dislikesCount: true,
+                    _count: {select: { comments: true }},
                     author: { select: { blogName: true } }
                 }
             });

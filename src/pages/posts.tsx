@@ -170,9 +170,9 @@ const Posts = ({ tags, categories }: { tags: IOption[], categories: IOption[] })
         </div>
       ) : posts.length ? (
         <Grid>
-          <Box className="gap-4 grid w-full grid-cols-1 mb-10 sm:grid-cols-2 ">
+          <Box className="gap-4 flex flex-col justify-center items-center w-full mb-10 ">
             {posts.map((post, index) => (
-              <div key={index} className="w-full">
+              <div key={index} className="w-[600px]">
                 <Post post={post} />
               </div>
             ))}

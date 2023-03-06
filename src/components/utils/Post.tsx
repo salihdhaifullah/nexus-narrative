@@ -7,64 +7,62 @@ import CardMedia from '@mui/material/CardMedia';
 import Link from 'next/link';
 import { IPostProps } from '../../types/post';
 import dateFormat from '../../utils/dateFormat';
-import { Box } from '@mui/material/Box';
+import Box from '@mui/material/Box';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import CommentIcon from '@mui/icons-material/Comment';
 
-export default function Post(props: {post: IPostProps }) {
-  const { post } = props;
+export default function Post({ post }: { post: IPostProps }) {
 
   return (
-    <div className="w-full flex">
-      <Grid item className="w-full">
+    <div className="w-full flex h-[200px]">
+      <Grid item className="w-full h-[200px]">
 
         <Link href={`/${post.author.blogName}/posts/${post.slug}`}>
-          <CardActionArea className="h-[200px] relative">
-            <Card className="flex w-full">
+          <CardActionArea className="relative h-[200px]">
+            <Card className="flex w-full h-full items-start">
 
-              <CardContent className="flex-1">
+              <CardContent className="flex-1 h-[200px] flex flex-col justify-between">
+                <Box className="flex flex-col">
 
-                <Typography component="h2" variant="h5">
-                  {post.title}
-                </Typography>
-
-                <Typography component="p" variant="body2">
-                  {dateFormat(post.createdAt)}
-                </Typography>
-
-                {post.description ? (
-                  <Typography component="p" variant="body2">
-                    {post.description.substring(0, 30)}...
+                  <Typography component="h2" variant="h5">
+                    {post.title}
                   </Typography>
-                ) : null}
 
-                <Typography variant="subtitle1" color="primary">
-                  Continue reading...
-                </Typography>
+                  <Typography component="p" variant="body2">
+                    {dateFormat(post.createdAt)}
+                  </Typography>
 
-                  <Box className="flex flex-row">
+
+                  <Typography component="p" variant="body2">
+                    {post.description}
+                  </Typography>
+
+
                   <Typography variant="subtitle1" color="primary">
-                 Likes
-                </Typography>
+                    Continue reading...
+                  </Typography>
+                </Box>
 
-                <Typography variant="subtitle1" color="primary">
-                  dislikes
-                </Typography>
+                <Box className="flex flex-row gap-4 justify-center">
+                  <div className="hover:bg-gray-200 cursor-default text-blue-500 rounded-full p-2">
+                    <ThumbUpOffAltIcon /> {post.likesCount}
+                  </div>
 
-                <Typography variant="subtitle1" color="primary">
-                  tags
-                </Typography>
+                  <div className="hover:bg-gray-200 cursor-default text-blue-500 rounded-full p-2">
+                    <ThumbDownOffAltIcon /> {post.dislikesCount}
+                  </div>
 
+                  <div className="hover:bg-gray-200 cursor-default text-blue-500 rounded-full p-2">
+                    <CommentIcon /> {post._count.comments}
+                  </div>
 
-                <Typography variant="subtitle1" color="primary">
-                  views
-                </Typography>
-                  </Box>
-
+                </Box>
               </CardContent>
 
               <CardMedia
                 component="img"
-                className="object-center h-[200px]"
-                sx={{ width: 200 }}
+                className="object-contain h-auto max-w-[200px] w-full"
                 image={post.backgroundImage}
                 alt={post.title}
               />

@@ -1,9 +1,7 @@
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import Box from '@mui/material/Box';
-import { useEffect, useCallback } from 'react';
 import { useState } from 'react';
-import Typography from '@mui/material/Typography';
 import { IViews } from './../../types/profile';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
@@ -44,10 +42,12 @@ const ViewsChart = ({ views }: { views: IViews[] }) => {
     })
 
     return (
-        <Box className="h-full flex justify-center items-center">
-            <div className='flex min-h-[500px] min-w-[900px] w-fit h-full shadow-lg rounded-md border bg-white p-3 flex-col'>
+        <Box className="h-full w-full flex justify-center items-center">
+            <div className='flex overflow-x-scroll h-[500px] w-fit mx-4 bg-white shadow-lg rounded-md border  p-3 flex-col'>
                 <h1 className='text-3xl text-gray-800 font-bold mb-4'>Views</h1>
-                <Line className="overflow-x-auto" data={data} />
+                <div className="min-w-[750px] min-h-[375px] relative">
+                    <Line data={data} width={750} height={375} />
+                </div>
             </div>
         </Box>
     )

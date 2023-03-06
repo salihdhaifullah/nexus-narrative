@@ -66,6 +66,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         title: true,
                         slug: true,
                         createdAt: true,
+                        likesCount: true,
+                        dislikesCount: true,
+                        _count: {select: { comments: true }},
                         description: true
                     }
                 }),
