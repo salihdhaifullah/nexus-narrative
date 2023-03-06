@@ -3,13 +3,81 @@ import prisma from '../../libs/prisma'
 import { ICreatePostData, IUpdatePostData, SortByType } from '../../types/post'
 import { GetUserId } from '../../utils/auth';
 import Storage from '../../libs/supabase'
+import { Prisma } from '@prisma/client';
 
 export const config = {
     api: { bodyParser: { sizeLimit: '4mb' } }
 }
 
+const filterQuery = (search: unknown, tag: unknown, category: unknown) => {
+    let query: Prisma.PostWhereInput = {}
+
+    if (typeof search === 'string' && search.length > 0) query["OR"] = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } }
+    ];
+
+    if (typeof tag === 'string' && tag.length > 1) query["tags"] = { some: { name: tag } };
+
+    if (typeof category === 'string' && category.length > 1) query["category"] = { name: category };
+
+    return query;
+}
+
+const SortQuery = (sort: unknown) => {
+    let query: Prisma.PostOrderByWithRelationInput = {}
+    const sortOptions = ["likes", "views", "date"]
+
+    if (typeof sort !== "string" || sort.length < 1 || !sortOptions.includes(sort)) return query;
+
+    if (sort === "likes") query = { likesCount: "desc" }
+    else if (sort === "views") query = { views: { _count: "desc" } }
+    else query = { createdAt: "desc" }
+
+    return query;
+}
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+
+    if (req.method === 'GET') {
+
+        try {
+            const category = req.query["category"];
+            const tag = req.query["tag"];
+            const search = req.query["search"];
+            const sort = req.query["sort"];
+
+            const page = Number(req.query["page"]);
+
+            if (typeof page !== "number") return res.status(400).json({ massage: "page is not a number" });
+
+            console.log(filterQuery(search, tag, category))
+
+            const [posts, count] = await prisma.$transaction([
+                prisma.post.findMany({
+                    orderBy: SortQuery(sort),
+                    where: filterQuery(search, tag, category),
+                    skip: (page * 5),
+                    take: 5,
+                    select: {
+                        author: { select: { blogName: true } },
+                        backgroundImage: true,
+                        title: true,
+                        slug: true,
+                        createdAt: true,
+                        description: true
+                    }
+                }),
+                prisma.post.count({ where: filterQuery(search, tag, category) })
+            ])
+
+            return res.status(200).json({ posts, count });
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ massage: "internal Server Error" })
+        }
+    }
 
     if (req.method === 'PATCH') {
         try {
@@ -78,75 +146,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(500).json({ massage: "internal Server Error" })
         }
     }
-
-    if (req.method === 'GET') {
-
-        try {
-            const category = req.query["category"];
-
-            const filterQuery = typeof category === "string" ? { where: { category: { name: category } } } : null;
-
-            const skip = Number(req.query["skip"]);
-            const take = Number(req.query["take"]);
-            const sort: SortByType | any = req.query["sort"];
-
-            if (!["Likes", "Views", "CreateAt"].includes(sort)) return res.status(404).json({ massage: "Sort unValid" })
-
-            let orderBy: { likes: { _count: "desc"; }; } | { views: { _count: "desc"; }; } | { createdAt: "desc" } = { createdAt: "desc" };
-
-            switch (sort) {
-                case "Likes": orderBy = { likes: { _count: "desc" } }
-                    break;
-                case "Views": orderBy = { views: { _count: "desc" } }
-                    break;
-                case "CreateAt": orderBy = { createdAt: "desc" }
-                default: orderBy = { createdAt: "desc" }
-            }
-
-            if (typeof skip !== "number") return res.status(404).json({ massage: "skip is not a number" });
-            if (typeof take !== "number") return res.status(404).json({ massage: "take is not a number" });
-
-            let posts;
-            if (filterQuery) {
-                posts = await prisma.post.findMany({
-                    orderBy: orderBy,
-                    where: filterQuery.where,
-                    skip: skip,
-                    take: take,
-                    select: {
-                        author: { select: { blogName: true } },
-                        backgroundImage: true,
-                        title: true,
-                        slug: true,
-                        createdAt: true,
-                        description: true
-                    }
-                });
-            } else {
-                posts = await prisma.post.findMany({
-                    orderBy: orderBy,
-                    skip: skip,
-                    take: take,
-                    select: {
-                        author: { select: { blogName: true } },
-                        backgroundImage: true,
-                        title: true,
-                        slug: true,
-                        createdAt: true,
-                        description: true
-                    }
-                });
-            }
-
-
-            return res.status(200).json({ posts });
-        } catch (error) {
-            console.log(error)
-            return res.status(500).json({ massage: "internal Server Error" })
-        }
-
-    }
-
 
     if (req.method === "POST") {
 

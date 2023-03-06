@@ -49,8 +49,8 @@ export const SearchByTag = async (tag: string, skip: number, take: number) => aw
 
 export const SearchByCategory = async (category: string, skip: number, take: number) => await API.get(`/search?category=${category}&skip=${skip}&take=${take}`)
 
-export const GetPosts = async (skip: number, take: number, category: string | undefined, sort: SortByType | undefined) =>
-await API.get(`/post/${category ? `?category=${category}&` : "?"}skip=${skip}&take=${take}&sort=${sort}`);
+export const GetPosts = async (page: number, category?: string, tag?: string, search?: string, sort?: string) =>
+await API.get(`/post/?page=${page}&category=${category || ""}&tag=${tag || ""}&search=${search || ""}&sort=${sort || ""}`);
 
 export const uploadProfileImage = async (data: IUploadAvatar) => await API.post("/upload", data)
 

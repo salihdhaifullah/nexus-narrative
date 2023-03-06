@@ -72,7 +72,7 @@ const Profile = (props: IProfile) => {
                     </div>
                 )}
 
-                {isLoadingRow ? <div className="w-full h-full flex justify-center items-center"> <CircularProgress className="w-12 h-12"/> </div> : null}
+                {!isLoadingRow ? <div className="w-full h-[150px] flex justify-center items-center"> <CircularProgress className="w-12 h-12"/> </div> : null}
                 <div ref={eleCallBack} className="min-h-[200px] w-full "></div>
             </Box>
         </div>

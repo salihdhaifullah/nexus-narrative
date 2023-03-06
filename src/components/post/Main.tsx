@@ -48,7 +48,7 @@ export default function Main({ createdAt, category, authorId, blogName, post }: 
 
         <Box className="flex flex-row gap-2 items-center justify-center">
           <p className="text-gray-800 text-lg">Category: </p>
-          <Link href={`/search?category=${category}`}>
+          <Link href={`/posts?category=${category}`}>
             <Typography className="link mb-0" variant="h6" gutterBottom> {category} </Typography>
           </Link>
         </Box>
