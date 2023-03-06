@@ -19,7 +19,7 @@ const Posts = ({ tags, categories }: { tags: IOption[], categories: IOption[] })
 
   const [posts, setPosts] = useState<IPostProps[]>([]);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [tag, setTag] = useState("")
