@@ -1,10 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: false,
-  swcMinify: true,
-  images: {
-    domains: ['flagcdn.com', 'afpvklxswartvhfhdnhe.supabase.co'],
-  },
-}
+const nextConfig = {}
 
-module.exports = nextConfig;
+module.exports = nextConfig
