@@ -1,4 +1,4 @@
-import { DependencyList, HTMLProps, ReactElement, RefObject, useEffect, useState } from 'react';
+import { HTMLProps, ReactElement } from 'react';
 import CircleProgress from './CircleProgress'
 
 type Size = "sm" | "md" | "lg";
@@ -33,31 +33,18 @@ interface IButtonProps {
     isValid?: boolean;
     buttonProps?: HTMLProps<HTMLButtonElement> & { type?: "button" | "submit" | "reset" }
     size?: Size
-    formRef: RefObject<HTMLFormElement>
-    debs: DependencyList
 }
 
 const Button = (props: IButtonProps) => {
-    const [isValid, setIsValid] = useState(false);
-
-    useEffect(() => {
-        const form = props.formRef.current;
-        if (form) {
-            setIsValid(form.checkValidity());
-        } else {
-            setIsValid(false);
-        }
-      }, props.debs);
-
 
     return (
         <button
             type={props.buttonProps?.type || 'button'}
-            {...(isValid === false ? {} : props.buttonProps)}
-            disabled={isValid === false || props.isLoading}
+            {...(props.isValid === false ? {} : props.buttonProps)}
+            disabled={props.isValid === false || props.isLoading}
             onClick={props.onClick}
             className={`${getSize(props.size)}
-                ${isValid === false ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed" :  (props.isLoading ? "cursor-wait" : "cursor-pointer") + " dark:bg-secondary bg-primary"}
+                ${props.isValid === false ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed" :  (props.isLoading ? "cursor-wait" : "cursor-pointer") + " dark:bg-secondary bg-primary"}
                 ${props.className || ""} rounded-md border-0 outline-none whitespace-nowrap font-bold dark:text-primary text-secondary dark:hover:text-black hover:text-white text-center transition-all ease-in-out shadow-md hover:shadow-lg dark:shadow-secondary/40 dark:hover:border-gray-400 hover:border-gray-600 w-fit h-fit
             `}>
 

@@ -30,16 +30,19 @@ const Login = () => {
 
   return (
     <section className='w-full h-full mt-20 flex justify-center items-center'>
-      <div className='rounded-md bg-normal shadow-lg w-[90%] sm:w-[80%] md:w-[60%] lg:w-[40%] p-8 h-full flex justify-center items-center flex-col mt-2'>
+      <div className='rounded-md bg-normal shadow-lg p-8 h-full flex justify-center items-center flex-col mt-2'>
 
         <div>
           <Image alt="logo" src="/logo.svg" width={80} height={80} priority />
         </div>
 
-        <h1> login </h1>
+        <h1 className='text-secondary text-4xl'> login </h1>
 
-        <form onSubmit={handleSubmit}>
-
+        <form
+          autoComplete="off"
+          onSubmit={handleSubmit}
+          className='flex flex-col'
+        >
           <TextFiled
             validation={[
               { validate: (str: string) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(str), massage: "un-valid email address" },
@@ -47,7 +50,7 @@ const Login = () => {
             ]}
             icon={MdEmail}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            setValue={setEmail}
             label="email address"
           />
 
@@ -56,7 +59,7 @@ const Login = () => {
             icon={RiLockPasswordFill}
             value={password}
             inputProps={{ type: passwordType }}
-            onChange={(e) => setPassword(e.target.value)}
+            setValue={setPassword}
             label="password"
             InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
           />

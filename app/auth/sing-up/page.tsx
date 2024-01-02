@@ -1,6 +1,6 @@
 "use client"
 
-import { DependencyList, FormEvent, RefObject, useCallback, useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import Link from "next/link";
 import useFetchApi from '@/hooks/useFetchApi';
 import Image from 'next/image';
@@ -24,23 +24,12 @@ const SingUp = () => {
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const [passwordType, setPasswordType] = useState("password")
-  const formRef = useRef<HTMLFormElement>(null)
   const [payload, call] = useFetchApi<ISingUp>("POST", "sing-up")
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     call()
   };
-
-  const [isValid, setIsValid] = useState(false);
-
-  useLayoutEffect(() => {
-    if (formRef.current) {
-      setIsValid(formRef.current.checkValidity());
-    } else {
-      setIsValid(false);
-    }
-  }, [firstName, lastName, email, password]);
 
   return (
     <section className='w-full h-full mt-20 flex justify-center items-center'>
@@ -53,7 +42,6 @@ const SingUp = () => {
         <h1 className='text-secondary text-4xl'> Sign up </h1>
 
         <form
-          ref={formRef}
           autoComplete="off"
           onSubmit={handleSubmit}
           className='flex flex-col'
@@ -108,8 +96,6 @@ const SingUp = () => {
 
           <div className="flex flex-col justify-center items-center w-full my-1">
             <Button
-              debs={[firstName, lastName, email, password]}
-              formRef={formRef}
               buttonProps={{ type: "submit" }}
               isLoading={payload.isLoading}
             >submit</Button>

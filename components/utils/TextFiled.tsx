@@ -1,4 +1,4 @@
-import { ChangeEventHandler, Dispatch, ForwardedRef, HTMLProps, KeyboardEvent, ReactNode, SetStateAction, forwardRef, useEffect, useId, useMemo, useRef, useState } from "react";
+import { ChangeEventHandler, Dispatch, ForwardedRef, HTMLProps, KeyboardEvent, ReactNode, SetStateAction, forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { IconType } from "react-icons";
 
 export interface IValidate {
@@ -26,19 +26,14 @@ const TextFiled = forwardRef((props: TextFiledProps, ref: ForwardedRef<HTMLDivEl
     const Id = useId();
     const [isFocus, setIsFocus] = useState(false);
     const [isError, setIsError] = useState(false);
-    const [errorMassage, setErrorMassage] = useState("");
     const inputRef = useRef<HTMLInputElement>(null)
 
     const labelClassName = useMemo(() => {
         if (props.value) return "sr-only"
         else return `absolute z-10 font-extralight transition-all ease-in-out
         ${isFocus ? `bottom-[95%] ${props?.icon ? "left-[12%]" : "left-[2.4%]"} text-sm ${isError ? "dark:text-red-400 text-red-600" : "dark:text-secondary text-primary"}`
-         : `text-base ${props?.icon ? "left-[20%]" : "left-[4%]"} bottom-[20%] text-gray-700 dark:text-gray-200`}`
+                : `text-base ${props?.icon ? "left-[20%]" : "left-[4%]"} bottom-[20%] text-gray-700 dark:text-gray-200`}`
     }, [props.value, props?.icon, isError, isFocus])
-
-    useEffect(() => {
-        inputRef.current?.setCustomValidity(errorMassage)
-    }, [errorMassage])
 
     const onFocus = () => {
         setIsFocus(true)
@@ -50,25 +45,28 @@ const TextFiled = forwardRef((props: TextFiledProps, ref: ForwardedRef<HTMLDivEl
         if (props?.onBlur) props.onBlur();
     }
 
-    const handelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        props.setValue(e.target.value)
-        setIsFocus(true)
-        setIsError(false)
-    }
-
-    useEffect(() => {
+    const validation = useCallback((val: string = props.value) => {
         if (!props?.validation) return;
         let massage = "";
         for (let i = 0; i < props.validation.length; i++) {
             const item = props.validation[i];
-            if (!item.validate(props.value)) {
+            if (!item.validate(val)) {
                 massage = item.massage
                 setIsError(true);
                 break;
             }
         }
-        setErrorMassage(massage)
+        inputRef.current?.setCustomValidity(massage);
     }, [props.validation, props.value])
+
+    useEffect(() => { validation() }, [validation])
+
+    const handelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        props.setValue(e.target.value)
+        setIsFocus(true)
+        setIsError(false)
+        validation(e.target.value)
+    }
 
     const handelKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         e.key === "Enter" && e.preventDefault()
