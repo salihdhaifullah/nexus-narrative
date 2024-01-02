@@ -40,7 +40,7 @@ const HeaderModal = () => {
   }
 
   return (
-    <div className="rounded-xl bg-white dark:bg-black h-full flex-1 flex flex-col gap-4 p-2 items-start justify-evenly">
+    <div className="rounded-xl bg-gray-100 dark:bg-gray-900 h-full flex-1 flex flex-col gap-4 p-2 items-start justify-evenly">
 
       <ButtonBase
         onClick={() => handelTheme()}

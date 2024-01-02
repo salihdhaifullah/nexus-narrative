@@ -2,16 +2,14 @@ import Link from "next/link";
 
 const Footer = () => {
     return (
-        <div className="flex flex-col min-h-[50px] mt-10 w-full ">
+        <footer className="flex flex-col h-12 justify-center items-center w-full">
             <p className="text-center text-secondary">
                 {'Copyright © '}
-                <Link href="https://github.com/salehWeb">
-                    Builded And developed by salehWeb
-                </Link>{' '}
+                <Link href="/" className="link">NexusNarrative</Link>{' '}
                 {new Date().getFullYear()}
                 {'.'}
             </p>
-        </div>
+        </footer>
     );
 };
 

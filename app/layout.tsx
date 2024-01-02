@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { Aleo } from 'next/font/google'
-import './globals.css'
 import Provider from '../context'
 import Wrapper from '@/components/layout/Wrapper'
+import isServer from 'utils/isServer'
+import './globals.css'
 
 const aleo = Aleo({
   style: ['normal', 'italic'],
@@ -16,17 +17,19 @@ export const metadata: Metadata = {
 }
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
+  console.log(`RootLayout: i was render on the ${isServer() ? "server" : "client"}`)
+
   return (
-    <html lang="en" className='flex flex-col bg-normal min-h-[100vh]'>
+    <html lang="en" className='flex flex-col bg-gray-100 dark:bg-gray-900 min-h-[100vh]'>
       <body className={aleo.className}>
-        <Provider>
-          <Wrapper>
-            {children}
-          </Wrapper>
-        </Provider>
+          <Provider>
+            <Wrapper>
+              {children}
+            </Wrapper>
+          </Provider>
       </body>
     </html>
   );
 }
 
-export default RootLayout;
+export default RootLayout

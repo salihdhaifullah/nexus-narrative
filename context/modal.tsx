@@ -18,7 +18,7 @@ const modalInit: IModal = {
 const ModalContext = createContext<IModal>(modalInit);
 const ModalDispatchContext = createContext<Dispatch<IModalAction>>(() => null);
 
-export function useModal() {
+export function useModal(): IModal {
     return useContext(ModalContext);
 }
 
