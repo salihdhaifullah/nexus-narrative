@@ -13,19 +13,18 @@ import Image from "next/image";
 import Link from "next/link";
 import useFetchApi from "@/hooks/useFetchApi";
 import { useRouter } from "next/navigation";
-import isServer from "utils/isServer";
 
 const Header = () => {
-    console.log(`Header: i was render on the ${isServer() ? "server" : "client"}`)
-
     const user = useUser();
     const theme = useTheme();
     const query = useQuery();
     const [search, setSearch] = useState(query.get("search") || "");
     const [show, setShow] = useState(false)
+
     useEffect(() => {
         setShow(true)
     }, [])
+
     const themeDispatch = useThemeDispatch();
     const router = useRouter();
     const userDispatch = useUserDispatch();
@@ -53,6 +52,7 @@ const Header = () => {
                         title="NexusNarrative"
                         width={45}
                         height={45}
+                        priority
                     />
                 </Link>
 

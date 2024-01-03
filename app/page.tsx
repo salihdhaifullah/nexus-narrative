@@ -3,13 +3,18 @@ import Link from 'next/link'
 import { FaArrowRight } from "react-icons/fa6"
 import mountains from "public/hero.jpg"
 import isServer from 'utils/isServer';
+import { Metadata } from 'next';
+
+
+export const metadata: Metadata = {
+  title: 'Explore Engaging Blog Posts on Technology, Lifestyle, Travel, and Health | NexusNarrative',
+  description: 'Explore engaging blog posts on technology, lifestyle, travel, and health. Stay informed and inspired with NexusNarrative.',
+}
 
 const Index = () => {
-    console.log(`Index: i was render on the ${isServer() ? "server" : "client"}`)
-
   return (
     <section className="h-screen w-full">
-      <div className='absolute h-screen w-full -z-10'>
+      <div className='absolute h-screen w-full -z-10 bg-black'>
         <Image
           alt="Mountains"
           src={mountains}
@@ -17,7 +22,6 @@ const Index = () => {
           quality={100}
           fill
           sizes="100vw"
-          priority
           className='object-cover opacity-40'
         />
       </div>

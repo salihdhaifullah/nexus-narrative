@@ -1,5 +1,3 @@
-"use client"
-
 import { ReactElement } from "react";
 import UserProvider from "./user";
 import ThemeProvider from "./theme";
