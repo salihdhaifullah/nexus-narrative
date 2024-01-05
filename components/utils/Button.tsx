@@ -1,4 +1,4 @@
-import { HTMLProps, ReactElement } from 'react';
+import { HTMLProps, ReactNode } from 'react';
 import CircleProgress from './CircleProgress'
 
 type Size = "sm" | "md" | "lg";
@@ -25,13 +25,12 @@ function getSize(size?: Size) {
 }
 
 
-interface IButtonProps {
-    className?: string
-    children?: ReactElement | ReactElement[] | string
-    onClick?: () => void;
+type ButtonElement = HTMLProps<HTMLButtonElement> & { type?: "button" | "submit" | "reset" };
+
+interface IButtonProps extends Omit<ButtonElement, 'size'> {
+    children?: ReactNode;
     isLoading?: boolean;
     isValid?: boolean;
-    buttonProps?: HTMLProps<HTMLButtonElement> & { type?: "button" | "submit" | "reset" }
     size?: Size
 }
 
@@ -39,8 +38,8 @@ const Button = (props: IButtonProps) => {
 
     return (
         <button
-            type={props.buttonProps?.type || 'button'}
-            {...(props.isValid === false ? {} : props.buttonProps)}
+            type={props.type || 'button'}
+            {...(props.isValid === false ? {} : props)}
             disabled={props.isValid === false || props.isLoading}
             onClick={props.onClick}
             className={`${getSize(props.size)}

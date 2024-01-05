@@ -1,4 +1,4 @@
-import { BsFillEyeSlashFill, BsFillEyeFill } from "react-icons/bs";
+import { BsFillEyeSlashFill, BsFillEyeFill } from "react-icons/bs/index.js";
 
 const PasswordEye = ({ setType, type }: { setType: (type: string) => void, type: string }) => {
 
