@@ -50,7 +50,10 @@ class ObjectValidator {
     }
 
     email(errorMessage: string): ObjectValidator {
-        return this.regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, errorMessage);
+        return this
+            .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, errorMessage)
+            .min(3, errorMessage)
+            .max(320, errorMessage);
     }
 
     number(errorMessage: string): ObjectValidator {
@@ -79,16 +82,18 @@ export default class Schema<T> {
         return this;
     }
 
-    validate(data: T): Record<keyof T, string | null> {
+    validate(data: T): {errors: Record<keyof T, string | null>, isError: boolean} {
         const errors: Record<keyof T, string | null> = {} as Record<keyof T, string | null>;
-
+        let isError = false;
         for (const key in this.validators) {
             if (this.validators.hasOwnProperty(key)) {
-                errors[key] = this.validators[key].validate(data[key] as unknown as Value);
+                const val = this.validators[key].validate(data[key] as unknown as Value);
+                errors[key] = val;
+                if (val) isError = true;
             }
         }
 
-        return errors;
+        return {errors, isError};
     }
 }
 

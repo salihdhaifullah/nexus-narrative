@@ -1,6 +1,6 @@
-import { useModal, useModalDispatch } from "context/modal";
+import { useModal, useModalDispatch } from "~/context/modal";
 import { useRef } from "react";
-import useOnClickOutside from "hooks/useOnClickOutside";
+import useOnClickOutside from "~/hooks/useOnClickOutside";
 import { MdClose } from "react-icons/md/index.js";
 
 const Modal = () => {

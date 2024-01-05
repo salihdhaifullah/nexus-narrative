@@ -1,5 +1,5 @@
 import { Dispatch, ReactElement, createContext, useContext, useReducer } from 'react';
-import isServer from 'utils/isServer';
+import isServer from '~/utils/isServer';
 
 const isUser = isServer() ? null : localStorage.getItem("user");
 const user: IUser | null = isUser ? JSON.parse(isUser) : null;

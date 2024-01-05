@@ -3,7 +3,7 @@ import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, isRouteErr
 import styles from "tailwind.css";
 import Aleo from "public/fonts/Aleo-VariableFont_wght.ttf";
 import AleoItalic from "public/fonts/Aleo-Italic-VariableFont_wght.ttf";
-import Wrapper from "components/layout/Wrapper";
+import Wrapper from "~/components/layout/Wrapper";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },

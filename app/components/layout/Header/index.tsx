@@ -1,10 +1,10 @@
 import { FaMoon, FaSun } from "react-icons/fa/index.js";
 import { BiLogOut, BiLogIn } from 'react-icons/bi/index.js';
-import ButtonBase from "components/utils/ButtonBase";
-import SearchFiled from "components/utils/SearchFiled";
-import { useUser } from "context/user"
-import { useTheme, useThemeDispatch } from "context/theme";
-import { useModalDispatch } from "context/modal";
+import ButtonBase from "~/components/utils/ButtonBase";
+import SearchFiled from "~/components/utils/SearchFiled";
+import { useUser } from "~/context/user"
+import { useTheme, useThemeDispatch } from "~/context/theme";
+import { useModalDispatch } from "~/context/modal";
 import { useEffect, useState } from "react";
 import { MdMoreVert } from "react-icons/md/index.js";
 import Modal from "./Modal";

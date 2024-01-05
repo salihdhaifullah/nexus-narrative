@@ -1,5 +1,5 @@
 import { Dispatch, ReactElement, createContext, useContext, useEffect, useReducer } from 'react';
-import isServer from 'utils/isServer';
+import isServer from '~/utils/isServer';
 
 type Theme = "dark" | "light";
 

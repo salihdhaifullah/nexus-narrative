@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
-import TextFiled from 'components/utils/TextFiled';
+import { useState } from 'react';
+import TextFiled from '~/components/utils/TextFiled';
 import { MdEmail } from 'react-icons/md/index.js';
-import PasswordEye from 'components/utils/PasswordEye';
+import PasswordEye from '~/components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri/index.js";
-import Button from 'components/utils/Button';
-import { Form, Link, useActionData } from '@remix-run/react';
+import Button from '~/components/utils/Button';
+import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 import { ActionFunctionArgs, MetaFunction, json, redirect } from '@remix-run/node';
-import Joi from 'joi';
+import Schema from '~/utils/validate';
+import { login } from '~/data/user';
 
 export const meta: MetaFunction = () => {
   return [
@@ -15,35 +16,28 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-interface ILogin {
-  password: string;
-  email: string;
-}
-
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
 
-  const shcame = Joi.object({
-    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-    password: Joi.string().min(8).max(250)
-  })
+  const data = { email, password };
 
-  const res = shcame.validate({ email, password })
+  const schema = new Schema<typeof data>()
+      .property("email", (v) => v.required("email is required").email("un-valid email address"))
+      .property("password", (v) => v.required("password is required").max(200, "max length of password is 200").min(8, "min length of the password is 8"))
 
-  if (res.error) return json({ error: res.error });
+  const res = schema.validate(data)
 
-  return redirect("/");
+  if (res.isError) return json({ error: res.errors });
+
+  return await login();
 }
 
 const Login = () => {
   const [passwordType, setPasswordType] = useState("password")
   const actionData = useActionData<typeof action>();
-
-  useEffect(() => {
-    console.log(actionData)
-  }, [actionData])
+  const navigation = useNavigation();
 
   return (
     <section className='w-full h-full mt-20 flex justify-center items-center'>
@@ -55,16 +49,14 @@ const Login = () => {
 
         <h1 className='text-secondary text-4xl'> login </h1>
 
-        <Form autoComplete="off" className='flex flex-col' method="post">
-          <p>
-            {actionData?.error.details[0].message}
-          </p>
+        <Form className='flex flex-col' method="post">
           <TextFiled
             icon={MdEmail}
             label="email address"
             name="email"
             required
-          // type='email'
+            error={actionData?.error.email}
+            type='email'
           />
 
           <TextFiled
@@ -73,16 +65,16 @@ const Login = () => {
             label="password"
             required
             name="password"
+            error={actionData?.error.password}
             InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
           />
-
 
           <div className="flex justify-end items-center w-full px-4 pb-2">
             <Link to="/auth/sing-up" className="link">sing up ?</Link>
           </div>
 
           <div className="flex flex-col justify-center items-center w-full my-1">
-            <Button type="submit">submit</Button>
+            <Button isLoading={navigation.state === "submitting"} type="submit">submit</Button>
           </div>
 
         </Form>
