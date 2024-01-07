@@ -1,7 +1,9 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import { Link, json, useLoaderData } from "@remix-run/react";
 import { FaArrowRight } from "react-icons/fa/index.js"
 import mountains from "public/hero.jpg"
+import { renderToStaticMarkup } from "react-dom/server";
+import ResetPassword from "~/components/utils/emails/ResetPassword";
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,7 +12,15 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export const loader = () => {
+  const html = renderToStaticMarkup(ResetPassword());
+  console.log(html)
+  return json({html})
+}
+
 export default function Index() {
+  const x = useLoaderData();
+
   return (
     <section className="h-screen w-full">
       <div className='absolute h-screen w-full -z-10 bg-black'>

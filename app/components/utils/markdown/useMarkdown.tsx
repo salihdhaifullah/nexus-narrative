@@ -59,12 +59,7 @@ export default function useMarkdown(md: string): JSX.Element {
     },
 
     blockquote: ({ children }) => {
-      return <blockquote
-      style={{quotes: '\u201C \u201D \u2018 \u2019'}}
-      className='before:dark:text-gray-600 before:content-[open-quote] before:text-gray-400 before:text-4xl before:ml-px before:align-[-0.5rem]
-      bg-slate-100 dark:bg-slate-900 rounded-sm dark:border-l-gray-600 border-l-gray-400 border-l-[10px] mx-2.5 my-6 px-2.5 py-2
-      after:dark:text-gray-600 after:content-[close-quote] after:text-gray-400 after:text-4xl after:align-[-0.5rem]
-      '>{children}</blockquote>
+      return <blockquote className='bg-slate-100 dark:bg-slate-900 rounded-sm dark:border-l-gray-600 border-l-gray-400 border-l-4 my-4 p-2'>{children}</blockquote>
     },
 
     strong: ({children}) => {
