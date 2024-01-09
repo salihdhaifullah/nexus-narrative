@@ -1,5 +1,3 @@
-import { Footer } from "../components/Footer";
-
 const Main = () => {
   return (
     <div className="flex bg-white-100 font-sans items-center flex-col justify-between h-screen">
@@ -9,7 +7,6 @@ const Main = () => {
           This is a Vite React SSR Tailwind boilerplate my name is salih!
         </h2>
       </div>
-      <Footer />
     </div>
   );
 };

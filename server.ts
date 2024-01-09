@@ -51,5 +51,5 @@ app.use("*", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.listen(port, () => console.log(`Server started at http://localhost:${port}`))
+app.listen(port, () => console.log(`Server started at http://localhost:${port}${isProd ? " in production" : ""}`))
 
