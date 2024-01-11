@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import ReactDOMServer from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server";
 import App from "./App";
@@ -7,13 +7,15 @@ import "./index.css";
 
 const html = (app: string, head?: string) => {
   return (
-  `
+    `
     <!doctype html>
     <html lang="en">
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          ${head || "<!-- app head -->"}
+          <link rel="stylesheet" href="/fonts/Aleo-VariableFont_wght.ttf" />
+          <link rel="stylesheet" href="/fonts/Aleo-Italic-VariableFont_wght.ttf" />
+          <!-- head-start -->${head ?? ""}<!-- head-end -->
         </head>
         <body>
           <div id="root">${app}</div>
@@ -25,20 +27,18 @@ const html = (app: string, head?: string) => {
 }
 
 export function render(url: string) {
-  console.log(url);
-
-  const headContext: {head?: () => JSX.Element} = {};
+  const headContext: { head?: ReactElement } = {};
 
   const app = ReactDOMServer.renderToString(
     <React.StrictMode>
       <StaticRouter location={url}>
-      <HeadContext.Provider value={headContext}>
-        <App />
-      </HeadContext.Provider>
+        <HeadContext.Provider value={headContext}>
+          <App />
+        </HeadContext.Provider>
       </StaticRouter>
     </React.StrictMode>,
   );
 
-  const head = headContext?.head ? ReactDOMServer.renderToString(<headContext.head />) : undefined;
+  const head = headContext?.head ? ReactDOMServer.renderToString(headContext.head) : undefined;
   return html(app, head);
 }
