@@ -3,11 +3,6 @@ node_modules
 build
 .cache
 
-.env
-.env.local
-.npmrc
-npm-debug.log*
-
 .git
 .gitignore
 .DS_Store

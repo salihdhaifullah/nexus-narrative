@@ -1,21 +1,23 @@
-FROM node:20-slim as base
+FROM oven/bun:slim as base
 
 ENV NODE_ENV production
+
+RUN apt-get update && apt-get install -y openssl && apt-get install -y curl && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
 
 FROM base as deps
 
 WORKDIR /app
 
-ADD package.json ./
-RUN npm install --include=dev
+COPY package.json bun.lockb ./
+
+RUN bun install --dev
 
 FROM base as production-deps
 
 WORKDIR /app
 
-COPY --from=deps /app/node_modules /app/node_modules
-ADD package.json ./
-RUN npm prune --omit=dev
+COPY package.json bun.lockb ./
+RUN bun install --production
 
 FROM base as build
 
@@ -23,24 +25,22 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules /app/node_modules
 
-ADD prisma .
-RUN npx prisma generate
+COPY prisma ./prisma/
 
-ADD . .
-RUN npm run build
+RUN bunx prisma generate
+
+COPY . .
+
+RUN bun run build
 
 FROM base
-
-ENV NODE_ENV="production"
 
 WORKDIR /app
 
 COPY --from=production-deps /app/node_modules /app/node_modules
 COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
-
 COPY --from=build /app/build /app/build
 COPY --from=build /app/public /app/public
-COPY --from=build /app/package.json /app/package.json
-COPY --from=build /app/prisma /app/prisma
+COPY . .
 
-CMD ["npm", "start"]
+CMD ["bun", "run", "start"]
