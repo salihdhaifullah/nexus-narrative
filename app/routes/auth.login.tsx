@@ -56,12 +56,13 @@ const Login = () => {
         </div>
 
         <h1 className='text-secondary text-4xl'> login </h1>
-        {!data?.error ? null : (
-          <p>
-            {data.error}
-          </p>
-        )}
+
         <Form className='flex flex-col' method="post">
+        {!data?.error ? null : (
+          <div className='w-60 place-self-center my-4 flex flex-col text-center p-2 rounded-md bg-red-200'>
+            <p className='text-red-600'>{data.error}</p>
+          </div>
+        )}
           <TextFiled
             icon={MdEmail}
             label="email address"

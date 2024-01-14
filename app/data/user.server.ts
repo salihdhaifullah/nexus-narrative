@@ -92,13 +92,12 @@ export const singUp = async (args: ISingUpArgs) => {
       sameSite: "strict",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      expires: new Date(Date.now() + time),
     });
 
     await verificationEmail(args.email, `${args.firstName} ${args.lastName}`, code);
 
     return redirect("/auth/account-verification", {
-      headers: { "Set-Cookie": await cookie.serialize(uuid) }
+      headers: { "Set-Cookie": await cookie.serialize(uuid, {expires: new Date(Date.now() + time)}) }
     })
 }
 
