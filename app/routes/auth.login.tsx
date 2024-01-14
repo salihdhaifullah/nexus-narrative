@@ -7,7 +7,6 @@ import Button from '~/components/utils/Button';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 import { ActionFunctionArgs, MetaFunction, json } from '@remix-run/node';
 import Schema from '~/utils/validate';
-import { prisma } from '~/db.server';
 import { useUserDispatch } from '~/context/user';
 import { login } from '~/data/user.server';
 
@@ -26,28 +25,27 @@ export async function action({ request }: ActionFunctionArgs) {
   const data = { email, password };
 
   const schema = new Schema<typeof data>()
-    .property("email", (v) => v.required("email is required").email("un-valid email address"))
-    .property("password", (v) => v.required("password is required").max(200, "max length of password is 200").min(8, "min length of the password is 8"))
+    .property("email", (v) => v
+      .required("email is required")
+      .email("un-valid email address"))
+    .property("password", (v) => v
+      .required("password is required")
+      .max(200, "max length of password is 200")
+      .min(8, "min length of the password is 8"))
 
   const res = schema.validate(data)
 
   if (res.isError) return json({ validationError: res.errors, error: null, data: null }, { status: 400 });
 
-  const user = await prisma.user.findUnique({ where: { email: email } });
-
-  if (!user) return json({ error: `user with this email ${email} dose not exist, please try sing up`, validationError: null, data: null }, { status: 404 })
-
-  return await login({user, password});
+  return await login(data);
 }
-
-
 
 const Login = () => {
   const [passwordType, setPasswordType] = useState("password")
   const data = useActionData<typeof action>();
   const navigation = useNavigation();
   const dispatch = useUserDispatch();
-  useEffect(() => { dispatch({type: "add", payload: data?.data || undefined}) }, [])
+  useEffect(() => { dispatch({type: "add", payload: data?.data || undefined}) }, [data?.data, dispatch])
 
   return (
     <section className='w-full h-full mt-20 flex justify-center items-center'>

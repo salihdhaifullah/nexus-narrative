@@ -5,7 +5,7 @@ import PasswordEye from '~/components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri/index.js";
 import Button from '~/components/utils/Button';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
-import { ActionFunctionArgs, MetaFunction, json, redirect } from '@remix-run/node';
+import { ActionFunctionArgs, MetaFunction, json } from '@remix-run/node';
 import Schema from '~/utils/validate';
 import { singUp } from '~/data/user.server';
 
@@ -26,21 +26,32 @@ export async function action({ request }: ActionFunctionArgs) {
     const data = { email, password, firstName, lastName };
 
     const schema = new Schema<typeof data>()
-        .property("email", (v) => v.required("email is required").email("un-valid email address"))
-        .property("password", (v) => v.required("password is required").max(200, "max length of password is 200").min(8, "min length of the password is 8"))
-        .property("lastName", (v) => v.required("lastName is required").max(200, "max length of lastName is 200").min(2, "min length of the lastName is 2"))
-        .property("firstName", (v) => v.required("firstName is required").max(200, "max length of firstName is 200").min(2, "min length of the password is 2"))
+        .property("email", (v) => v
+            .required("email is required")
+            .email("un-valid email address"))
+        .property("password", (v) => v
+            .required("password is required")
+            .max(200, "max length of password is 200")
+            .min(8, "min length of the password is 8"))
+        .property("lastName", (v) => v
+            .required("lastName is required")
+            .max(200, "max length of lastName is 200")
+            .min(2, "min length of the lastName is 2"))
+        .property("firstName", (v) => v
+            .required("firstName is required")
+            .max(200, "max length of firstName is 200")
+            .min(2, "min length of the password is 2"))
 
     const res = schema.validate(data)
 
-    if (res.isError) return json({ error: res.errors });
+    if (res.isError) return json({ validationError: res.errors, error: null, data: null }, { status: 400 });
 
-    return await singUp();
+    return await singUp(data);
 }
 
 const SingUp = () => {
     const [passwordType, setPasswordType] = useState("password")
-    const actionData = useActionData<typeof action>();
+    const data = useActionData<typeof action>();
     const navigation = useNavigation();
 
     return (
@@ -52,14 +63,18 @@ const SingUp = () => {
                 </div>
 
                 <h1 className='text-secondary text-4xl'> Sing Up </h1>
-
+                {!data?.error ? null : (
+                    <p>
+                        {data.error}
+                    </p>
+                )}
                 <Form className='flex flex-col' method="post">
                     <TextFiled
                         icon={MdEmail}
                         label="first name"
                         name="firstName"
                         required
-                        error={actionData?.error.firstName}
+                        error={data?.validationError?.firstName}
                     />
 
                     <TextFiled
@@ -67,7 +82,7 @@ const SingUp = () => {
                         label="last name"
                         name="lastName"
                         required
-                        error={actionData?.error.lastName}
+                        error={data?.validationError?.lastName}
                     />
 
                     <TextFiled
@@ -75,7 +90,7 @@ const SingUp = () => {
                         label="email address"
                         name="email"
                         required
-                        error={actionData?.error.email}
+                        error={data?.validationError?.email}
                         type='email'
                     />
 
@@ -85,7 +100,7 @@ const SingUp = () => {
                         label="password"
                         required
                         name="password"
-                        error={actionData?.error.password}
+                        error={data?.validationError?.password}
                         InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
                     />
 

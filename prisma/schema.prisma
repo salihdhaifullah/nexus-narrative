@@ -51,14 +51,13 @@ model Views {
   IPAddress String
   postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  monthAndYear String
+  createdAt DateTime  @default(now())
 }
 
 model Like {
   id        Int     @id @default(autoincrement())
+  isLike    Boolean?
   userId    Int
-  isLike    Boolean @default(false)
-  isDislike Boolean @default(false)
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   postId    Int
   post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -71,14 +70,14 @@ model User {
   lastName    String
   firstName   String
   password    String
+  blogName    String    @unique
   comments    Comment[]
-  Likes       Like[]
+  likes       Like[]
   posts       Post[]
+  phoneNumber String?
   profile     String?
   about       String?
-  blogName    String    @unique
   title       String?
-  phoneNumber Int?
   country     String?
   city        String?
 
@@ -90,7 +89,7 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   authorId  Int
-  postId    Int
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
