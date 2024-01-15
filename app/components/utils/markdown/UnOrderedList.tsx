@@ -1,9 +1,9 @@
-import { BiListUl } from "react-icons/bi/index.js";
+import { BiListUl } from "react-icons/bi";
 import { useCallback, useEffect, useRef } from "react";
 import { getCurrentLine, setRange, useTextarea } from "./util";
 
 const UnOrderedList = () => {
-    let isUnOrderedListMode = useRef(false);
+    const isUnOrderedListMode = useRef(false);
 
     const textarea = useTextarea();
 
@@ -11,7 +11,7 @@ const UnOrderedList = () => {
         isUnOrderedListMode.current = false;
     }
 
-    const addItem = () => {
+    const addItem = useCallback(() => {
         const text = textarea.value;
         const start = textarea.selectionStart;
         const currentLine = getCurrentLine(start, text);
@@ -25,18 +25,18 @@ const UnOrderedList = () => {
         setRange(textarea, start + inner.length);
 
         isUnOrderedListMode.current = true;
-    };
+    }, [textarea])
 
 
     const enterUnOrderedListMode = () => {
         addItem();
     }
 
-    const undo = () => {
+    const undo = useCallback(() => {
         const start = textarea.selectionStart;
         setRange(textarea, start);
         document.execCommand("undo");
-    }
+    }, [textarea])
 
     const keydownListener = useCallback((e: KeyboardEvent) => {
         if (e.key !== "Enter" || !isUnOrderedListMode.current) return;
@@ -57,17 +57,17 @@ const UnOrderedList = () => {
             resetState();
             undo();
         }
-    }, []);
+    }, [addItem, textarea.selectionStart, textarea.value, undo]);
 
     useEffect(() => {
         textarea.addEventListener("keydown", keydownListener);
         return () => textarea.removeEventListener("keydown", keydownListener);
-    }, []);
+    }, [keydownListener, textarea]);
 
     return (
-        <div title="Unordered list" className="flex justify-center items-center" onClick={() => enterUnOrderedListMode()}>
+        <button title="Unordered list" className="flex justify-center items-center" onClick={() => enterUnOrderedListMode()}>
             <BiListUl className="text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary text-xl rounded-sm cursor-pointer" />
-        </div>
+        </button>
     );
 };
 

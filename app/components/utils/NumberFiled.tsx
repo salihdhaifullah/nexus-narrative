@@ -20,7 +20,7 @@ const NumberFiled = forwardRef((props: INumberFiledProps, ref: ForwardedRef<HTML
     useEffect(() => {
         if (props.value) setLabelClassName("sr-only");
         else setLabelClassName(`absolute z-10 font-extralight transition-all ease-in-out  ${isFocus ? LABEL_FOCUS : LABEL}`);
-    }, [isFocus, changing])
+    }, [isFocus, changing, props.value, LABEL_FOCUS, LABEL])
 
     useEffect(() => {
         if (props.value) setLabelClassName("sr-only");
@@ -65,6 +65,8 @@ const NumberFiled = forwardRef((props: INumberFiledProps, ref: ForwardedRef<HTML
         </div>
     )
 })
+
+NumberFiled.displayName = "NumberFiled";
 
 export default NumberFiled;
 

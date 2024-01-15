@@ -1,5 +1,5 @@
 import { findWordBoundaries, setRange, useTextarea } from "./util";
-import { FaListUl } from "react-icons/fa/index.js";
+import { FaListUl } from "react-icons/fa";
 
 const LIST = "* [ ] todo\n* [x] done";
 
@@ -19,10 +19,10 @@ const List = () => {
     };
 
     return (
-        <div title="todo list" className="flex justify-center items-center"
+        <button title="todo list" className="flex justify-center items-center"
             onClick={() => insertList()}>
             <FaListUl className="text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary text-xl p-0.5 rounded-sm cursor-pointer" />
-        </div>
+        </button>
     )
 }
 

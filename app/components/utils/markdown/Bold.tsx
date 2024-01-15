@@ -1,4 +1,4 @@
-import { BiBold } from "react-icons/bi/index.js";
+import { BiBold } from "react-icons/bi";
 import { findWordBoundaries, setRange, useTextarea } from "./util";
 
 const DOUBLE_ASTERISK = "**";
@@ -28,9 +28,9 @@ const Bold = () => {
   };
 
   return (
-    <div title="Bold" className="flex justify-center items-center" onClick={() => insertBold()}>
+    <button title="Bold" className="flex justify-center items-center" onClick={() => insertBold()}>
       <BiBold className="text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary text-xl rounded-sm cursor-pointer" />
-    </div>
+    </button>
   );
 };
 

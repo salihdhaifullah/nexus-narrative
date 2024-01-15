@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import TextFiled from '~/components/utils/TextFiled';
-import { MdEmail } from 'react-icons/md/index.js';
+import { MdEmail } from 'react-icons/md';
 import PasswordEye from '~/components/utils/PasswordEye';
-import { RiLockPasswordFill } from "react-icons/ri/index.js";
+import { RiLockPasswordFill } from "react-icons/ri";
 import Button from '~/components/utils/Button';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 import { ActionFunctionArgs, MetaFunction, json } from '@remix-run/node';

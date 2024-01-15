@@ -86,7 +86,7 @@ export default class Schema<T> {
         const errors: Record<keyof T, string | null> = {} as Record<keyof T, string | null>;
         let isError = false;
         for (const key in this.validators) {
-            if (this.validators.hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(this.validators, key)) {
                 const val = this.validators[key].validate(data[key] as unknown as Value);
                 errors[key] = val;
                 if (val) isError = true;

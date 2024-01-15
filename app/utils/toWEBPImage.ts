@@ -33,7 +33,7 @@ export default function toWEBPImage(file: File, quality: Range<1, 101> = 80): Pr
                 resolve(canvas.toDataURL("image/WEBP", qualityDecimal).split(",")[1]);
             };
 
-            reader.onerror = (error: any) => { reject(new Error(error)) };
+            reader.onerror = () => { reject(new Error("error trying to convert to webp base64")) };
         }
     })
 }

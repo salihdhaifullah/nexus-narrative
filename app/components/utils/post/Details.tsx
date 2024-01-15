@@ -10,7 +10,7 @@ interface IProps {
     profile: string | null;
     about: string | null;
   }
-};
+}
 
 export default function Details({ author }: IProps) {
 
@@ -23,7 +23,7 @@ export default function Details({ author }: IProps) {
           <img
             className='rounded-full w-20 h-20'
             src={author.profile || '/images/user-placeholder.png'}
-            alt="Picture of the author"
+            alt="author"
           />
 
           <Link to={`/profiles/${author.id}`}>

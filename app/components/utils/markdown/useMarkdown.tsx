@@ -12,7 +12,7 @@ export default function useMarkdown(md: string): JSX.Element {
   const theme = useTheme();
 
   useEffect(() => {
-    var link = document.createElement('link');
+    const link = document.createElement('link');
     const css = theme === "dark" ? dark : light;
 
     link.rel = 'stylesheet';
@@ -102,7 +102,7 @@ export default function useMarkdown(md: string): JSX.Element {
       if (href && href.startsWith('/')) {
         return <Link className='link' to={href}>{children}</Link>;
       }
-      return <a className='link' target="_blank" href={href}>{children}</a>;
+      return <a className='link' target="_blank" rel="noreferrer" href={href}>{children}</a>;
     },
 
     pre: ({ children }) => {
@@ -128,5 +128,5 @@ export default function useMarkdown(md: string): JSX.Element {
     },
   };
 
-  return <ReactMarkdown className="overflow-x-auto thin-scrollbar" remarkPlugins={[remarkGfm]} children={md} components={markdownComponents} />;
+  return <ReactMarkdown className="overflow-x-auto thin-scrollbar" remarkPlugins={[remarkGfm]} components={markdownComponents}>{md}</ReactMarkdown>;
 }

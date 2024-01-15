@@ -17,7 +17,7 @@ export const links: LinksFunction = () => [
 export function ErrorBoundary() {
   const error = useRouteError();
   return (
-    <html>
+    <html lang="en">
       <head>
         <title>Oops!</title>
         <Meta />

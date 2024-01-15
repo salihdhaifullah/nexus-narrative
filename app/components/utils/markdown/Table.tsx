@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { AiOutlineTable } from "react-icons/ai/index.js"
+import { AiOutlineTable } from "react-icons/ai"
 import NumberFiled from "../NumberFiled";
 import { setRange, useTextarea } from "./util";
 import Button from "../Button";

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import TextFiled from '~/components/utils/TextFiled';
-import { MdEmail } from 'react-icons/md/index.js';
+import { MdEmail } from 'react-icons/md';
 import PasswordEye from '~/components/utils/PasswordEye';
-import { RiLockPasswordFill } from "react-icons/ri/index.js";
+import { RiLockPasswordFill } from "react-icons/ri";
 import Button from '~/components/utils/Button';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 import { ActionFunctionArgs, MetaFunction, json } from '@remix-run/node';
 import Schema from '~/utils/validate';
-import { useUserDispatch } from '~/context/user';
+import { IUser, useUserDispatch } from '~/context/user';
 import { login } from '~/data/user.server';
 
 export const meta: MetaFunction = () => {
@@ -45,7 +45,7 @@ const Login = () => {
   const data = useActionData<typeof action>();
   const navigation = useNavigation();
   const dispatch = useUserDispatch();
-  useEffect(() => { dispatch({type: "add", payload: data?.data || undefined}) }, [data?.data, dispatch])
+  useEffect(() => { dispatch({type: "add", payload: data?.data as unknown as IUser || undefined}) }, [data?.data, dispatch])
 
   return (
     <section className='w-full h-full mt-20 flex justify-center items-center'>

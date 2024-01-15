@@ -1,4 +1,4 @@
-import { BiHeading } from "react-icons/bi/index.js";
+import { BiHeading } from "react-icons/bi";
 import { findWordBoundaries, setRange, useTextarea } from "./util";
 import { useRef, useState } from "react";
 import useOnClickOutside from "~/hooks/useOnClickOutside";
@@ -31,14 +31,14 @@ const Heading = () => {
 
                 {isOpen && ["text-2xl", "text-xl", "text-lg", "text-base", "text-sm", "text-xs"].map(
                     (textType, index) => (
-                        <p key={index}
+                        <button key={index}
                             className={`text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary p-1 flex justify-center items-center rounded-sm cursor-pointer ${textType} `}
                             onClick={() => {
                                 setIsOpen(false)
                                 insertHeading(index + 1)
                             }}>
                             <BiHeading />
-                        </p>
+                        </button>
                     )
                 )}
             </div>

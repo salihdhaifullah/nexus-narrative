@@ -1,17 +1,15 @@
-import { FaMoon, FaSun } from "react-icons/fa/index.js";
-import { BiLogOut, BiLogIn } from 'react-icons/bi/index.js';
+import { FaMoon, FaSun } from "react-icons/fa";
+import { BiLogOut, BiLogIn } from 'react-icons/bi';
 import ButtonBase from "~/components/utils/ButtonBase";
 import SearchFiled from "~/components/utils/SearchFiled";
 import { useTheme, useThemeDispatch } from "~/context/theme";
 import { useModalDispatch } from "~/context/modal";
-import { useUser, useUserDispatch } from "~/context/user";
-import { useState } from "react";
-import { Link, useNavigate } from "@remix-run/react";
+import { useUser } from "~/context/user";
+import { Link } from "@remix-run/react";
 
 const HeaderModal = () => {
   const themeDispatch = useThemeDispatch()
   const dispatchModal = useModalDispatch()
-  const userDispatch = useUserDispatch();
 
   const theme = useTheme();
   const user = useUser();
@@ -53,7 +51,7 @@ const HeaderModal = () => {
       )}
 
       <div className="w-full">
-        <SearchFiled onClick={handelSearch} label="Search" value={""} onChange={(e) => {}} />
+        <SearchFiled onClick={handelSearch} label="Search" value={""} onChange={() => {}} />
       </div>
 
     </div>

@@ -55,4 +55,6 @@ const TextFiled = forwardRef(({ label, error, name, icon: Icons, InElement, smal
     )
 })
 
+TextFiled.displayName = "TextFiled";
+
 export default TextFiled;

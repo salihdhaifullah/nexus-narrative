@@ -21,7 +21,7 @@ const ProfileTemplate = ({ data }: { data: IProfileProps }) => {
                     <div className='flex justify-center items-center flex-col gap-8 h-full rounded-lg w-full max-w-[500px] bg-white shadow-md p-6'>
 
                         <div className="bg-white w-[150px] h-[150px] p-4 rounded-full shadow-lg border">
-                            <img className='object-center' src={data.profile || "/images/user-placeholder.png"} alt="Picture of the author" width={120} height={100} />
+                            <img className='object-center' src={data.profile || "/images/user-placeholder.png"} alt="author" width={120} height={100} />
                         </div>
 
                         <h1 className='text-2xl text-gray-800 font-bold'>{data.firstName + " " + data.lastName}</h1>

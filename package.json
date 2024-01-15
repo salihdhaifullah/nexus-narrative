@@ -16,6 +16,7 @@
     "@remix-run/node": "^2.4.1",
     "@remix-run/react": "^2.4.1",
     "@remix-run/serve": "^2.4.1",
+    "@supabase/supabase-js": "^2.39.3",
     "bcryptjs": "^2.4.3",
     "highlight.js": "^11.9.0",
     "isbot": "^3.6.8",

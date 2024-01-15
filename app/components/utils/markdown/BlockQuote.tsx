@@ -1,4 +1,4 @@
-import { BsQuote } from "react-icons/bs/index.js";
+import { BsQuote } from "react-icons/bs";
 import { findWordBoundaries, setRange, useTextarea } from "./util";
 
 const BLOCK_QUOTE = ">";
@@ -19,10 +19,10 @@ const BlockQuote = () => {
     };
 
     return (
-        <div title="Block quote" className="flex justify-center items-center"
+        <button title="Block quote" className="flex justify-center items-center"
             onClick={() => insertBlockQuote()}>
             <BsQuote className="text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary text-xl rounded-sm cursor-pointer" />
-        </div>
+        </button>
     )
 }
 

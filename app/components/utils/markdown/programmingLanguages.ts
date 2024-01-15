@@ -1,8 +1,8 @@
 import { IconType } from "react-icons";
-import { SiRuby, SiElixir, SiGraphql, SiDart, SiHaskell, SiKotlin, SiPhp, SiPython, SiGnubash, SiSwift, SiTypescript, SiC } from "react-icons/si/index.js";
-import { TbBrandCSharp, TbBrandCpp, TbBrandGolang, TbSql } from "react-icons/tb/index.js";
-import { DiFsharp, DiJavascript1 } from "react-icons/di/index.js";
-import { FaCss3, FaDocker, FaHtml5, FaJava, FaRust } from "react-icons/fa/index.js";
+import { SiRuby, SiElixir, SiGraphql, SiDart, SiHaskell, SiKotlin, SiPhp, SiPython, SiGnubash, SiSwift, SiTypescript, SiC } from "react-icons/si";
+import { TbBrandCSharp, TbBrandCpp, TbBrandGolang, TbSql } from "react-icons/tb";
+import { DiFsharp, DiJavascript1 } from "react-icons/di";
+import { FaCss3, FaDocker, FaHtml5, FaJava, FaRust } from "react-icons/fa";
 
 const programmingLanguages: { name: string, icon: IconType, color: string }[] = [
     { name: "bash", icon: SiGnubash, color: "#4EAA25" },

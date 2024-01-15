@@ -1,4 +1,3 @@
-import { createCookie } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useEffect } from 'react';
 import { LoaderFunctionArgs, json } from 'react-router';
@@ -27,14 +26,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   });
 
   if (!user) throw new Response("Not Found", { status: 404 });
-
-
-  const cookie = createCookie("test", {
-    path: "/",
-    sameSite: "strict",
-    expires: new Date(Date.now() + (1000 * 60 * 60 * 24 * 180) /* 180 days */),
-  });
-
 
   return json({ user })
 }

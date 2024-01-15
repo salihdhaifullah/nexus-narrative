@@ -1,4 +1,4 @@
-import { FaStrikethrough } from "react-icons/fa/index.js";
+import { FaStrikethrough } from "react-icons/fa";
 import { findWordBoundaries, setRange, useTextarea } from "./util";
 
 const TILDE = "~";
@@ -28,9 +28,9 @@ const StrikeThrough = () => {
   };
 
   return (
-    <div title="strike through" className="flex justify-center items-center" onClick={() => insertStrikeThrough()}>
+    <button title="strike through" className="flex justify-center items-center" onClick={() => insertStrikeThrough()}>
       <FaStrikethrough className="text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary text-xl p-0.5 rounded-sm cursor-pointer" />
-    </div>
+    </button>
   );
 };
 

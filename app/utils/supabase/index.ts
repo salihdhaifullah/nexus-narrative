@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 
 
 interface IUploadFile {
-    error: null | any;
+    error: null | unknown;
     Url: string;
 }
 
@@ -29,7 +29,7 @@ class Storage {
 
             const Buffer = await base64toBuffer(file)
 
-            const { error, data } = await supabase.storage.from("public").upload(fileId, Buffer, {contentType: "image/webp" });
+            const { error } = await supabase.storage.from("public").upload(fileId, Buffer, {contentType: "image/webp" });
             return { error, Url };
 
         } catch (error) {

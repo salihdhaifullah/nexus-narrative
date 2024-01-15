@@ -1,5 +1,5 @@
 import { Link } from '@remix-run/react';
-import { MdModeComment, MdOutlineThumbDownOffAlt, MdOutlineThumbUpOffAlt } from 'react-icons/md/index.js';
+import { MdModeComment, MdOutlineThumbDownOffAlt, MdOutlineThumbUpOffAlt } from 'react-icons/md';
 import formatDate from '~/utils/formatDate';
 
 export interface IPostProps {

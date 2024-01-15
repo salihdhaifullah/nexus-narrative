@@ -1,12 +1,12 @@
-import { FaMoon, FaSun } from "react-icons/fa/index.js";
-import { BiLogOut, BiLogIn } from 'react-icons/bi/index.js';
+import { FaMoon, FaSun } from "react-icons/fa";
+import { BiLogOut, BiLogIn } from 'react-icons/bi';
 import ButtonBase from "~/components/utils/ButtonBase";
 import SearchFiled from "~/components/utils/SearchFiled";
 import { useUser } from "~/context/user"
 import { useTheme, useThemeDispatch } from "~/context/theme";
 import { useModalDispatch } from "~/context/modal";
 import { useEffect, useState } from "react";
-import { MdMoreVert } from "react-icons/md/index.js";
+import { MdMoreVert } from "react-icons/md";
 import Modal from "./Modal";
 
 import { Link } from "@remix-run/react";
@@ -42,9 +42,9 @@ const Header = () => {
                 </Link>
 
                 <div className="flex sm:hidden flex-row gap-4">
-                    <div onClick={handelOpenModal} className="flex text-secondary p-1 h-fit self-center dark:hover:bg-slate-800 hover:bg-slate-200 bg-normal justify-center cursor-pointer items-center rounded-md font-bold text-xl">
+                    <button onClick={() => handelOpenModal} className="flex text-secondary p-1 h-fit self-center dark:hover:bg-slate-800 hover:bg-slate-200 bg-normal justify-center cursor-pointer items-center rounded-md font-bold text-xl">
                         <MdMoreVert />
-                    </div>
+                    </button>
 
                     {user && (
                         <div className="flex justify-center items-center">
@@ -83,15 +83,15 @@ const Header = () => {
             <div className="sm:flex hidden flex-row justify-center gap-4 items-center">
 
                 <div className="max-w-[400px]">
-                    <SearchFiled onClick={() => {}} label="Search" value={""} onChange={(e) => {}} />
+                    <SearchFiled onClick={() => {}} label="Search" value={""} onChange={() => {}} />
                 </div>
 
                 {!show ? null : (
-                    <div
+                    <button
                         onClick={() => themeDispatch({ type: theme === "dark" ? "light" : "dark" })}
                         className="flex dark:text-secondary p-1 dark:hover:bg-slate-800 hover:bg-slate-200 justify-center cursor-pointer items-center rounded-md text-primary font-bold text-2xl">
                         {theme === "dark" ? <FaMoon /> : <FaSun />}
-                    </div>
+                    </button>
                 )}
 
                 {user && (

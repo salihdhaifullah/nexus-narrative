@@ -12,8 +12,8 @@ type IUserAction = {
 export interface IUser {
     id: number;
     email: string;
-    firstName: string;
-    lastName: string;
+    name: string;
+    avatarUrl: string;
 }
 
 const UserContext = createContext<IUser | null>(user);

@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import formatDate from '~/utils/formatDate';
 import useMarkdown from '../markdown/useMarkdown';
-import { MdOutlineFullscreen, MdOutlineFullscreenExit } from 'react-icons/md/index.js';
+import { MdOutlineFullscreen, MdOutlineFullscreenExit } from 'react-icons/md';
 
 interface IProps {
   createdAt: string;
@@ -11,7 +11,7 @@ interface IProps {
   blogName: string;
   post: string;
   description: string;
-};
+}
 
 
 export default function Main({ createdAt, category, authorId, blogName, post, description }: IProps) {

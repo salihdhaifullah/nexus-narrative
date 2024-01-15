@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Link } from "@remix-run/react";
-import { FaArrowRight } from "react-icons/fa/index.js"
+import { FaArrowRight } from "react-icons/fa"
 import mountains from "public/hero.jpg"
 
 export const meta: MetaFunction = () => {

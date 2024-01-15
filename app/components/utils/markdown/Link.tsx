@@ -2,7 +2,7 @@ import { FaRightFromBracket, FaRightToBracket } from "react-icons/fa6";
 import { setRange, useTextarea } from "./util";
 import { useRef, useState } from "react";
 import useOnClickOutside from "~/hooks/useOnClickOutside";
-import { BiLink } from "react-icons/bi/index.js";
+import { BiLink } from "react-icons/bi";
 
 const EXTERNAL_LINK = "[](https://)";
 const INTERNAL_LINK = "[](/)";
@@ -29,7 +29,7 @@ const Link = () => {
 
                 {isOpen && [true, false].map(
                     (linkType, index) => (
-                        <p key={index}
+                        <button key={index}
                             title={linkType ? "external" : "internal"}
                             className="text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary p-1 flex justify-center items-center rounded-sm cursor-pointer"
                             onClick={() => {
@@ -38,7 +38,7 @@ const Link = () => {
                             }}>
 
                             {linkType ? <FaRightFromBracket /> : <FaRightToBracket />}
-                        </p>
+                        </button>
                     )
                 )}
             </div>

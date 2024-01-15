@@ -1,4 +1,4 @@
-import { BiItalic } from "react-icons/bi/index.js";
+import { BiItalic } from "react-icons/bi";
 import { findWordBoundaries, setRange, useTextarea } from "./util";
 
 const UNDER_SCORE = "_";
@@ -29,10 +29,10 @@ const Italic = () => {
     };
 
     return (
-        <div title="Italic" className="flex justify-center items-center"
+        <button title="Italic" className="flex justify-center items-center"
             onClick={() => insertItalic()}>
             <BiItalic className="text-gray-700 dark:text-gray-300 dark:hover:bg-slate-800 hover:bg-slate-200 hover:text-primary dark:hover:text-secondary text-xl rounded-sm cursor-pointer" />
-        </div>
+        </button>
     )
 }
 

@@ -1,5 +1,5 @@
 import { ChangeEventHandler, HTMLProps, KeyboardEvent, useId, useMemo, useState } from "react";
-import { AiOutlineSearch } from "react-icons/ai/index.js";
+import { AiOutlineSearch } from "react-icons/ai";
 
 interface SearchFiledProps {
     label: string
