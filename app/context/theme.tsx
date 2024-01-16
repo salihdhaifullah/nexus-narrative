@@ -1,4 +1,4 @@
-import { Dispatch, ReactElement, createContext, useContext, useEffect, useReducer } from 'react';
+import { Dispatch, ReactElement, createContext, useContext, useEffect, useReducer, useState } from 'react';
 import isServer from '~/utils/isServer';
 
 type Theme = "dark" | "light";
@@ -8,13 +8,8 @@ const getTheme = (): Theme => {
 
     const theme = localStorage.getItem("theme");
     if (theme) return theme as Theme;
-    else {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return "dark"
-        } else {
-            return "light"
-        }
-    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return "dark"
+    return "light"
 }
 
 const theme: Theme = getTheme()
@@ -43,12 +38,16 @@ function ThemeReducer(theme: Theme, action: IThemeAction): Theme {
 }
 
 export default function ThemeProvider({ children }: { children: ReactElement }) {
+    const [isInitialRenderComplete, setInitialRenderComplete] = useState(false);
+    const [Theme, dispatchTheme] = useReducer(ThemeReducer, theme);
+
     useEffect(() => {
+        setInitialRenderComplete(true);
         if (theme === "dark") document.documentElement.classList.add('dark')
         else document.documentElement.classList.remove('dark')
-    }, [])
+    }, []);
 
-    const [Theme, dispatchTheme] = useReducer(ThemeReducer, theme);
+    if (!isInitialRenderComplete) return null;
 
     return (
         <ThemeContext.Provider value={Theme}>

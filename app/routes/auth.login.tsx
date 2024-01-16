@@ -5,10 +5,10 @@ import PasswordEye from '~/components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri";
 import Button from '~/components/utils/Button';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
-import { ActionFunctionArgs, MetaFunction, json } from '@remix-run/node';
-import Schema from '~/utils/validate';
+import { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
 import { IUser, useUserDispatch } from '~/context/user';
-import { login } from '~/data/user.server';
+import { Response, login } from '~/data/user.server';
+import { LoginSchema } from '~/dto/auth';
 
 export const meta: MetaFunction = () => {
   return [
@@ -24,18 +24,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const data = { email, password };
 
-  const schema = new Schema<typeof data>()
-    .property("email", (v) => v
-      .required("email is required")
-      .email("un-valid email address"))
-    .property("password", (v) => v
-      .required("password is required")
-      .max(200, "max length of password is 200")
-      .min(8, "min length of the password is 8"))
+  const res = LoginSchema.validate(data)
 
-  const res = schema.validate(data)
-
-  if (res.isError) return json({ validationError: res.errors, error: null, data: null }, { status: 400 });
+  if (res.isError) return Response({ validationError: res.errors, status: 400 });
 
   return await login(data);
 }

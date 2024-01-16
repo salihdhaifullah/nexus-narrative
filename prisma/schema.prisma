@@ -66,16 +66,16 @@ model Like {
 model User {
   id          Int       @id @default(autoincrement())
   email       String    @unique
-  createdAt   DateTime  @default(now())
   lastName    String
   firstName   String
   password    String
+  avatarUrl  String
+  createdAt   DateTime  @default(now())
   blogName    String    @unique
   comments    Comment[]
   likes       Like[]
   posts       Post[]
   phoneNumber String?
-  profile     String?
   about       String?
   title       String?
   country     String?

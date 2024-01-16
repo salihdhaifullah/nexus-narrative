@@ -7,23 +7,30 @@ const urlsToCache = async () => {
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME)
-  .then(async (cache) => {
-    cache.addAll(await urlsToCache())
-  }))
+    .then(async (cache) => {
+      cache.addAll(await urlsToCache())
+    }))
 })
 
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) return response;
+const getResponse = async (event) => {
+  if (event.request.method !== "GET") return fetch(event.request);
 
-      return fetch(event.request).then((networkResponse) => {
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
-        });
+  const response = await caches.match(event.request)
+  if (response && !navigator.onLine) {
+    console.log("got response from cache on request", event.request)
+    return response;
+  }
 
-        return networkResponse;
-      });
-    })
-  );
-});
+  const networkResponse = await fetch(event.request);
+  console.log("fetch with method ", event.request.method);
+
+  if (event.request.method === "GET") {
+    const clonedResponse = networkResponse.clone();
+    const cache = await caches.open(CACHE_NAME)
+    cache.put(event.request, clonedResponse);
+  }
+
+  return networkResponse;
+}
+
+self.addEventListener('fetch', (event) => event.respondWith(getResponse(event)))

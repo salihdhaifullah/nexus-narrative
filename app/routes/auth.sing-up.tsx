@@ -5,9 +5,9 @@ import PasswordEye from '~/components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri";
 import Button from '~/components/utils/Button';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
-import { ActionFunctionArgs, MetaFunction, json } from '@remix-run/node';
-import Schema from '~/utils/validate';
-import { singUp } from '~/data/user.server';
+import { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
+import { Response, singUp } from '~/data/user.server';
+import { SingUpSchema } from '~/dto/auth';
 
 export const meta: MetaFunction = () => {
     return [
@@ -25,26 +25,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const data = { email, password, firstName, lastName };
 
-    const schema = new Schema<typeof data>()
-        .property("email", (v) => v
-            .required("email is required")
-            .email("un-valid email address"))
-        .property("password", (v) => v
-            .required("password is required")
-            .max(200, "max length of password is 200")
-            .min(8, "min length of the password is 8"))
-        .property("lastName", (v) => v
-            .required("lastName is required")
-            .max(200, "max length of lastName is 200")
-            .min(2, "min length of the lastName is 2"))
-        .property("firstName", (v) => v
-            .required("firstName is required")
-            .max(200, "max length of firstName is 200")
-            .min(2, "min length of the password is 2"))
+    const res = SingUpSchema.validate(data)
 
-    const res = schema.validate(data)
-
-    if (res.isError) return json({ validationError: res.errors, error: null, data: null }, { status: 400 });
+    if (res.isError) return Response({ validationError: res.errors, status: 400 });
 
     return await singUp(data);
 }

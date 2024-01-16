@@ -5,6 +5,7 @@ import Aleo from "public/fonts/Aleo-VariableFont_wght.ttf";
 import AleoItalic from "public/fonts/Aleo-Italic-VariableFont_wght.ttf";
 import Wrapper from "~/components/layout/Wrapper";
 import { useEffect } from "react";
+import Provider from "./context";
 
 
 
@@ -68,9 +69,12 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Wrapper>
-          <Outlet />
-        </Wrapper>
+        <Provider>
+          <Wrapper>
+            <Outlet />
+          </Wrapper>
+        </Provider>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

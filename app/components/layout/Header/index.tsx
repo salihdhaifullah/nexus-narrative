@@ -5,7 +5,6 @@ import SearchFiled from "~/components/utils/SearchFiled";
 import { useUser } from "~/context/user"
 import { useTheme, useThemeDispatch } from "~/context/theme";
 import { useModalDispatch } from "~/context/modal";
-import { useEffect, useState } from "react";
 import { MdMoreVert } from "react-icons/md";
 import Modal from "./Modal";
 
@@ -14,15 +13,9 @@ import { Link } from "@remix-run/react";
 const Header = () => {
     const user = useUser();
     const theme = useTheme();
-    const [show, setShow] = useState(false)
-
-    useEffect(() => {
-        setShow(true)
-    }, [])
 
     const themeDispatch = useThemeDispatch();
     const dispatchModal = useModalDispatch();
-
 
     const handelOpenModal = () => {
         dispatchModal({ type: "open", payload: <Modal /> })
@@ -46,7 +39,7 @@ const Header = () => {
                         <MdMoreVert />
                     </button>
 
-                    {user && (
+                    {!user ? null : (
                         <div className="flex justify-center items-center">
                             <Link to={`/users/${user.id}`} title="your profile">
                                 <img
@@ -63,7 +56,7 @@ const Header = () => {
 
                 <div className="sm:flex hidden">
 
-                    {user === null ? (
+                    {!user ? (
                         <Link
                             to="/auth/login"
                             className="w-fit h-fit place-self-center text-secondary p-1 border border-secondary hover:shadow-md bg-normal transition-all ease-in-out rounded-md text-lg flex-row flex gap-1 items-center">
@@ -71,7 +64,7 @@ const Header = () => {
                         </Link>
                     ) : (
                         <ButtonBase
-                            onClick={() => {}}
+                            onClick={() => { }}
                             className="w-fit h-fit place-self-center text-secondary p-1 border border-secondary hover:shadow-md bg-normal transition-all ease-in-out rounded-md text-lg flex-row flex gap-1 items-center">
                             <BiLogOut />
                             <p>logout</p>
@@ -83,18 +76,16 @@ const Header = () => {
             <div className="sm:flex hidden flex-row justify-center gap-4 items-center">
 
                 <div className="max-w-[400px]">
-                    <SearchFiled onClick={() => {}} label="Search" value={""} onChange={() => {}} />
+                    <SearchFiled onClick={() => { }} label="Search" value={""} onChange={() => { }} />
                 </div>
 
-                {!show ? null : (
-                    <button
-                        onClick={() => themeDispatch({ type: theme === "dark" ? "light" : "dark" })}
-                        className="flex dark:text-secondary p-1 dark:hover:bg-slate-800 hover:bg-slate-200 justify-center cursor-pointer items-center rounded-md text-primary font-bold text-2xl">
-                        {theme === "dark" ? <FaMoon /> : <FaSun />}
-                    </button>
-                )}
+                <button
+                    onClick={() => themeDispatch({ type: theme === "dark" ? "light" : "dark" })}
+                    className="flex dark:text-secondary p-1 dark:hover:bg-slate-800 hover:bg-slate-200 justify-center cursor-pointer items-center rounded-md text-primary font-bold text-2xl">
+                    {theme === "dark" ? <FaMoon /> : <FaSun />}
+                </button>
 
-                {user && (
+                {!user ? null : (
                     <div className="flex justify-center items-center">
                         <Link to={`/users/${user.id}`} title="your profile">
                             <img

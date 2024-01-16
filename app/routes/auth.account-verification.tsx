@@ -1,51 +1,55 @@
-import { useEffect, useState } from 'react';
 import TextFiled from '~/components/utils/TextFiled';
-import { MdEmail } from 'react-icons/md';
-import PasswordEye from '~/components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri";
 import Button from '~/components/utils/Button';
-import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
-import { ActionFunctionArgs, MetaFunction, json } from '@remix-run/node';
-import Schema from '~/utils/validate';
-import { IUser, useUserDispatch } from '~/context/user';
-import { login } from '~/data/user.server';
+import { Form, useActionData, useNavigation } from '@remix-run/react';
+import { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
+import { singUpSessionCookie } from '~/cookies.server';
+import cache from '~/cache.server';
+import { Response, createUser } from '~/data/user.server';
+import { CodeSchema, SingUpSessionSchema } from '~/dto/auth';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'Login to Your Blog Account | NexusNarrative' },
-    { name: "description", content: 'Login to access your blog account. Connect with the community, share your thoughts, and engage with fellow bloggers at NexusNarrative.' }
+    { title: 'Account Verification | NexusNarrative' },
+    { name: 'description', content: 'Verify your account at NexusNarrative. Complete the account verification process to access your blog account and connect with the community.' },
   ];
 };
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const email = String(formData.get("email"));
-  const password = String(formData.get("password"));
+  const code = String(formData.get("code"));
 
-  const data = { email, password };
+  const data = { code };
 
-  const schema = new Schema<typeof data>()
-    .property("email", (v) => v
-      .required("email is required")
-      .email("un-valid email address"))
-    .property("password", (v) => v
-      .required("password is required")
-      .max(200, "max length of password is 200")
-      .min(8, "min length of the password is 8"))
+  const res = CodeSchema.validate(data)
 
-  const res = schema.validate(data)
+  if (res.isError) return Response({ validationError: res.errors, status: 400 });
+  const cookieHeader = request.headers.get("Cookie");
+  const singUpSessionId = (await singUpSessionCookie.parse(cookieHeader)) || {};
+  const sessionJson = await cache.get(singUpSessionId)
 
-  if (res.isError) return json({ validationError: res.errors, error: null, data: null }, { status: 400 });
+  console.log(sessionJson)
 
-  return await login(data);
+  if (sessionJson === null) return Response({
+    status: 400,
+    error: "sing-up session expired, please try to sing-up"
+  })
+
+  const session = JSON.parse(sessionJson) as (typeof SingUpSessionSchema.type);
+
+  const res1 = SingUpSessionSchema.validate(session)
+
+  if (res1.isError) return Response({
+    status: 400,
+    error: "sing-up session is un-valid, please try to sing-up"
+  })
+
+  return await createUser(session);
 }
 
 const AccountVerification = () => {
-  const [passwordType, setPasswordType] = useState("password")
   const data = useActionData<typeof action>();
   const navigation = useNavigation();
-  const dispatch = useUserDispatch();
-  useEffect(() => { dispatch({type: "add", payload: data?.data as unknown as IUser || undefined}) }, [data?.data, dispatch])
 
   return (
     <section className='w-full h-full mt-20 flex justify-center items-center'>
@@ -58,33 +62,19 @@ const AccountVerification = () => {
         <h1 className='text-secondary text-4xl'> account verification </h1>
 
         <Form className='flex flex-col' method="post">
-        {!data?.error ? null : (
-          <div className='w-60 place-self-center my-4 flex flex-col text-center p-2 rounded-md bg-red-200'>
-            <p className='text-red-600'>{data.error}</p>
-          </div>
-        )}
-          <TextFiled
-            icon={MdEmail}
-            label="email address"
-            name="email"
-            required
-            error={data?.validationError?.email}
-            type='email'
-          />
+          {!data?.error ? null : (
+            <div className='w-60 place-self-center my-4 flex flex-col text-center p-2 rounded-md bg-red-200'>
+              <p className='text-red-600'>{data.error}</p>
+            </div>
+          )}
 
           <TextFiled
             icon={RiLockPasswordFill}
-            type={passwordType}
-            label="password"
+            label="verification code"
             required
-            name="password"
-            error={data?.validationError?.password}
-            InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
+            name="code"
+            error={data?.validationError?.code}
           />
-
-          <div className="flex justify-end items-center w-full px-4 pb-2">
-            <Link to="/auth/sing-up" className="link">sing up ?</Link>
-          </div>
 
           <div className="flex flex-col justify-center items-center w-full my-1">
             <Button isLoading={navigation.state === "submitting"} type="submit">submit</Button>

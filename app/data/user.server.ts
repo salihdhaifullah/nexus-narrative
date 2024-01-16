@@ -1,110 +1,137 @@
-import { createCookie, json, redirect } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import { prisma } from "~/db.server"
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import cache from "~/cache.server";
 import { verificationEmail } from "~/utils/email";
+import { singUpSessionCookie, tokenCookie } from "~/cookies.server";
+import { LoginSchema, SingUpSchema, SingUpSessionSchema } from "~/dto/auth";
+import { createAvatar } from '@dicebear/core';
+import { adventurer } from '@dicebear/collection';
+import sharp from "sharp";
+import Storage from "~/utils/supabase";
 
-interface ILoginArgs {
-  email: string;
-  password: string;
-}
-
-
-interface IResponseArgs {
-  error?: string
-  validationError?: null | Record<string, string | null>;
-  data?: unknown;
-  status?: number;
-}
-
-class Response {
-  error: string | null = null;
-  validationError: null | Record<string, string | null> = null;
-  data: unknown = null;
-  status: number = 200;
-  redirect: string | null = null
-
-  constructor(args: IResponseArgs) {
-    if (args.error) this.error = args.error;
-    if (args.validationError) this.validationError = args.validationError;
-    if (args.data) this.data = args.data;
-    if (args.status) this.status = args.status;
-  }
-
-  send() {
-    return json(
-      { error: this.error, validationError: this.validationError, data: this.data },
-      { status: this.status })
-  }
-}
-
-export const login = async (args: ILoginArgs) => {
+export const login = async (args: typeof LoginSchema.type) => {
   const user = await prisma.user.findUnique({ where: { email: args.email } });
 
-  if (!user) return json({ error: `user with this email ${args.email} dose not exist, please try sing up`, validationError: null, data: null }, { status: 404 })
+  if (!user) return Response({ error: `user with this email ${args.email} dose not exist, please try sing up`, status: 404 })
 
-  if (!bcrypt.compareSync(args.password, user.password)) return json({ error: "password or email is incorrect", validationError: null, data: null }, { status: 400 })
+  if (!bcrypt.compareSync(args.password, user.password)) return Response({ error: "password or email is incorrect", status: 400 })
 
-    const fullYear = 1000 * 60 * 60 * 24 * 365;
+  const fullYear = 1000 * 60 * 60 * 24 * 365;
 
-    const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY as string, { expiresIn: fullYear })
+  const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY as string, { expiresIn: fullYear })
 
-    const cookie = createCookie("token", {
-      path: "/",
-      sameSite: "strict",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      expires: new Date(Date.now() + fullYear),
-    });
-
-    return json({
-      data: {
-        id: user.id,
-        email: user.email,
-        lastName: user.lastName,
-        firstName: user.firstName
-      }, validationError: null, error: null
-    }, { headers: { "Set-Cookie": await cookie.serialize(token) }, status: 200 })
+  return Response({
+    data: {
+      id: user.id,
+      email: user.email,
+      name: user.firstName + " " + user.lastName,
+      avatarUrl: user.avatarUrl
+    },
+    status: 200,
+    cookie: await tokenCookie.serialize(token, { expires: new Date(Date.now() + fullYear)})
+  })
 }
 
 
-interface ISingUpArgs {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
+export const singUp = async (args: typeof SingUpSchema.type) => {
+  const isFound = await prisma.user.findUnique({where: {email: args.email}, select: {id: true}}).then(Boolean);
+  if (isFound) return Response({ status: 400, error: `this account ${args.email} already exist try login` });
+  const code = initCode();
+
+  const password = bcrypt.hashSync(args.password, bcrypt.genSaltSync(10));
+
+  const sessionData = { ...args, code, password };
+  const thirtyMinuets = 1000 * 60 * 30;
+  const uuid = crypto.randomUUID();
+
+  await cache.set(uuid, JSON.stringify(sessionData), { PX: thirtyMinuets });
+
+  await verificationEmail(args.email, `${args.firstName} ${args.lastName}`, code);
+
+  return redirect("/auth/account-verification", {
+    headers: { "Set-Cookie": await singUpSessionCookie.serialize(uuid, { expires: new Date(Date.now() + thirtyMinuets) }) }
+  })
 }
 
-export const singUp = async (args: ISingUpArgs) => {
-    const isFound = await prisma.user.findUnique({ where: { email: args.email } });
-    if (isFound) return new Response({status: 400, error: `this account ${args.email} already exist try login`}).send();
-    const code = initCode();
-    const time = (1000 * 60 * 30);
-    const sessionData = { code, ...args };
-    const uuid = crypto.randomUUID();
+export async function createUser(args: typeof SingUpSessionSchema.type) {
+  const isFound = await prisma.user.findUnique({where: {email: args.email}, select: {id: true}}).then(Boolean);
+  if (isFound) return Response({ status: 400, error: `this account ${args.email} already exist try login` });
 
-    await cache.set(uuid, JSON.stringify(sessionData));
+  const seed = `${args.firstName}-${args.lastName}`;
+  const blogName = await generateSlug(seed);
+  const avatarUrl = await initAvatarUrl(seed);
 
-    const cookie = createCookie("sing-up-session", {
-      path: "/",
-      sameSite: "strict",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
+  await prisma.user.create({
+    data: {
+      blogName: blogName,
+      avatarUrl: avatarUrl,
+      email: args.email,
+      firstName: args.firstName,
+      lastName: args.lastName,
+      password: args.password
+    }
+  })
 
-    await verificationEmail(args.email, `${args.firstName} ${args.lastName}`, code);
-
-    return redirect("/auth/account-verification", {
-      headers: { "Set-Cookie": await cookie.serialize(uuid, {expires: new Date(Date.now() + time)}) }
-    })
+  return redirect("/auth/login")
 }
-
 
 function initCode() {
   const randomBytes = crypto.randomBytes(3);
   const code = parseInt(randomBytes.toString('hex'), 16) % 1000000;
 
   return code.toString().padStart(6, '0');
+}
+
+async function generateSlug(seed: string) {
+  const baseSlug = seed
+    .toLowerCase()
+    .replace(/[^a-z0-9_-\s]/g, '')
+    .replace(/[ _-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  let isFound = await prisma.user.findUnique({ where: { blogName: baseSlug }, select: { id: true } }).then(Boolean)
+
+  if (!isFound) return baseSlug;
+
+  let count = 1;
+  let slug = `${baseSlug}-${count}`
+
+  while (isFound) {
+    isFound = await prisma.user.findUnique({ where: { blogName: baseSlug }, select: { id: true } }).then(Boolean)
+    count++
+    slug = `${baseSlug}-${count}`
+  }
+
+  return slug;
+}
+
+async function initAvatarUrl(seed: string) {
+  const avatar = createAvatar(adventurer, {
+    seed: seed + crypto.randomUUID(),
+    flip: Math.random() < 0.5,
+    size: 200,
+    glassesProbability: 40,
+    hairProbability: 85
+  })
+
+  const webpBuffer = await sharp(await avatar.toArrayBuffer()).toFormat('webp').toBuffer();
+
+  return await Storage.uploadFile(webpBuffer);
+}
+
+export interface IResponseObjArgs {
+  error?: string
+  validationError?: null | Record<string, string | null>;
+  data?: unknown;
+  status?: number;
+  cookie?: string
+}
+
+export function Response(args: IResponseObjArgs) {
+  return json(
+    { error: args.error??null, validationError: args.validationError??null, data: args.data??null },
+    { status: args.status??200, headers: args.cookie ? { "Set-Cookie": args.cookie } : undefined })
 }

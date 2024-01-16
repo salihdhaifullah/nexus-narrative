@@ -41,6 +41,13 @@ class ObjectValidator {
         return this;
     }
 
+    code(length: number, errorMessage: string) {
+        return this
+            .min(length, errorMessage)
+            .max(length, errorMessage)
+            .regex(/^[0-9]+$/, errorMessage);
+    }
+
     regex(regex: RegExp, errorMessage: string): ObjectValidator {
         this.rules.push({
             ruleFunction: (value) => this.isFalsy(value) || (typeof value === "string" && regex.test(value)),
@@ -76,13 +83,15 @@ class ObjectValidator {
 export default class Schema<T> {
     private validators: Record<keyof T, ObjectValidator> = {} as Record<keyof T, ObjectValidator>;
 
+    type: T = null as T;
+
     property<K extends keyof T>(name: K, call: (v: ObjectValidator) => void): Schema<T> {
         this.validators[name] = new ObjectValidator();
         call(this.validators[name]);
         return this;
     }
 
-    validate(data: T): {errors: Record<keyof T, string | null>, isError: boolean} {
+    validate(data: T): { errors: Record<keyof T, string | null>, isError: boolean } {
         const errors: Record<keyof T, string | null> = {} as Record<keyof T, string | null>;
         let isError = false;
         for (const key in this.validators) {
@@ -93,7 +102,7 @@ export default class Schema<T> {
             }
         }
 
-        return {errors, isError};
+        return { errors, isError };
     }
 }
 

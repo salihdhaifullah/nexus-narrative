@@ -1,12 +1,6 @@
 import supabase from './config';
 import { randomUUID } from 'crypto';
 
-
-interface IUploadFile {
-    error: null | unknown;
-    Url: string;
-}
-
 function base64toBuffer(base64: string) {
     return (
         fetch(base64)
@@ -18,27 +12,23 @@ function base64toBuffer(base64: string) {
 }
 
 class Storage {
+    static async uploadFile(file: string | Buffer): Promise<string> {
+        const SUPABASE_URL = process.env.SUPABASE_URL;
+        if (!SUPABASE_URL) throw new Error("SUPABASE_URL  Not Found");
 
-    async uploadFile(file: string): Promise<IUploadFile> {
-        try {
-            const SUPABASE_URL = process.env.SUPABASE_URL;
-            if (!SUPABASE_URL) throw new Error("SUPABASE_URL  Not Found");
+        const fileId = Date.now().toString() + randomUUID() + '.webp';
+        const Url = `${SUPABASE_URL}/storage/v1/object/public/public/${fileId}`;
 
-            const fileId = Date.now().toString() + randomUUID() + '.webp';
-            const Url = `${SUPABASE_URL}/storage/v1/object/public/public/${fileId}`;
+        const Buffer = typeof file === "string" ? await base64toBuffer(file) : file
 
-            const Buffer = await base64toBuffer(file)
+        const { error } = await supabase.storage.from("public").upload(fileId, Buffer, { contentType: "image/webp" });
 
-            const { error } = await supabase.storage.from("public").upload(fileId, Buffer, {contentType: "image/webp" });
-            return { error, Url };
+        if (error) throw error;
 
-        } catch (error) {
-            console.log(error)
-            throw new Error("internal Server Error")
-        }
+        return Url;
     }
 
-    async deleteFile(filePath: string) {
+    static async deleteFile(filePath: string) {
         try {
             await supabase.storage.from("public").remove([filePath])
         } catch (error) {
