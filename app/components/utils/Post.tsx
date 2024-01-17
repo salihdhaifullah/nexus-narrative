@@ -9,7 +9,7 @@ export interface IPostProps {
   description: string;
   createdAt: Date;
   author: {
-    blogName: string;
+    blog: string;
   };
   _count: { comments: number };
   likesCount: number;
@@ -22,7 +22,7 @@ export default function Post({ post }: { post: IPostProps }) {
     <div className="w-full flex h-[200px]">
       <div className="w-full h-[200px]">
 
-        <Link to={`/${post.author.blogName}/posts/${post.slug}`}>
+        <Link to={`/${post.author.blog}/posts/${post.slug}`}>
           <div className="relative h-[200px]">
             <div className="flex w-full h-full items-start">
 

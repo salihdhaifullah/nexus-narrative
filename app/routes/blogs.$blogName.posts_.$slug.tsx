@@ -19,7 +19,7 @@ export default function Post() {
                 createdAt={post.createdAt}
                 category={post.category.name}
                 authorId={post.author.id}
-                blogName={post.author.blogName}
+                blog={post.author.blog}
             />
 
             <Details author={post.author} />
@@ -41,7 +41,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
                     email: true,
                     firstName: true,
                     lastName: true,
-                    blogName: true,
+                    blog: true,
                     id: true,
                     profile: true,
                     about: true

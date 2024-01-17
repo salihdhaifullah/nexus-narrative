@@ -4,10 +4,10 @@ import { MdEmail } from 'react-icons/md';
 import PasswordEye from '~/components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri";
 import Button from '~/components/utils/Button';
-import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
+import { Form, Link, useActionData, useNavigate, useNavigation } from '@remix-run/react';
 import { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
-import { IUser, useUserDispatch } from '~/context/user';
-import { Response, login } from '~/data/user.server';
+import { useUserDispatch } from '~/context/user';
+import { customResponse, login } from '~/data/user.server';
 import { LoginSchema } from '~/dto/auth';
 
 export const meta: MetaFunction = () => {
@@ -26,7 +26,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const res = LoginSchema.validate(data)
 
-  if (res.isError) return Response({ validationError: res.errors, status: 400 });
+  if (res.isError) return customResponse({ validationError: res.errors, status: 400 });
 
   return await login(data);
 }
@@ -35,8 +35,14 @@ const Login = () => {
   const [passwordType, setPasswordType] = useState("password")
   const data = useActionData<typeof action>();
   const navigation = useNavigation();
+  const navigate = useNavigate();
   const dispatch = useUserDispatch();
-  useEffect(() => { dispatch({type: "add", payload: data?.data as unknown as IUser || undefined}) }, [data?.data, dispatch])
+
+  useEffect(() => {
+    if (!data?.data) return;
+    dispatch({type: "add", payload: data.data })
+    navigate(`/${data.data.blog}`)
+  }, [data?.data, navigate, dispatch])
 
   return (
     <section className='w-full h-full mt-20 flex justify-center items-center'>
@@ -61,6 +67,7 @@ const Login = () => {
             required
             error={data?.validationError?.email}
             type='email'
+            autoComplete="username"
           />
 
           <TextFiled
@@ -69,6 +76,7 @@ const Login = () => {
             label="password"
             required
             name="password"
+            autoComplete="current-password"
             error={data?.validationError?.password}
             InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
           />

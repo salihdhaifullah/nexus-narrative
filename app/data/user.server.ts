@@ -15,30 +15,31 @@ import Storage from "~/utils/supabase";
 export const login = async (args: typeof LoginSchema.type) => {
   const user = await prisma.user.findUnique({ where: { email: args.email } });
 
-  if (!user) return Response({ error: `user with this email ${args.email} dose not exist, please try sing up`, status: 404 })
+  if (!user) return customResponse({ error: `user with this email ${args.email} dose not exist, please try sing up`, status: 404 })
 
-  if (!bcrypt.compareSync(args.password, user.password)) return Response({ error: "password or email is incorrect", status: 400 })
+  if (!bcrypt.compareSync(args.password, user.password)) return customResponse({ error: "password or email is incorrect", status: 400 })
 
   const fullYear = 1000 * 60 * 60 * 24 * 365;
 
   const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY as string, { expiresIn: fullYear })
 
-  return Response({
+  return customResponse({
     data: {
       id: user.id,
       email: user.email,
       name: user.firstName + " " + user.lastName,
-      avatarUrl: user.avatarUrl
+      avatarUrl: user.avatarUrl,
+      blog: user.blog,
     },
     status: 200,
-    cookie: await tokenCookie.serialize(token, { expires: new Date(Date.now() + fullYear)})
+    cookie: await tokenCookie.serialize(token, { expires: new Date(Date.now() + fullYear) })
   })
 }
 
 
 export const singUp = async (args: typeof SingUpSchema.type) => {
-  const isFound = await prisma.user.findUnique({where: {email: args.email}, select: {id: true}}).then(Boolean);
-  if (isFound) return Response({ status: 400, error: `this account ${args.email} already exist try login` });
+  const isFound = await prisma.user.findUnique({ where: { email: args.email }, select: { id: true } }).then(Boolean);
+  if (isFound) return customResponse({ status: 400, error: `this account ${args.email} already exist try login` });
   const code = initCode();
 
   const password = bcrypt.hashSync(args.password, bcrypt.genSaltSync(10));
@@ -57,16 +58,16 @@ export const singUp = async (args: typeof SingUpSchema.type) => {
 }
 
 export async function createUser(args: typeof SingUpSessionSchema.type) {
-  const isFound = await prisma.user.findUnique({where: {email: args.email}, select: {id: true}}).then(Boolean);
-  if (isFound) return Response({ status: 400, error: `this account ${args.email} already exist try login` });
+  const isFound = await prisma.user.findUnique({ where: { email: args.email }, select: { id: true } }).then(Boolean);
+  if (isFound) return customResponse({ status: 400, error: `this account ${args.email} already exist try login` });
 
   const seed = `${args.firstName}-${args.lastName}`;
-  const blogName = await generateSlug(seed);
+  const blog = await generateSlug(seed);
   const avatarUrl = await initAvatarUrl(seed);
 
   await prisma.user.create({
     data: {
-      blogName: blogName,
+      blog: blog,
       avatarUrl: avatarUrl,
       email: args.email,
       firstName: args.firstName,
@@ -92,7 +93,7 @@ async function generateSlug(seed: string) {
     .replace(/[ _-]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-  let isFound = await prisma.user.findUnique({ where: { blogName: baseSlug }, select: { id: true } }).then(Boolean)
+  let isFound = await prisma.user.findUnique({ where: { blog: baseSlug }, select: { id: true } }).then(Boolean)
 
   if (!isFound) return baseSlug;
 
@@ -100,7 +101,7 @@ async function generateSlug(seed: string) {
   let slug = `${baseSlug}-${count}`
 
   while (isFound) {
-    isFound = await prisma.user.findUnique({ where: { blogName: baseSlug }, select: { id: true } }).then(Boolean)
+    isFound = await prisma.user.findUnique({ where: { blog: baseSlug }, select: { id: true } }).then(Boolean)
     count++
     slug = `${baseSlug}-${count}`
   }
@@ -122,16 +123,16 @@ async function initAvatarUrl(seed: string) {
   return await Storage.uploadFile(webpBuffer);
 }
 
-export interface IResponseObjArgs {
+export interface IResponseObjArgs<T> {
   error?: string
   validationError?: null | Record<string, string | null>;
-  data?: unknown;
   status?: number;
-  cookie?: string
+  cookie?: string;
+  data?: T;
 }
 
-export function Response(args: IResponseObjArgs) {
-  return json(
-    { error: args.error??null, validationError: args.validationError??null, data: args.data??null },
-    { status: args.status??200, headers: args.cookie ? { "Set-Cookie": args.cookie } : undefined })
+export async function customResponse<T = null>(args: IResponseObjArgs<T>) {
+  return await json(
+    { error: args.error ?? null, validationError: args.validationError ?? null, data: args.data ?? null },
+    { status: args.status ?? 200, headers: args.cookie ? { "set-cookie": args.cookie } : undefined }).json()
 }

@@ -40,8 +40,8 @@ model Post {
   likes           Like[]
   views           Views[]
   description     String
-  likesCount      Int @default(0)
-  dislikesCount   Int @default(0)
+  likesCount      Int       @default(0)
+  dislikesCount   Int       @default(0)
 
   @@index([title, description, createdAt(sort: Desc)])
 }
@@ -51,16 +51,16 @@ model Views {
   IPAddress String
   postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Like {
-  id        Int     @id @default(autoincrement())
-  isLike    Boolean?
-  userId    Int
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId    Int
-  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id     Int      @id @default(autoincrement())
+  isLike Boolean?
+  userId Int
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId Int
+  post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -69,9 +69,9 @@ model User {
   lastName    String
   firstName   String
   password    String
-  avatarUrl  String
+  avatarUrl   String
   createdAt   DateTime  @default(now())
-  blogName    String    @unique
+  blog        String    @unique
   comments    Comment[]
   likes       Like[]
   posts       Post[]
@@ -81,7 +81,7 @@ model User {
   country     String?
   city        String?
 
-  @@index([blogName, createdAt(sort: Desc)])
+  @@index([blog, createdAt(sort: Desc)])
 }
 
 model Comment {

@@ -3,7 +3,7 @@ import isServer from '~/utils/isServer';
 
 type IUserAction = {
   type: "add" | "logout";
-  payload?: IUser;
+  payload?: IUser | null;
 };
 
 export interface IUser {
@@ -11,6 +11,7 @@ export interface IUser {
   email: string;
   name: string;
   avatarUrl: string;
+  blog: string;
 }
 
 const UserContext = createContext<IUser | null>(null);

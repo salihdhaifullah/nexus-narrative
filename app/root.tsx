@@ -7,8 +7,6 @@ import Wrapper from "~/components/layout/Wrapper";
 import { useEffect } from "react";
 import Provider from "./context";
 
-
-
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
   { rel: "stylesheet", href: Aleo },

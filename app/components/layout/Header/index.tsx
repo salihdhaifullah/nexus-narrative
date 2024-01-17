@@ -2,23 +2,27 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { BiLogOut, BiLogIn } from 'react-icons/bi';
 import ButtonBase from "~/components/utils/ButtonBase";
 import SearchFiled from "~/components/utils/SearchFiled";
-import { useUser } from "~/context/user"
+import { useUser, useUserDispatch } from "~/context/user"
 import { useTheme, useThemeDispatch } from "~/context/theme";
 import { useModalDispatch } from "~/context/modal";
 import { MdMoreVert } from "react-icons/md";
 import Modal from "./Modal";
-
-import { Link } from "@remix-run/react";
+import { Form, Link, useNavigation } from "@remix-run/react";
 
 const Header = () => {
     const user = useUser();
     const theme = useTheme();
-
+    const navigation = useNavigation();
     const themeDispatch = useThemeDispatch();
     const dispatchModal = useModalDispatch();
+    const dispatchUser = useUserDispatch();
 
     const handelOpenModal = () => {
         dispatchModal({ type: "open", payload: <Modal /> })
+    }
+
+    const handelLogout = () => {
+        dispatchUser({ type: "logout" })
     }
 
     return (
@@ -35,13 +39,13 @@ const Header = () => {
                 </Link>
 
                 <div className="flex sm:hidden flex-row gap-4">
-                    <button onClick={() => handelOpenModal} className="flex text-secondary p-1 h-fit self-center dark:hover:bg-slate-800 hover:bg-slate-200 bg-normal justify-center cursor-pointer items-center rounded-md font-bold text-xl">
+                    <button onClick={() => handelOpenModal()} className="flex text-secondary p-1 h-fit self-center dark:hover:bg-slate-800 hover:bg-slate-200 bg-normal justify-center cursor-pointer items-center rounded-md font-bold text-xl">
                         <MdMoreVert />
                     </button>
 
                     {!user ? null : (
                         <div className="flex justify-center items-center">
-                            <Link to={`/users/${user.id}`} title="your profile">
+                            <Link to={`/${user.blog}`} title="your profile">
                                 <img
                                     className="rounded-full shadow-md object-cover"
                                     width={32}
@@ -63,12 +67,14 @@ const Header = () => {
                             <BiLogIn /> <p>login</p>
                         </Link>
                     ) : (
-                        <ButtonBase
-                            onClick={() => { }}
-                            className="w-fit h-fit place-self-center text-secondary p-1 border border-secondary hover:shadow-md bg-normal transition-all ease-in-out rounded-md text-lg flex-row flex gap-1 items-center">
-                            <BiLogOut />
-                            <p>logout</p>
-                        </ButtonBase>
+                        <Form action="auth/logout" navigate={false} method="post" onSubmit={() => handelLogout()}>
+                            <ButtonBase
+                                isLoading={navigation.state === "submitting"}
+                                className="w-fit h-fit place-self-center text-secondary p-1 border border-secondary hover:shadow-md bg-normal transition-all ease-in-out rounded-md text-lg flex-row flex gap-1 items-center">
+                                <BiLogOut />
+                                <p>logout</p>
+                            </ButtonBase>
+                        </Form>
                     )}
                 </div>
             </div>
@@ -87,7 +93,7 @@ const Header = () => {
 
                 {!user ? null : (
                     <div className="flex justify-center items-center">
-                        <Link to={`/users/${user.id}`} title="your profile">
+                        <Link to={`/${user.blog}`} title="your profile">
                             <img
                                 className="rounded-full shadow-md object-cover"
                                 width={32}

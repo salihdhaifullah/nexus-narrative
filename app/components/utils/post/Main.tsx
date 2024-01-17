@@ -8,13 +8,13 @@ interface IProps {
   createdAt: string;
   category: string;
   authorId: number;
-  blogName: string;
+  blog: string;
   post: string;
   description: string;
 }
 
 
-export default function Main({ createdAt, category, authorId, blogName, post, description }: IProps) {
+export default function Main({ createdAt, category, authorId, blog, post, description }: IProps) {
   const jsx = useMarkdown(`## **${description}** \n\n` + post);
 
   const [isFullScreen, setIsFullScreen] = useState(false)
@@ -46,7 +46,7 @@ export default function Main({ createdAt, category, authorId, blogName, post, de
         <div className="flex flex-row gap-2 items-center justify-center text-center">
           <p className="text-gray-800 text-lg">Blog: </p>
           <Link to={`/profiles/${authorId}`}>
-            <p className="link mb-0"> {blogName} </p>
+            <p className="link mb-0"> {blog} </p>
           </Link>
         </div>
 

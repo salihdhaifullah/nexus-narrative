@@ -1,15 +1,14 @@
 import { useLoaderData } from '@remix-run/react';
-import { useEffect } from 'react';
 import { LoaderFunctionArgs, json } from 'react-router';
 import ProfileTemplate from '~/components/utils/ProfileTemplate';
 import { prisma } from '~/db.server';
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const { blogName } = params;
-  if (!blogName) throw new Error("Missing blogName param");
+  const { blog } = params;
+  if (!blog) throw new Error("Missing blog param");
 
   const user = await prisma.user.findUnique({
-    where: { blogName: blogName },
+    where: { blog: blog },
     select: {
       avatarUrl: true,
       firstName: true,
@@ -17,7 +16,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
       title: true,
       about: true,
       email: true,
-      blogName: true,
+      blog: true,
       phoneNumber: true,
       country: true,
       city: true,
@@ -32,8 +31,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const Profile = () => {
   const { user } = useLoaderData<typeof loader>();
-
-  useEffect(() => { console.log(document.cookie.split("theme=")[1].split(";")[0]) }, [])
 
   return (
     <div className='w-full h-fit mb-10'>

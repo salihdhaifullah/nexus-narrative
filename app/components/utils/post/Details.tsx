@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 
 interface IProps {
   author: {
-    blogName: string;
+    blog: string;
     id: number;
     email: string;
     lastName: string;

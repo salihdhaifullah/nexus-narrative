@@ -7,11 +7,11 @@ import { prisma } from "~/db.server";
 import useInfintieScroll from "~/hooks/useInfintieScroll";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
-    const { blogName } = params;
+    const { blog } = params;
     const page = Number(new URL(request.url).searchParams.get("page")) || 0;
     const [posts, count] = await prisma.$transaction([
         prisma.post.findMany({
-            where: { author: { blogName: blogName } },
+            where: { author: { blog: blog } },
             take: 5,
             skip: page * 5,
             select: {
@@ -24,13 +24,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
                 _count: { select: { comments: true } },
                 author: {
                     select: {
-                        blogName: true
+                        blog: true
                     }
                 },
                 description: true
             }
         }),
-        prisma.post.count({ where: { author: { blogName: blogName } } })
+        prisma.post.count({ where: { author: { blog: blog } } })
     ])
 
     return json({ posts, count });

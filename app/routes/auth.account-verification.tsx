@@ -5,7 +5,7 @@ import { Form, useActionData, useNavigation } from '@remix-run/react';
 import { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
 import { singUpSessionCookie } from '~/cookies.server';
 import cache from '~/cache.server';
-import { Response, createUser } from '~/data/user.server';
+import { customResponse, createUser } from '~/data/user.server';
 import { CodeSchema, SingUpSessionSchema } from '~/dto/auth';
 
 export const meta: MetaFunction = () => {
@@ -23,14 +23,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const res = CodeSchema.validate(data)
 
-  if (res.isError) return Response({ validationError: res.errors, status: 400 });
+  if (res.isError) return customResponse({ validationError: res.errors, status: 400 });
   const cookieHeader = request.headers.get("Cookie");
   const singUpSessionId = (await singUpSessionCookie.parse(cookieHeader)) || {};
   const sessionJson = await cache.get(singUpSessionId)
 
   console.log(sessionJson)
 
-  if (sessionJson === null) return Response({
+  if (sessionJson === null) return customResponse({
     status: 400,
     error: "sing-up session expired, please try to sing-up"
   })
@@ -39,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const res1 = SingUpSessionSchema.validate(session)
 
-  if (res1.isError) return Response({
+  if (res1.isError) return customResponse({
     status: 400,
     error: "sing-up session is un-valid, please try to sing-up"
   })

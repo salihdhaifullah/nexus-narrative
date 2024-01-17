@@ -6,7 +6,7 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import Button from '~/components/utils/Button';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 import { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
-import { Response, singUp } from '~/data/user.server';
+import { customResponse, singUp } from '~/data/user.server';
 import { SingUpSchema } from '~/dto/auth';
 
 export const meta: MetaFunction = () => {
@@ -27,7 +27,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const res = SingUpSchema.validate(data)
 
-    if (res.isError) return Response({ validationError: res.errors, status: 400 });
+    if (res.isError) return customResponse({ validationError: res.errors, status: 400 });
 
     return await singUp(data);
 }

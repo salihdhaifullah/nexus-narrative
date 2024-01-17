@@ -5,7 +5,7 @@ interface IProfileProps {
     title: string | null;
     about: string | null;
     email: string;
-    blogName: string;
+    blog: string;
     phoneNumber: number | null;
     country: string | null;
     city: string | null;
@@ -42,7 +42,7 @@ const ProfileTemplate = ({ data }: { data: IProfileProps }) => {
                             <hr className='my-2' />
                         </h2>
 
-                        <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{data.blogName}</strong>
+                        <h2 className='text-gray-700 text-lg mt-1'>Blog Name: <strong>{data.blog}</strong>
                             <hr className='my-2' />
                         </h2>
 

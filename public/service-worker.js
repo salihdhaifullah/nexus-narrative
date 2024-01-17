@@ -12,25 +12,37 @@ self.addEventListener('install', (event) => {
     }))
 })
 
-const getResponse = async (event) => {
-  if (event.request.method !== "GET") return fetch(event.request);
-
-  const response = await caches.match(event.request)
-  if (response && !navigator.onLine) {
-    console.log("got response from cache on request", event.request)
-    return response;
+async function getResponse(event) {
+  if (event.request.method !== 'GET') {
+    return await fetch(event.request);
   }
 
-  const networkResponse = await fetch(event.request);
-  console.log("fetch with method ", event.request.method);
+  try {
+    const response = await caches.match(event.request);
 
-  if (event.request.method === "GET") {
-    const clonedResponse = networkResponse.clone();
-    const cache = await caches.open(CACHE_NAME)
-    cache.put(event.request, clonedResponse);
+    if (response && !navigator.onLine) {
+      console.log('Got response from cache on request', event.request);
+      return response;
+    }
+
+    const networkResponse = await fetch(event.request);
+    console.log('Fetch with method', event.request.method);
+
+    if (event.request.method === 'GET') {
+      const clonedResponse = networkResponse.clone();
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(event.request, clonedResponse);
+    }
+
+    return networkResponse;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    const cachedResponse = await caches.match(event.request);
+    if (cachedResponse) {
+      console.log('Got response from cache on error', event.request);
+      return cachedResponse;
+    }
   }
-
-  return networkResponse;
 }
 
 self.addEventListener('fetch', (event) => event.respondWith(getResponse(event)))
