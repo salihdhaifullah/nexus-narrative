@@ -64,24 +64,30 @@ model Like {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  email       String    @unique
-  lastName    String
-  firstName   String
-  password    String
-  avatarUrl   String
-  createdAt   DateTime  @default(now())
-  blog        String    @unique
-  comments    Comment[]
-  likes       Like[]
-  posts       Post[]
-  phoneNumber String?
-  about       String?
-  title       String?
-  country     String?
-  city        String?
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  lastName  String
+  firstName String
+  password  String
+  avatarUrl String
+  joinedAt  DateTime  @default(now())
+  blog      String    @unique
+  bio       String?
+  profile   String?
+  comments  Comment[]
+  likes     Like[]
+  posts     Post[]
+  contents  Content[]
 
-  @@index([blog, createdAt(sort: Desc)])
+  @@index([blog, joinedAt(sort: Desc)])
+}
+
+model Content {
+  id       Int      @id @default(autoincrement())
+  markdown String
+  authorId Int
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  files    String[]
 }
 
 model Comment {
