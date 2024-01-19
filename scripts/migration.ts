@@ -11,8 +11,8 @@ const userTable = `--sql
         joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         blog VARCHAR(255) UNIQUE NOT NULL,
         bio VARCHAR(255) DEFAULT '' NOT NULL,
-        about_id VARCHAR(26) NOT NULL
-        -- FOREIGN KEY (about_id) REFERENCES "content" (id) ON DELETE CASCADE
+        profile_id VARCHAR(26) NOT NULL,
+        FOREIGN KEY (profile_id) REFERENCES "profile" (id) ON DELETE CASCADE
     );
 
     CREATE INDEX idx_user_joined_at ON "user" (joined_at);
@@ -20,20 +20,18 @@ const userTable = `--sql
 `;
 
 
-const contentTable = `--sql
-    CREATE TABLE IF NOT EXISTS "content" (
+const profileTable = `--sql
+    CREATE TABLE IF NOT EXISTS "profile" (
         id VARCHAR(26) PRIMARY KEY,
-        markdown TEXT DEFAULT '' NOT NULL,
-        author_id VARCHAR(26) NOT NULL
-        -- FOREIGN KEY (author_id) REFERENCES "user" (id) ON DELETE CASCADE
+        markdown TEXT DEFAULT '' NOT NULL
     );
 `;
 
 const fileTable = `--sql
     CREATE TABLE IF NOT EXISTS "file" (
         file_path VARCHAR(255) PRIMARY KEY,
-        content_id VARCHAR(26) NOT NULL,
-        FOREIGN KEY (content_id) REFERENCES "content" (id) ON DELETE CASCADE
+        profile_id VARCHAR(26) NOT NULL,
+        FOREIGN KEY (profile_id) REFERENCES "profile" (id) ON DELETE CASCADE
     )
 `;
 
@@ -43,19 +41,7 @@ await transaction(async (client) => {
       CREATE SCHEMA public;
     `);
 
+    await client.query(profileTable);
     await client.query(userTable);
-    await client.query(contentTable);
     await client.query(fileTable);
-
-    await client.query(`--sql
-        ALTER TABLE "user"
-        ADD CONSTRAINT fk_user_content
-        FOREIGN KEY (about_id) REFERENCES "content" (id) ON DELETE CASCADE;
-    `);
-
-    await client.query(`--sql
-        ALTER TABLE "content"
-        ADD CONSTRAINT fk_content_user
-        FOREIGN KEY (author_id) REFERENCES "user" (id) ON DELETE CASCADE;
-    `);
 })

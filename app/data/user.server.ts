@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node"
-import pool, { IDBUser, createContent, createUserX, transaction, userExistsByBlog, userExistsByEmail } from "~/db.server"
+import pool, { IDBUser, createUserX, transaction, userExistsByBlog, userExistsByEmail } from "~/db.server"
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -69,14 +69,12 @@ export async function createUser(args: typeof SingUpSessionSchema.type) {
   const blog = await generateSlug(seed);
   const avatarUrl = await initAvatarUrl(seed);
   const userId = ulid()
-  const contentId = ulid()
+  const profileId = ulid()
 
   await transaction(async (client) => {
-    await createContent({id: contentId, author_id: userId, client})
-    await createUserX({id: userId, about_id: contentId,
-      blog: blog, avatar_url: avatarUrl, email: args.email,
-      first_name: args.firstName, last_name: args.lastName,
-      password_hash: args.password, client})
+    await createUserX({id: userId, blog: blog, avatar_url: avatarUrl,
+      email: args.email, first_name: args.firstName, last_name: args.lastName,
+      password_hash: args.password, profile_id: profileId, client })
   });
 
   return redirect("/auth/login")
