@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node"
-import { prisma } from "~/db.server"
+import pool, { IDBUser, createContent, createUserX, transaction, userExistsByBlog, userExistsByEmail } from "~/db.server"
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -11,13 +11,16 @@ import { createAvatar } from '@dicebear/core';
 import { adventurer } from '@dicebear/collection';
 import sharp from "sharp";
 import Storage from "~/utils/supabase";
+import { ulid } from "ulid";
 
 export const login = async (args: typeof LoginSchema.type) => {
-  const user = await prisma.user.findUnique({ where: { email: args.email } });
+  const user = await pool.query(`--sql
+      SELECT * FROM "user" WHERE "email" = $1;
+  `, [args.email]).then(res => res.rows[0] as IDBUser | undefined)
 
   if (!user) return customResponse({ error: `user with this email ${args.email} dose not exist, please try sing up`, status: 404 })
 
-  if (!bcrypt.compareSync(args.password, user.password)) return customResponse({ error: "password or email is incorrect", status: 400 })
+  if (!bcrypt.compareSync(args.password, user.password_hash)) return customResponse({ error: "password or email is incorrect", status: 400 })
 
   const fullYear = 1000 * 60 * 60 * 24 * 365;
 
@@ -27,8 +30,8 @@ export const login = async (args: typeof LoginSchema.type) => {
     data: {
       id: user.id,
       email: user.email,
-      name: user.firstName + " " + user.lastName,
-      avatarUrl: user.avatarUrl,
+      name: user.first_name + " " + user.last_name,
+      avatarUrl: user.avatar_url,
       blog: user.blog,
     },
     status: 200,
@@ -38,7 +41,7 @@ export const login = async (args: typeof LoginSchema.type) => {
 
 
 export const singUp = async (args: typeof SingUpSchema.type) => {
-  const isFound = await prisma.user.findUnique({ where: { email: args.email }, select: { id: true } }).then(Boolean);
+  const isFound = await userExistsByEmail(args.email);
   if (isFound) return customResponse({ status: 400, error: `this account ${args.email} already exist try login` });
   const code = initCode();
 
@@ -57,24 +60,24 @@ export const singUp = async (args: typeof SingUpSchema.type) => {
   })
 }
 
+
 export async function createUser(args: typeof SingUpSessionSchema.type) {
-  const isFound = await prisma.user.findUnique({ where: { email: args.email }, select: { id: true } }).then(Boolean);
+  const isFound = await userExistsByEmail(args.email)
   if (isFound) return customResponse({ status: 400, error: `this account ${args.email} already exist try login` });
 
   const seed = `${args.firstName}-${args.lastName}`;
   const blog = await generateSlug(seed);
   const avatarUrl = await initAvatarUrl(seed);
+  const userId = ulid()
+  const contentId = ulid()
 
-  await prisma.user.create({
-    data: {
-      blog: blog,
-      avatarUrl: avatarUrl,
-      email: args.email,
-      firstName: args.firstName,
-      lastName: args.lastName,
-      password: args.password
-    }
-  })
+  await transaction(async (client) => {
+    await createContent({id: contentId, author_id: userId, client})
+    await createUserX({id: userId, about_id: contentId,
+      blog: blog, avatar_url: avatarUrl, email: args.email,
+      first_name: args.firstName, last_name: args.lastName,
+      password_hash: args.password, client})
+  });
 
   return redirect("/auth/login")
 }
@@ -93,7 +96,7 @@ async function generateSlug(seed: string) {
     .replace(/[ _-]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-  let isFound = await prisma.user.findUnique({ where: { blog: baseSlug }, select: { id: true } }).then(Boolean)
+  let isFound = await userExistsByBlog(baseSlug);
 
   if (!isFound) return baseSlug;
 
@@ -101,7 +104,7 @@ async function generateSlug(seed: string) {
   let slug = `${baseSlug}-${count}`
 
   while (isFound) {
-    isFound = await prisma.user.findUnique({ where: { blog: baseSlug }, select: { id: true } }).then(Boolean)
+    isFound = await userExistsByBlog(baseSlug);
     count++
     slug = `${baseSlug}-${count}`
   }

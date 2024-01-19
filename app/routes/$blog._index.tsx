@@ -1,50 +1,51 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunctionArgs } from 'react-router';
 import { customResponse } from '~/data/user.server';
-import { prisma } from '~/db.server';
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { blog } = params;
 
   if (!blog) throw new Error("Missing blog param");
 
-  const user = await prisma.user.findUnique({
-    where: { blog: blog },
-    select: {
-      avatarUrl: true,
-      firstName: true,
-      lastName: true,
-      title: true,
-      about: true,
-      email: true,
-      blog: true,
-      phoneNumber: true,
-      country: true,
-      city: true,
-      _count: { select: { posts: true } }
-    }
-  });
+  // const user = await prisma.user.findUnique({
+  //   where: { blog: blog },
+  //   select: {
+  //     avatarUrl: true,
+  //     firstName: true,
+  //     lastName: true,
+  //     title: true,
+  //     about: true,
+  //     email: true,
+  //     blog: true,
+  //     phoneNumber: true,
+  //     country: true,
+  //     city: true,
+  //     _count: { select: { posts: true } }
+  //   }
+  // });
 
-  if (!user) throw new Response("Not Found", { status: 404 });
+  // if (!user) throw new Response("Not Found", { status: 404 });
 
-  return customResponse({ data: user })
+  // return customResponse({ data: user })
+  return null;
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [
-    { title: data?.data?.blog },
-    { name: "description", content: data?.data?.about }
-  ]
-}
+// export const meta: MetaFunction<typeof loader> = ({ data }) => {
+//   return [
+//     { title: data?.data?.blog },
+//     { name: "description", content: data?.data?.about }
+//   ]
+// }
 
 const Profile = () => {
-  const { data } = useLoaderData<typeof loader>();
+  // const { data } = useLoaderData<typeof loader>();
 
   return (
     <div className='w-full h-fit mb-10'>
       <div>
-        {data ? (
+        {/* {data ? (
           <div className="m-4 mb-[120px]">
             <div className='gap-4 flex-wrap flex flex-col'>
 
@@ -103,7 +104,8 @@ const Profile = () => {
 
             </div>
           </div>
-        ) : null}
+        ) : null} */}
+        <h1>hello world</h1>
       </div>
     </div>
   )
