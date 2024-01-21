@@ -1,5 +1,4 @@
 import { json, redirect } from "@remix-run/node"
-import pool, { IDBUser, createUserX, transaction, userExistsByBlog, userExistsByEmail } from "~/db.server"
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -11,16 +10,33 @@ import { createAvatar } from '@dicebear/core';
 import { adventurer } from '@dicebear/collection';
 import sharp from "sharp";
 import Storage from "~/utils/supabase";
-import { ulid } from "ulid";
+import { prisma } from "~/db.server";
 
 export const login = async (args: typeof LoginSchema.type) => {
-  const user = await pool.query(`--sql
-      SELECT * FROM "user" WHERE "email" = $1;
-  `, [args.email]).then(res => res.rows[0] as IDBUser | undefined)
+  const user = await prisma.user.findUnique({
+    where: {
+      email: args.email
+    },
+    select: {
+      password: true,
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      avatarUrl: true,
+      blog: true
+    }
+  })
 
-  if (!user) return customResponse({ error: `user with this email ${args.email} dose not exist, please try sing up`, status: 404 })
+  if (!user) return customResponse({
+    error: `user with this email ${args.email} dose not exist, please try sing up`,
+    status: 404
+  })
 
-  if (!bcrypt.compareSync(args.password, user.password_hash)) return customResponse({ error: "password or email is incorrect", status: 400 })
+  if (!bcrypt.compareSync(args.password, user.password)) return customResponse({
+    error: "password or email is incorrect",
+    status: 400
+  })
 
   const fullYear = 1000 * 60 * 60 * 24 * 365;
 
@@ -30,8 +46,8 @@ export const login = async (args: typeof LoginSchema.type) => {
     data: {
       id: user.id,
       email: user.email,
-      name: user.first_name + " " + user.last_name,
-      avatarUrl: user.avatar_url,
+      name: user.firstName + " " + user.lastName,
+      avatarUrl: user.avatarUrl,
       blog: user.blog,
     },
     status: 200,
@@ -40,9 +56,28 @@ export const login = async (args: typeof LoginSchema.type) => {
 }
 
 
+async function checkIsFound(query: string, isEmail: boolean = true) {
+  return await prisma.user.findUnique({
+    where: isEmail ? {
+      email: query
+    } : {
+      blog: query
+    },
+    select: {
+      id: true
+    }
+  })
+    .then(res => Boolean(res?.id))
+}
+
 export const singUp = async (args: typeof SingUpSchema.type) => {
-  const isFound = await userExistsByEmail(args.email);
-  if (isFound) return customResponse({ status: 400, error: `this account ${args.email} already exist try login` });
+  const isFound = await checkIsFound(args.email)
+
+  if (isFound) return customResponse({
+    status: 400,
+    error: `this account ${args.email} already exist try login`
+  });
+
   const code = initCode();
 
   const password = bcrypt.hashSync(args.password, bcrypt.genSaltSync(10));
@@ -62,20 +97,25 @@ export const singUp = async (args: typeof SingUpSchema.type) => {
 
 
 export async function createUser(args: typeof SingUpSessionSchema.type) {
-  const isFound = await userExistsByEmail(args.email)
-  if (isFound) return customResponse({ status: 400, error: `this account ${args.email} already exist try login` });
+  const isFound = await checkIsFound(args.email)
+  if (isFound) return customResponse({
+    status: 400,
+    error: `this account ${args.email} already exist try login` });
 
   const seed = `${args.firstName}-${args.lastName}`;
   const blog = await generateSlug(seed);
   const avatarUrl = await initAvatarUrl(seed);
-  const userId = ulid()
-  const profileId = ulid()
 
-  await transaction(async (client) => {
-    await createUserX({id: userId, blog: blog, avatar_url: avatarUrl,
-      email: args.email, first_name: args.firstName, last_name: args.lastName,
-      password_hash: args.password, profile_id: profileId, client })
-  });
+  await prisma.user.create({
+    data: {
+      blog: blog,
+      avatarUrl: avatarUrl,
+      email: args.email,
+      firstName: args.firstName,
+      lastName: args.lastName,
+      password: args.password,
+    }
+  })
 
   return redirect("/auth/login")
 }
@@ -94,7 +134,7 @@ async function generateSlug(seed: string) {
     .replace(/[ _-]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-  let isFound = await userExistsByBlog(baseSlug);
+  let isFound = await checkIsFound(baseSlug, false);
 
   if (!isFound) return baseSlug;
 
@@ -102,7 +142,7 @@ async function generateSlug(seed: string) {
   let slug = `${baseSlug}-${count}`
 
   while (isFound) {
-    isFound = await userExistsByBlog(baseSlug);
+    isFound = await checkIsFound(baseSlug, false);
     count++
     slug = `${baseSlug}-${count}`
   }

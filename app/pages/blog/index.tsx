@@ -1,51 +1,50 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderFunctionArgs } from 'react-router';
+import useMarkdown from '~/components/utils/markdown/useMarkdown';
 import { customResponse } from '~/data/user.server';
+import { prisma } from '~/db.server';
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { blog } = params;
 
   if (!blog) throw new Error("Missing blog param");
 
-  // const user = await prisma.user.findUnique({
-  //   where: { blog: blog },
-  //   select: {
-  //     avatarUrl: true,
-  //     firstName: true,
-  //     lastName: true,
-  //     title: true,
-  //     about: true,
-  //     email: true,
-  //     blog: true,
-  //     phoneNumber: true,
-  //     country: true,
-  //     city: true,
-  //     _count: { select: { posts: true } }
-  //   }
-  // });
+  const user = await prisma.user.findUnique({
+    where: { blog: blog },
+    select: {
+      avatarUrl: true,
+      firstName: true,
+      lastName: true,
+      bio: true,
+      profile: {
+        select: {
+          markdown: true
+        }
+      }
+    }
+  });
 
-  // if (!user) throw new Response("Not Found", { status: 404 });
+  if (!user) throw new Response("Not Found", { status: 404 });
 
-  // return customResponse({ data: user })
-  return null;
+  return customResponse({ data: {...user, blog} })
 }
 
-// export const meta: MetaFunction<typeof loader> = ({ data }) => {
-//   return [
-//     { title: data?.data?.blog },
-//     { name: "description", content: data?.data?.about }
-//   ]
-// }
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    { title: data?.data?.blog },
+    { name: "description", content: data?.data?.bio }
+  ]
+}
 
 const Profile = () => {
-  // const { data } = useLoaderData<typeof loader>();
+  const { data } = useLoaderData<typeof loader>();
+  const jsx = useMarkdown(data?.profile?.markdown || "");
 
   return (
     <div className='w-full h-fit mb-10'>
       <div>
-        {/* {data ? (
+        {data ? (
           <div className="m-4 mb-[120px]">
             <div className='gap-4 flex-wrap flex flex-col'>
 
@@ -57,7 +56,7 @@ const Profile = () => {
                   </div>
 
                   <h1 className='text-2xl text-gray-800 font-bold'>{data.firstName + " " + data.lastName}</h1>
-                  {data.title ? <h2 className='text-gray-600 mt-2'>{data.title}</h2> : null}
+                  {data.bio ? <h2 className='text-gray-600 mt-2'>{data.bio}</h2> : null}
                 </div>
               </div>
 
@@ -78,34 +77,17 @@ const Profile = () => {
                     <hr className='my-2' />
                   </h2>
 
-                  <h2 className='text-gray-700 text-lg mt-1'>about: <strong>{data.about || "Not Found"}</strong>
-                    <hr className='my-2' />
-                  </h2>
-
-                  <h2 className='text-gray-700 text-lg mt-1'>title: <strong>{data.title || "Not Found"}</strong>
-                    <hr className='my-2' />
-                  </h2>
-
-                  <h2 className='text-gray-700 text-lg mt-1'>phone Number: <strong>{data.phoneNumber || "Not Found"}</strong>
-                    <hr className='my-2' />
-                  </h2>
-
-                  <h2 className='text-gray-700 text-lg mt-1'>country: <strong>{data.country || "Not Found"}
-                    <hr className='my-2' />
-                  </strong> </h2>
-
-                  <h2 className='text-gray-700 text-lg mt-1'>city: <strong>{data.city || "Not Found"}</strong>
-                    <hr className='my-2' />
-                  </h2>
-                  <h2 className='text-gray-700 text-lg mt-1'>email: <strong>{data.email}</strong> </h2>
-
                 </div>
+              </div>
+
+
+              <div className='bg-normal rounded-md shadow-md p-4 my-10 flex flex-col'>
+                  {jsx}
               </div>
 
             </div>
           </div>
-        ) : null} */}
-        <h1>hello world</h1>
+        ) : null}
       </div>
     </div>
   )

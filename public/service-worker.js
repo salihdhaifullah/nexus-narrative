@@ -1,7 +1,7 @@
 const CACHE_NAME = 'nexus-narrative-cache';
 
 const urlsToCache = async () => {
-  const res = await fetch(`${self.location.origin}/build`)
+  const res = await fetch(`${self.location.origin}/api/build`)
   return await res.json()
 }
 

@@ -67,7 +67,7 @@ const Header = () => {
                             <BiLogIn /> <p>login</p>
                         </Link>
                     ) : (
-                        <Form action="auth/logout" navigate={false} method="post" onSubmit={() => handelLogout()}>
+                        <Form action="api/auth/logout" method="post" onSubmit={() => handelLogout()}>
                             <ButtonBase
                                 isLoading={navigation.state === "submitting"}
                                 className="w-fit h-fit place-self-center text-secondary p-1 border border-secondary hover:shadow-md bg-normal transition-all ease-in-out rounded-md text-lg flex-row flex gap-1 items-center">
