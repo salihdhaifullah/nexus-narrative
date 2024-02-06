@@ -1,6 +1,8 @@
-node_modules
-.cache
-build
-public/build
+.bin
 .env
-prisma/migrations
+*_templ.go
+*_templ.txt
+tmp
+vendor
+main
+node_modules

@@ -1,0 +1,17 @@
+{{define "blog"}}
+    {{template "header" . }}
+    <main class="h-[80vh] flex flex-col items-center justify-center">
+        <h1 class="text-4xl text-primary">blog Page</h1>
+        <p>Name: {{ .User.Name }}</p>
+        <p>Blog: {{ .User.Blog }}</p>
+        <p>Id: {{ .User.Id }}</p>
+        <p>AvatarUrl: </p>
+        <img src="{{ .User.AvatarUrl }}" width="200px" height="100px" alt="{{ .User.Name }}" />
+    </main>
+    {{template "footer" . }}
+{{ end }}
+{{ define "script" }}
+    <script>
+        console.log("from the blog page hello world")
+    </script>
+{{ end }}

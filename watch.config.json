@@ -1,0 +1,8 @@
+{
+    "ignore_regex": [],
+    "ignore": ["static", "vendor", ".git", ".bin", "views", "node_modules"],
+    "delay": 1500,
+    "setup_commands": ["gotip build -mod=vendor -o ./vendor/main -p 4"],
+    "parallel_commands": [],
+    "background_commands": ["./vendor/main", "npx tailwindcss -i ./tailwind.css -o ./static/index.css --watch"]
+}

@@ -1,0 +1,14 @@
+{{ define "footer" }}
+<footer id="footer" class="flex flex-col h-12 justify-center items-center w-full">
+    <p class="text-center text-secondary">
+        Copyright ©
+        <a href="/" class="link">NexusNarrative</a>
+        <p> {{ .Year }} </p>
+    </p>
+</footer>
+</body>
+{{ if .Script }}
+    {{ template "script" }}
+{{ end }}
+</html>
+{{ end }}

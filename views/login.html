@@ -1,0 +1,8 @@
+{{define "login"}}
+    {{template "header" .}}
+    <main class="h-[80vh] flex flex-col items-center justify-center">
+        <h1 class="text-4xl text-primary">Login page</h1>
+        <p>Hello, how are you, {{ .User.Name }}</p>
+    </main>
+    {{template "footer" .}}
+{{ end }}
