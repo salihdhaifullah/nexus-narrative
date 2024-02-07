@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"sync"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
@@ -22,99 +20,97 @@ type User struct {
 	AvatarUrl string
 }
 
-type View struct {
-	Year  string
-	Title string
-	Theme string
-	Script bool
-	User  User
+var isProduction = true
+var Blog *template.Template
+var NotFound *template.Template
+var Login *template.Template
+var Home *template.Template
+var AccountVerification *template.Template
+var ForgatPassword *template.Template
+var ResetPassword *template.Template
+var SingUp *template.Template
+
+func initViews() {
+	log.Println("revaldting templates")
+	Blog = template.Must(template.ParseFiles("./views/blog.html", "./views/base.html"))
+	NotFound = template.Must(template.ParseFiles("./views/404.html", "./views/base.html"))
+	Home = template.Must(template.ParseFiles("./views/home.html", "./views/base.html"))
+	Login = template.Must(template.ParseFiles("./views/auth/login.html", "./views/base.html"))
+	AccountVerification = template.Must(template.ParseFiles("./views/auth/account-verification.html", "./views/base.html"))
+	ForgatPassword = template.Must(template.ParseFiles("./views/auth/forgat-password.html", "./views/base.html"))
+	ResetPassword = template.Must(template.ParseFiles("./views/auth/reset-password.html", "./views/base.html"))
+	SingUp = template.Must(template.ParseFiles("./views/auth/sing-up.html", "./views/base.html"))
 }
 
-var Temp *template.Template
-var isProduction = true
-
 func init() {
+	initViews()
 	initializers.GetENV()
-	temp, err := template.ParseGlob("./views/*.html")
-	Temp = temp
+	isProduction = os.Getenv("ENV") == "PROD"
+}
+
+func (this View) Send(t *template.Template) {
+	err := t.Execute(this.w, this.data)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	isProduction = os.Getenv("ENV") == "PROD"
 }
 
-// BUG: cant serve static files from "/"
-
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
-	data := View{
-		Year:  fmt.Sprint(time.Now().Year()),
-		Title: "test title",
-		Theme: "dark",
-		User: User{
-			Id:        "1",
-			Blog:      "SD-DEV",
-			AvatarUrl: "https://templ.guide/img/logo.svg",
-			Name:      "salih dhaifullah",
-		},
-	}
-
-	SendView(w, data, "index")
+type View struct {
+	w http.ResponseWriter
+	data interface{}
 }
+
+func initView(w http.ResponseWriter, data interface{}) *View {
+	if !isProduction {
+		// to reload the html files
+		initViews()
+	}
+
+	return &View{w: w, data: data}
+}
+
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	data := View{
-		Year:  fmt.Sprint(time.Now().Year()),
-		Title: "test title",
-		Theme: "dark",
-		User: User{
-			Id:        "1",
-			Blog:      "SD-DEV",
-			AvatarUrl: "https://templ.guide/img/logo.svg",
-			Name:      "salih dhaifullah",
-		},
-	}
-
-	SendView(w, data, "login")
+	initView(w, nil).Send(Login)
 }
 
+func SingUpHandler(w http.ResponseWriter, r *http.Request) {
+	initView(w, nil).Send(SingUp)
+}
+
+func AccountVerificationHandler(w http.ResponseWriter, r *http.Request) {
+	initView(w, nil).Send(AccountVerification)
+}
+
+func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	initView(w, nil).Send(ResetPassword)
+
+}
+
+func ForgatPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	initView(w, nil).Send(ForgatPassword)
+}
+
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	initView(w, nil).Send(Home)
+}
+
+
 func BlogHandler(w http.ResponseWriter, r *http.Request) {
-	data := View{
-		Year:  fmt.Sprint(time.Now().Year()),
-		Title: "test title",
-		Theme: "dark",
-		Script: true,
-		User: User{
-			Id:        "1",
-			Blog:      mux.Vars(r)["blog"],
-			AvatarUrl: "https://templ.guide/img/logo.svg",
-			Name:      "salih dhaifullah",
-		},
+	data := User{
+		Id:        "1",
+		Blog:      mux.Vars(r)["blog"],
+		AvatarUrl: "https://templ.guide/img/logo.svg",
+		Name:      "salih dhaifullah",
 	}
 
-	SendView(w, data, "blog")
+	initView(w, data).Send(Blog)
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	data := View{
-		Year:  fmt.Sprint(time.Now().Year()),
-		Title: "test title",
-		Theme: "dark",
-		User: User{
-			Id:        "1",
-			Blog:      "test",
-			AvatarUrl: "https://templ.guide/img/logo.svg",
-			Name:      "salih dhaifullah",
-		},
-	}
-
-	SendView(w, data, "404")
+	initView(w, nil).Send(NotFound)
 }
 
 
@@ -130,38 +126,32 @@ func main() {
 	wg.Wait()
 
 	router := mux.NewRouter()
+	router.Use(CacheMiddleware)
+	router.Use(middleware.Gzip)
+
 	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
-	http.Handle("/", middleware.Gzip(router))
 
 	router.HandleFunc("/", HomeHandler).Methods("GET")
-    router.HandleFunc("/login", LoginHandler).Methods("GET")
     router.HandleFunc("/{blog}", BlogHandler).Methods("GET")
 	router.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static")))).Methods("GET")
 
-	initializers.Listen()
-}
+	authRouter := router.PathPrefix("/auth").Subrouter()
+	authRouter.HandleFunc("/login", LoginHandler).Methods("GET")
+	authRouter.HandleFunc("/account-verification", AccountVerificationHandler).Methods("GET")
+	authRouter.HandleFunc("/reset-password", ResetPasswordHandler).Methods("GET")
+	authRouter.HandleFunc("/forgat-password", ForgatPasswordHandler).Methods("GET")
+	authRouter.HandleFunc("/sing-up", SingUpHandler).Methods("GET")
 
-func SendView(w http.ResponseWriter, data interface{}, name string) {
-	if isProduction {
-		err := Temp.ExecuteTemplate(w, name, data)
 
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		Temp, err := template.ParseGlob("./views/*.html")
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = Temp.ExecuteTemplate(w, name, data)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
+	initializers.Listen(router)
 }
 
 
-
+func CacheMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		next.ServeHTTP(w, r)
+	})
+}

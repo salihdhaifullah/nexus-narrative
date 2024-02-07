@@ -11,3 +11,16 @@
 blockquote p {
     @apply inline mx-2 !font-semibold;
 }
+
+svg {
+    fill: currentColor;
+    width: 1em;
+    height: 1em;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+
+html {
+    font-family: "'Aleo', serif";
+}

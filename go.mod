@@ -11,6 +11,8 @@ require (
 	golang.org/x/image v0.15.0
 )
 
+require github.com/google/go-cmp v0.6.0 // indirect
+
 require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
@@ -26,7 +28,6 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.14.6 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/gorilla/mux v1.8.1
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84 // indirect
