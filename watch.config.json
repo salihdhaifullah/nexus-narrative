@@ -1,8 +1,8 @@
 {
     "ignore_regex": [],
-    "ignore": ["static", ".git", ".bin", "views", "node_modules"],
+    "ignore": [".git", "client", "build", "main"],
     "delay": 1500,
-    "setup_commands": ["gotip build -o main -p 4"],
+    "setup_commands": ["go build -o main . "],
     "parallel_commands": [],
-    "background_commands": ["./main", "npx tailwindcss -i ./tailwind.css -o ./static/index.css --watch"]
+    "background_commands": ["./main", "cd client && npx tailwindcss -i ./src/index.css -o ../build/client/index.css --watch"]
 }

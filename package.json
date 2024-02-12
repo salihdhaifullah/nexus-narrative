@@ -1,9 +1,0 @@
-{
-  "name": "test-go",
-  "version": "1.0.0",
-  "repository": "https://github.com/salihdhaifullah/golang-web-app-setup.git",
-  "license": "MIT",
-  "dependencies": {
-    "tailwindcss": "^3.4.1"
-  }
-}

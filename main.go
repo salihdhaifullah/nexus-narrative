@@ -1,157 +1,113 @@
 package main
 
 import (
-	"html/template"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers/initializers"
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers/middleware"
+	goja "github.com/dop251/goja"
+	"github.com/salihdhaifullah/nexus-narrative/src/builder"
 )
 
-type User struct {
-	Id        string
-	Name      string
-	Blog      string
-	AvatarUrl string
+type Person struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
 
-var isProduction = true
-var Blog *template.Template
-var NotFound *template.Template
-var Login *template.Template
-var Home *template.Template
-var AccountVerification *template.Template
-var ForgatPassword *template.Template
-var ResetPassword *template.Template
-var SingUp *template.Template
-
-func initViews() {
-	log.Println("revaldting templates")
-	Blog = template.Must(template.ParseFiles("./views/blog.html", "./views/base.html"))
-	NotFound = template.Must(template.ParseFiles("./views/404.html", "./views/base.html"))
-	Home = template.Must(template.ParseFiles("./views/home.html", "./views/base.html"))
-	Login = template.Must(template.ParseFiles("./views/auth/login.html", "./views/base.html"))
-	AccountVerification = template.Must(template.ParseFiles("./views/auth/account-verification.html", "./views/base.html"))
-	ForgatPassword = template.Must(template.ParseFiles("./views/auth/forgat-password.html", "./views/base.html"))
-	ResetPassword = template.Must(template.ParseFiles("./views/auth/reset-password.html", "./views/base.html"))
-	SingUp = template.Must(template.ParseFiles("./views/auth/sing-up.html", "./views/base.html"))
+func Loader(url string) Props {
+	switch url {
+	case "/":
+		return Props{Ok: true,
+			Data: Person{
+				Name: "Salih Dhaifullah",
+				Age:  19,
+			}}
+	default:
+		return Props{Ok: true}
+	}
 }
 
-func init() {
-	initViews()
-	initializers.GetENV()
-	isProduction = os.Getenv("ENV") == "PROD"
+type Props struct {
+	Ok   bool        `json:"ok"`
+	Data interface{} `json:"data"`
 }
 
-func (this View) Send(t *template.Template) {
-	err := t.Execute(this.w, this.data)
-
+func MustStringfiy(data interface{}) string {
+	byt, err := json.Marshal(data)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return string(byt)
 }
-
-type View struct {
-	w http.ResponseWriter
-	data interface{}
-}
-
-func initView(w http.ResponseWriter, data interface{}) *View {
-	if !isProduction {
-		// to reload the html files
-		initViews()
-	}
-
-	return &View{w: w, data: data}
-}
-
-
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	initView(w, nil).Send(Login)
-}
-
-func SingUpHandler(w http.ResponseWriter, r *http.Request) {
-	initView(w, nil).Send(SingUp)
-}
-
-func AccountVerificationHandler(w http.ResponseWriter, r *http.Request) {
-	initView(w, nil).Send(AccountVerification)
-}
-
-func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
-	initView(w, nil).Send(ResetPassword)
-
-}
-
-func ForgatPasswordHandler(w http.ResponseWriter, r *http.Request) {
-	initView(w, nil).Send(ForgatPassword)
-}
-
-
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	initView(w, nil).Send(Home)
-}
-
-
-func BlogHandler(w http.ResponseWriter, r *http.Request) {
-	data := User{
-		Id:        "1",
-		Blog:      mux.Vars(r)["blog"],
-		AvatarUrl: "https://templ.guide/img/logo.svg",
-		Name:      "salih dhaifullah",
-	}
-
-	initView(w, data).Send(Blog)
-}
-
-func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	initView(w, nil).Send(NotFound)
-}
-
 
 func main() {
-	wg := sync.WaitGroup{}
+	rendererMutex := sync.Mutex{}
+	var renderer Renderer
 
-	wg.Add(1)
-	go helpers.WaitFor(initializers.MongoDB, &wg)
-	if isProduction {
-		wg.Add(1)
-		go helpers.WaitFor(helpers.Build, &wg)
+	handel := func() {
+		rendererMutex.Lock()
+		renderer = NewRenderer()
+		rendererMutex.Unlock()
 	}
-	wg.Wait()
 
-	router := mux.NewRouter()
-	router.Use(CacheMiddleware)
-	router.Use(middleware.Gzip)
+	events := builder.HandelHotReload(handel)
+	builder.Build(events)
+	rendererMutex.Lock()
+	renderer = NewRenderer()
+	rendererMutex.Unlock()
 
-	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./build/client"))))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		log.Println("handel client runs ok")
+		json := MustStringfiy(Loader(r.URL.Path))
 
-	router.HandleFunc("/", HomeHandler).Methods("GET")
-    router.HandleFunc("/{blog}", BlogHandler).Methods("GET")
-	router.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static")))).Methods("GET")
+		since := time.Now()
+		rendererMutex.Lock()
+		html := renderer.RenderHtml(r.URL.Path, json)
+		rendererMutex.Unlock()
+		log.Println(time.Since(since))
 
-	authRouter := router.PathPrefix("/auth").Subrouter()
-	authRouter.HandleFunc("/login", LoginHandler).Methods("GET")
-	authRouter.HandleFunc("/account-verification", AccountVerificationHandler).Methods("GET")
-	authRouter.HandleFunc("/reset-password", ResetPasswordHandler).Methods("GET")
-	authRouter.HandleFunc("/forgat-password", ForgatPasswordHandler).Methods("GET")
-	authRouter.HandleFunc("/sing-up", SingUpHandler).Methods("GET")
+		_, err := w.Write([]byte(html))
+		if err != nil {
+			log.Fatal(err)
+		}
+	})
 
-
-	initializers.Listen(router)
+	log.Println("start server at http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+type Renderer struct {
+	RenderHtml func(string, string) string
+}
 
-func CacheMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-		w.Header().Set("Pragma", "no-cache")
-		w.Header().Set("Expires", "0")
-		next.ServeHTTP(w, r)
-	})
+func NewRenderer() Renderer {
+	b, err := os.ReadFile("./build/server/script.js")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rn := goja.New()
+	_, err = rn.RunScript("input", string(b))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var RenderHtml func(string, string) string
+	err = rn.ExportTo(rn.Get("RenderHtml"), &RenderHtml)
+	if err != nil {
+		panic(err)
+	}
+
+	return Renderer{
+		RenderHtml: RenderHtml,
+	}
 }
