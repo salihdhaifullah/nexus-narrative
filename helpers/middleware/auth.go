@@ -3,12 +3,7 @@ package middleware
 import (
 	"net/http"
 
-<<<<<<< HEAD:helpers/middleware/auth.go
 	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
-=======
-	"github.com/dgrijalva/jwt-go"
-	"github.com/salihdhaifullah/nexus-narrative/helpers"
->>>>>>> origin/main:src/helpers/middleware/auth.go
 )
 
 func Authorized(next func(w http.ResponseWriter, r *http.Request)) http.Handler {

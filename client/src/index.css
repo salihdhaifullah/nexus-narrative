@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-<<<<<<< HEAD
 
 @layer components {
   .link {
@@ -16,5 +15,3 @@ blockquote p {
 html {
   font-family: "'Aleo', serif";
 }
-=======
->>>>>>> origin/main

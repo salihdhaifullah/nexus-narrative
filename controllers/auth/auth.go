@@ -6,10 +6,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/salihdhaifullah/nexus-narrative/helpers"
-	"github.com/salihdhaifullah/nexus-narrative/helpers/validator"
-	"github.com/salihdhaifullah/nexus-narrative/models/dto"
+	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
+	"github.com/salihdhaifullah/golang-web-app-setup/helpers/validator"
+	"github.com/salihdhaifullah/golang-web-app-setup/models/dto"
 )
+
 
 type User struct {
 	ID        uint   `json:"id"`

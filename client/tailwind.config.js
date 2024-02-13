@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-<<<<<<< HEAD
   content: ["/src/**/*.tsx"],
   darkMode: "class",
   theme: {
@@ -12,12 +11,5 @@ export default {
       }
     },
   }
-=======
-  content: ["./src/**/*.tsx"],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
->>>>>>> origin/main
 }
 

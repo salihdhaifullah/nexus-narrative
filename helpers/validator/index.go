@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/mail"
 
-	"github.com/salihdhaifullah/nexus-narrative/helpers"
+	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
 )
 
 func IsNotEmail(email string, w http.ResponseWriter) bool {
