@@ -3,7 +3,6 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
 )
 
@@ -16,24 +15,13 @@ func Authorized(next func(w http.ResponseWriter, r *http.Request)) http.Handler 
 			w.Write([]byte("User is UnAuthorized"))
 			return
 		}
-
-		token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("User is UnAuthorized"))
-			}
-
-			return helpers.GetSecretKey(), nil
-		})
-
+		_, err = helpers.Decode(cookie.Value)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("User is UnAuthorized"))
 			return
 		}
 
-		if token.Valid {
-			next(w, r)
-		}
+		next(w, r)
 	})
 }
