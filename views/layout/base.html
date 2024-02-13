@@ -1,0 +1,35 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#CBD18F" />
+    <link rel="stylesheet" href="/static/index.css" />
+    <link rel="stylesheet" href="/static/fonts/Aleo-VariableFont_wght.ttf" />
+    <link rel="stylesheet" href="/static/fonts/Aleo-Italic-VariableFont_wght.ttf" />
+    <link rel="icon" href="/static/favicon.ico" />
+    <link rel="icon" href="/static/favicon-16x16.png" />
+    <link rel="icon" href="/static/favicon-32x32.png" />
+    <link rel="icon" href="/static/icon.svg" />
+    <link rel="manifest" href="/static/manifest.json" />
+    <link rel="apple-touch-icon" href="/static/apple-icon.png" />
+    {{block "head" . }}{{ end }}
+</head>
+
+<body>
+    {{template "header" .}}
+    <main class="h-screen flex flex-col">
+        {{ block "content" . }}{{end}}
+    </main>
+    {{template "footer"}}
+</body>
+
+{{ block "scripts" .}}{{end}}
+
+<script defer src="/static/js/theme.js"></script>
+<script src="/static/js/worker.js"></script>
+
+</html>
+{{ end }}

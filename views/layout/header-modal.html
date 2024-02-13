@@ -1,0 +1,91 @@
+{{define "header-modal"}}
+
+<script>
+    function HandelOpenDialog() {
+        const dialogx = document.querySelector("#dialog-header")
+        dialogx.show()
+        // dialogx.showModal();
+    }
+
+
+    function HandelCloseDialog() {
+        const dialogx = document.querySelector("#dialog-header")
+        dialogx.close()
+    }
+</script>
+
+<style>
+.center-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  height: 30rem;
+  width: 30rem;
+  transform: translate(-50%, -50%);
+}
+
+</style>
+<div class="flex sm:hidden flex-row gap-4">
+    <button onclick="HandelOpenDialog()"
+        class="flex text-secondary p-1 h-fit self-center dark:hover:bg-slate-800 hover:bg-slate-200 bg-normal justify-center cursor-pointer items-center rounded-md font-bold text-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512">
+            <path
+                d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z">
+            </path>
+        </svg>
+    </button>
+
+    <dialog id="dialog-header" class="rounded-xl center-container">
+        <div
+            class="p-6 bg-gray-100 dark:bg-gray-900 h-full w-full flex flex-col gap-4 items-start justify-center">
+            <button class="w-full text-primary dark:text-secondary hover:bg-slate-200 dark:hover:bg-slate-800 transition-all ease-in-out rounded-md text-xl flex-row flex gap-1 items-center">
+                {{template "theme"}}
+                <p>change theme</p>
+            </button>
+
+            <button
+                class="w-full text-primary dark:text-secondary hover:bg-slate-200 dark:hover:bg-slate-800 transition-all ease-in-out rounded-md text-xl flex-row flex gap-1 items-center">
+                {{ if . }}
+                <a href="/auth/login"
+                    class="w-full text-primary dark:text-secondary hover:bg-slate-200 dark:hover:bg-slate-800 transition-all ease-in-out rounded-md text-xl flex-row flex gap-1 items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path
+                            d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z" />
+                    </svg>
+                    <p>login</p>
+                </a>
+                {{ else }}
+
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path
+                        d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z" />
+                </svg>
+                <p>logout</p>
+                {{ end }}
+            </button>
+
+            <div class="w-full">
+                <input placeholder="Search..." />
+            </div>
+
+            <button onclick="HandelCloseDialog()"
+                class="w-full text-primary dark:text-secondary hover:bg-slate-200 dark:hover:bg-slate-800 transition-all ease-in-out rounded-md text-xl flex-row flex gap-1 items-center">
+                <p>Close dialog</p>
+            </button>
+        </div>
+
+    </dialog>
+
+
+    {{if .}}
+    <a href="/{{ .Blog }}" title="your profile">
+        <div class="flex justify-center items-center">
+            <img class="rounded-full shadow-md object-cover" width="32" height="32" src="{{ .AvatarUrl }}"
+                alt="{{ .Name }}" />
+        </div>
+    </a>
+    {{ end }}
+
+
+</div>
+{{ end }}

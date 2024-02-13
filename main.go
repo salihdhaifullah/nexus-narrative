@@ -21,6 +21,7 @@ type User struct {
 }
 
 var isProduction = true
+
 var Blog *template.Template
 var NotFound *template.Template
 var Login *template.Template
@@ -31,15 +32,14 @@ var ResetPassword *template.Template
 var SingUp *template.Template
 
 func initViews() {
-	log.Println("revaldting templates")
-	Blog = template.Must(template.ParseFiles("./views/blog.html", "./views/base.html"))
-	NotFound = template.Must(template.ParseFiles("./views/404.html", "./views/base.html"))
-	Home = template.Must(template.ParseFiles("./views/home.html", "./views/base.html"))
-	Login = template.Must(template.ParseFiles("./views/auth/login.html", "./views/base.html"))
-	AccountVerification = template.Must(template.ParseFiles("./views/auth/account-verification.html", "./views/base.html"))
-	ForgatPassword = template.Must(template.ParseFiles("./views/auth/forgat-password.html", "./views/base.html"))
-	ResetPassword = template.Must(template.ParseFiles("./views/auth/reset-password.html", "./views/base.html"))
-	SingUp = template.Must(template.ParseFiles("./views/auth/sing-up.html", "./views/base.html"))
+	Blog = template.Must(template.Must(template.ParseFiles("./views/blog.html")).ParseGlob("./views/layout/*.html"))
+	NotFound = template.Must(template.Must(template.ParseFiles("./views/404.html")).ParseGlob("./views/layout/*.html"))
+	Home = template.Must(template.Must(template.ParseFiles("./views/home.html")).ParseGlob("./views/layout/*.html"))
+	Login = template.Must(template.Must(template.ParseFiles("./views/auth/login.html")).ParseGlob("./views/layout/*.html"))
+	AccountVerification = template.Must(template.Must(template.ParseFiles("./views/auth/account-verification.html")).ParseGlob("./views/layout/*.html"))
+	ForgatPassword = template.Must(template.Must(template.ParseFiles("./views/auth/forgat-password.html")).ParseGlob("./views/layout/*.html"))
+	ResetPassword = template.Must(template.Must(template.ParseFiles("./views/auth/reset-password.html")).ParseGlob("./views/layout/*.html"))
+	SingUp = template.Must(template.Must(template.ParseFiles("./views/auth/sing-up.html")).ParseGlob("./views/layout/*.html"))
 }
 
 func init() {

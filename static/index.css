@@ -605,8 +605,8 @@ video {
   display: none;
 }
 
-.h-\[6vh\] {
-  height: 6vh;
+.h-\[10vh\] {
+  height: 10vh;
 }
 
 .h-\[80vh\] {
@@ -628,10 +628,6 @@ video {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[10vh\] {
-  height: 10vh;
 }
 
 .w-auto {
