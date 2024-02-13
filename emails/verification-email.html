@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Buegee — account verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #111827;
+            margin: 10px 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            padding: 10px;
+            text-align: center;
+            background: #3A6B35;
+            border-radius: 0px 0px 10px 10px;
+            color: #E3B448;
+        }
+
+        .content {
+            padding: 0px 20px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            color: #111827;
+        }
+
+        .message {
+            font-size: 18px;
+            text-align: center;
+            color: #111827;
+        }
+
+        .end {
+            font-size: 18px;
+            color: #3A6B35;
+            font-weight: bold;
+        }
+
+        .date {
+            font-size: 18px;
+            color: #111827;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h2>Verify your email address</h2>
+        </div>
+        <div class='content'>
+            <p class='message'>Hello, <strong class="title">{name}</strong></p>
+            <p class='message'>Thank you for signing up with us.</p>
+            <p class='message'>Verification code: <strong class="title">{code}</strong></p>
+            <p class='message'>This code will expire after 30 minutes.</p>
+            <p class='message'>If you did not sign up with us, please ignore this email.</p>
+            <p class='date'>date <strong class="title date">{date}</strong></p>
+            <p class='end'>Sincerely, NexusNarrative Team.<p>
+        </div>
+    </div>
+</body>
+
+</html>
