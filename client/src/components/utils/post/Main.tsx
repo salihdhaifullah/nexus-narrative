@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import formatDate from '@/utils/formatDate';
+import formatDate from '../../../utils/formatDate';
 import useMarkdown from '../markdown/useMarkdown';
 import { MdOutlineFullscreen, MdOutlineFullscreenExit } from 'react-icons/md';
 

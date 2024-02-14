@@ -1,7 +1,7 @@
 import { BiHeading } from "react-icons/bi";
 import { findWordBoundaries, setRange, useTextarea } from "./util";
 import { useRef, useState } from "react";
-import useOnClickOutside from "@/hooks/useOnClickOutside";
+import useOnClickOutside from "../../../hooks/useOnClickOutside";
 
 const Heading = () => {
     const textarea = useTextarea();

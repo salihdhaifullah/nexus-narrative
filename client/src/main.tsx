@@ -9,11 +9,11 @@ import SingUp from "./pages/auth/sing-up";
 import ResetPassword from "./pages/auth/reset-password";
 import AccountVerification from "./pages/auth/account-verification";
 import ForgatPassword from "./pages/auth/forgat-password";
-import Layout from './root';
+import Layout from './root.tsx';
 
 const router = createBrowserRouter([
   {
-    path: "*",
+    path: "/",
     element: <Layout />,
     children: [
       {

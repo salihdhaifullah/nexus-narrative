@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import TextFiled from '@/components/utils/TextFiled';
+import TextFiled from '../../components/utils/TextFiled';
 import { MdEmail } from 'react-icons/md';
-import PasswordEye from '@/components/utils/PasswordEye';
+import PasswordEye from '../../components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri";
-import Button from '@/components/utils/Button';
-import { Form, Link, useActionData, useNavigation } from 'react-router-dom';
+import Button from '../../components/utils/Button';
+import { Link } from 'react-router-dom';
 
 export const meta = () => {
     return [
@@ -13,26 +13,14 @@ export const meta = () => {
     ];
 };
 
-export async function action({ request }: ActionFunctionArgs) {
-    const formData = await request.formData();
-    const email = String(formData.get("email"));
-    const password = String(formData.get("password"));
-    const firstName = String(formData.get("firstName"));
-    const lastName = String(formData.get("lastName"));
-
-    const data = { email, password, firstName, lastName };
-
-    const res = SingUpSchema.validate(data)
-
-    if (res.isError) return customResponse({ validationError: res.errors, status: 400 });
-
-    return await singUp(data);
-}
 
 const SingUp = () => {
     const [passwordType, setPasswordType] = useState("password")
-    const data = useActionData<typeof action>();
-    const navigation = useNavigation();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     return (
         <section className='w-full h-full mt-20 flex justify-center items-center'>
@@ -43,18 +31,12 @@ const SingUp = () => {
                 </div>
 
                 <h1 className='text-secondary text-4xl'> Sing Up </h1>
-                {!data?.error ? null : (
-                    <p>
-                        {data.error}
-                    </p>
-                )}
-                <Form className='flex flex-col' method="post">
+                <form className='flex flex-col'>
                     <TextFiled
                         icon={MdEmail}
                         label="first name"
                         name="firstName"
                         required
-                        error={data?.validationError?.firstName}
                     />
 
                     <TextFiled
@@ -62,7 +44,6 @@ const SingUp = () => {
                         label="last name"
                         name="lastName"
                         required
-                        error={data?.validationError?.lastName}
                     />
 
                     <TextFiled
@@ -70,7 +51,6 @@ const SingUp = () => {
                         label="email address"
                         name="email"
                         required
-                        error={data?.validationError?.email}
                         type='email'
                     />
 
@@ -80,7 +60,6 @@ const SingUp = () => {
                         label="password"
                         required
                         name="password"
-                        error={data?.validationError?.password}
                         InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
                     />
 
@@ -89,10 +68,10 @@ const SingUp = () => {
                     </div>
 
                     <div className="flex flex-col justify-center items-center w-full my-1">
-                        <Button isLoading={navigation.state === "submitting"} type="submit">submit</Button>
+                        <Button isLoading={true} type="submit">submit</Button>
                     </div>
 
-                </Form>
+                </form>
             </div>
         </section>
     );

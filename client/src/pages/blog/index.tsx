@@ -1,5 +1,5 @@
-import useMarkdown from '@/components/utils/markdown/useMarkdown';
-import useFetchApi from '@/hooks/useFetchApi';
+import useMarkdown from '../../components/utils/markdown/useMarkdown';
+import useFetchApi from '../../hooks/useFetchApi';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 

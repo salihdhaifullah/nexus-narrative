@@ -1,6 +1,6 @@
-import TextFiled from '@/components/utils/TextFiled';
+import TextFiled from '../../components/utils/TextFiled';
 import { RiLockPasswordFill } from "react-icons/ri";
-import Button from '@/components/utils/Button';
+import Button from '../../components/utils/Button';
 import { Form, useActionData, useNavigation } from 'react-router-dom';
 
 export const meta = () => {

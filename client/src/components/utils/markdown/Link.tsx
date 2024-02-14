@@ -1,7 +1,7 @@
 import { FaRightFromBracket, FaRightToBracket } from "react-icons/fa6";
 import { setRange, useTextarea } from "./util";
 import { useRef, useState } from "react";
-import useOnClickOutside from "@/hooks/useOnClickOutside";
+import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import { BiLink } from "react-icons/bi";
 
 const EXTERNAL_LINK = "[](https://)";

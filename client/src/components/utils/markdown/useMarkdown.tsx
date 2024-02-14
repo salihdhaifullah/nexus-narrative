@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
-import { useTheme } from '@/context/theme';
+import { useTheme } from '../../../context/theme';
 import { Link } from 'react-router-dom';
 import hljs from 'highlight.js';
 import dark from "highlight.js/styles/atom-one-dark.min.css?url";

@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"sync"
 
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
 	"github.com/salihdhaifullah/golang-web-app-setup/helpers/initializers"
 	"github.com/salihdhaifullah/golang-web-app-setup/helpers/middleware"
 )
@@ -19,8 +17,7 @@ func init() {
 }
 
 func main() {
-	wg := sync.WaitGroup{}
-	go helpers.WaitFor(initializers.MongoDB, &wg)
+	go initializers.MongoDB()
 
 	viteServer := "http://localhost:5173"
 

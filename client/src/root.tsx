@@ -1,5 +1,5 @@
 import { Outlet, ScrollRestoration } from "react-router-dom";
-import Wrapper from "@/components/layout/Wrapper";
+import Wrapper from "./components/layout/Wrapper";
 import { useEffect } from "react";
 import Provider from "./context";
 

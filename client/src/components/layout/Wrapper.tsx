@@ -1,7 +1,7 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import Modal from "./Modal";
-import { useModal } from "@/context/modal";
+import { useModal } from "../../context/modal";
 import { ReactNode } from "react";
 import { useNavigation } from "react-router-dom";
 
