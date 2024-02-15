@@ -7,6 +7,17 @@ import Button from '../../components/utils/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import { IUser, useUserDispatch } from '../../context/user';
 import useFetchApi from '../../hooks/useFetchApi';
+import { useHeadDispatch } from '../../context/head';
+
+
+const Head = (props: string) => {
+  return {
+    title: 'Login to Your Blog Account | NexusNarrative' + props,
+    meta: [
+      { name: "description", content: 'Login to access your blog account. Connect with the community, share your thoughts, and engage with fellow bloggers at NexusNarrative.' }
+    ]
+  };
+};
 
 interface IData {
   password: string;
@@ -14,6 +25,8 @@ interface IData {
 }
 
 const Login = () => {
+  const HeadDispatch = useHeadDispatch()
+
   const [passwordType, setPasswordType] = useState("password")
   const [data, call] = useFetchApi<IUser, IData>("POST", "auth/login")
   const navigate = useNavigate();
@@ -26,6 +39,11 @@ const Login = () => {
     e.preventDefault()
     call({ password, email })
   }, [call, email, password])
+
+
+  useEffect(() => {
+    HeadDispatch({payload: Head(password)})
+  }, [HeadDispatch, password])
 
   useEffect(() => {
     if (!data.result) return;
@@ -49,7 +67,8 @@ const Login = () => {
             name="email"
             required
             type='email'
-            onChange={(e) => setEmail(e.target.value)}
+            setValue={setEmail}
+            value={email}
             autoComplete="username"
           />
 
@@ -60,7 +79,8 @@ const Login = () => {
             required
             name="password"
             autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)}
+            setValue={setPassword}
+            value={password}
             InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
           />
 
