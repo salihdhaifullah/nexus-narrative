@@ -10,24 +10,24 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var DB *mongo.Database
+
 func MongoDB() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(os.Getenv("MONGO_DB_URL")).SetServerAPIOptions(serverAPI)
 	client, err := mongo.Connect(context.TODO(), opts)
 
 	if err != nil {
-	  panic(err)
+        log.Printf("ERROR: connecting to monogdb server %s", err)
+        return
 	}
-
-	defer func() {
-	  if err = client.Disconnect(context.TODO()); err != nil {
-		panic(err)
-	  }
-	}()
-
-	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
-	  panic(err)
-	}
+    
+    DB = client.Database("admin") 
+	
+    if err := DB.RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
+        log.Printf("ERROR: pinging monogdb server %s", err)
+	    return
+    }
 
 	log.Println("Pinged your deployment. You successfully connected to MongoDB!")
   }

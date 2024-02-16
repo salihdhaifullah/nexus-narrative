@@ -5,14 +5,15 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"log"
 	"strings"
 )
 
-func HashPassword(password string) (string, error) {
+func HashPassword(password string) string {
     salt := make([]byte, 16)
     _, err := rand.Read(salt)
     if err != nil {
-        return "", err
+        log.Fatal(err)
     }
 
     saltedPassword := append([]byte(password), salt...)
@@ -24,7 +25,7 @@ func HashPassword(password string) (string, error) {
 
     hashedWithSalt := hashedPassword + "." + encodedSalt
 
-    return hashedWithSalt, nil
+    return hashedWithSalt
 }
 
 func ComparePassword(hashedPassword string, password string) error {

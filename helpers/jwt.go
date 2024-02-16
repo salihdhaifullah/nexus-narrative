@@ -18,11 +18,11 @@ var (
 )
 
 type CustomClaims struct {
-    UserID int `json:"user_id"`
+    UserID string `json:"user_id"`
     ExpiresAt int64 `json:"exp"`
 }
 
-func NewToken(id int) string {
+func NewToken(id string) string {
 	claims := CustomClaims{
 		UserID: id,
 	}

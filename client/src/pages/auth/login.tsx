@@ -1,4 +1,3 @@
-import { FormEvent, useCallback, useEffect, useState } from 'react';
 import TextFiled from '../../components/utils/TextFiled';
 import { MdEmail } from 'react-icons/md';
 import PasswordEye from '../../components/utils/PasswordEye';
@@ -8,11 +7,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IUser, useUserDispatch } from '../../context/user';
 import useFetchApi from '../../hooks/useFetchApi';
 import { useHeadDispatch } from '../../context/head';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 
 
-const Head = (props: string) => {
+const Head = () => {
   return {
-    title: 'Login to Your Blog Account | NexusNarrative' + props,
+    title: 'Login to Your Blog Account | NexusNarrative',
     meta: [
       { name: "description", content: 'Login to access your blog account. Connect with the community, share your thoughts, and engage with fellow bloggers at NexusNarrative.' }
     ]
@@ -41,9 +41,7 @@ const Login = () => {
   }, [call, email, password])
 
 
-  useEffect(() => {
-    HeadDispatch({payload: Head(password)})
-  }, [HeadDispatch, password])
+  useEffect(() => { HeadDispatch({payload: Head()}) }, [HeadDispatch])
 
   useEffect(() => {
     if (!data.result) return;
