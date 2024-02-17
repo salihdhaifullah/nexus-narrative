@@ -6,10 +6,15 @@ import (
 	"github.com/salihdhaifullah/golang-web-app-setup/controllers/auth"
 )
 
-
-func HandelRoutes() {
-	http.HandleFunc("/api/auth/sing-up/", auth.SingUp)
-	http.HandleFunc("/api/auth/login/", auth.Login)
-	http.HandleFunc("/api/auth/logout/", auth.Logout)
+func HandelRoutes() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/api/auth/sing-up":
+			auth.SingUp(w, r)
+		case "/api/auth/login":
+			auth.Login(w, r)
+		case "/api/auth/logout":
+			auth.Logout(w, r)
+		}
+	})
 }
-

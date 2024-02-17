@@ -10,7 +10,6 @@ import (
 
 	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
 	"github.com/salihdhaifullah/golang-web-app-setup/helpers/initializers"
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers/validator"
 	"github.com/salihdhaifullah/golang-web-app-setup/models/dto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -22,7 +21,7 @@ type User struct {
 	Email     string             `json:"email"`
 	FirstName string             `json:"firstName"`
 	LastName  string             `json:"lastName"`
-	Password  string             `json:"password"`
+	Password  string             `json:"-"`
 }
 
 
@@ -35,7 +34,6 @@ func SingUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data dto.SingUp
-
 	// need data valdtion
 	err = json.Unmarshal(bytes, &data)
 
@@ -55,31 +53,30 @@ func SingUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if isFound {
-		helpers.BadRequest(fmt.Sprintf("User With This Email \"%s\" is Already Exists Try Login", *data.Email), w)
+		helpers.BadRequest(fmt.Sprintf("User With This Email \"%s\" is Already Exists Try Login", data.Email), w)
 		return
 	}
 
+
+  
 	// hash password
-	hash := helpers.HashPassword(*data.Password)
+	hash := helpers.HashPassword(data.Password)
 
 	// create account
     user := User{
-		Password:  hash,
-		Email:     *data.Email,
-		FirstName: *data.FirstName,
-		LastName:  *data.LastName,
+        ID: primitive.NewObjectID(),
+        Password:  hash,
+		Email:     data.Email,
+		FirstName: data.FirstName,
+		LastName:  data.LastName,
 	}
 
-    res, err := initializers.DB.Collection("users").InsertOne(context.Background(), user)
-
+    _, err = initializers.DB.Collection("users").InsertOne(context.Background(), user)
 	if err != nil {
 			log.Fatal(err)
 	}
 
-    user.ID = res.InsertedID.(primitive.ObjectID)
 	helpers.SetCookie(user.ID.String(), w)
-
-
 	helpers.Created(&user, "Successfully Sing Up", w)
 }
 
@@ -91,7 +88,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check if data is formatted correctly
+	// need data valdtion
 	var data dto.Login
 	err = json.Unmarshal(bytes, &data)
 
@@ -100,44 +97,28 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validator.IsNotEmail(*data.Email, w) {
+    user := User{}
+
+	err = initializers.DB.Collection("users").FindOne(context.Background(), bson.M{"email": data.Email}).Decode(&user)
+	
+    if err != nil {
+	    if err == mongo.ErrNoDocuments {
+		helpers.BadRequest(fmt.Sprintf("User With This Email \"%s\" is Not Exists Try SingUp", data.Email), w)
 		return
-	}
+        } else {
+            log.Fatal(err)
+        }
+    }
 
-	if validator.IsNotLen(8, 60, *data.Password, "Password", w) {
-		return
-	}
-
-	var isFound struct {
-		ID        *uint
-		Password  *string
-		FirstName *string
-		LastName  *string
-	}
-
-	// TODO: use mongoDB
-	// initializers.DB.Raw("SELECT id, password, first_name, last_name FROM users WHERE email = ?", *data.Email).Scan(&isFound)
-
-	if isFound.ID == nil {
-		helpers.BadRequest(fmt.Sprintf("User With This Email \"%s\" is Not Exists Try SingUp", *data.Email), w)
-		return
-	}
-
-	err = helpers.ComparePassword(*isFound.Password, *data.Password)
+	err = helpers.ComparePassword(user.Password, data.Password)
 
 	if err != nil {
 		helpers.BadRequest("Password Or Email Is Wrong Try Again", w)
 		return
 	}
 
-	user := &User{
-		ID:        *isFound.ID,
-		Email:     *data.Email,
-		FirstName: *isFound.FirstName,
-		LastName:  *isFound.LastName,
-	}
 
-	helpers.SetCookie(user.ID, w)
+	helpers.SetCookie(user.ID.String(), w)
 	helpers.Ok(user, "Successfully Login", w)
 }
 

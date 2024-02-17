@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func Listen(router http.Handler) {
+func Listen() {
 	var port string = "8080"
 
 	if len(os.Getenv("PORT")) > 1 {
@@ -22,5 +22,5 @@ func Listen(router http.Handler) {
 		fmt.Printf("App listen in \"http://localhost:%s\"\n\n", port)
 	}
 
-	log.Fatal(http.ListenAndServe(addr, router))
+	log.Fatal(http.ListenAndServe(addr, nil))
 }

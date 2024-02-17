@@ -9,8 +9,10 @@ import (
 	"strings"
 )
 
+
 func HashPassword(password string) string {
     salt := make([]byte, 16)
+  
     _, err := rand.Read(salt)
     if err != nil {
         log.Fatal(err)
