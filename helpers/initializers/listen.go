@@ -5,9 +5,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
-func Listen() {
+func Listen(router *mux.Router) {
 	var port string = "8080"
 
 	if len(os.Getenv("PORT")) > 1 {
@@ -22,5 +24,5 @@ func Listen() {
 		fmt.Printf("App listen in \"http://localhost:%s\"\n\n", port)
 	}
 
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.ListenAndServe(addr, router))
 }

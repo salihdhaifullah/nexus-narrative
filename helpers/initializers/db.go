@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/salihdhaifullah/golang-web-app-setup/models"
+	"github.com/salihdhaifullah/nexus-narrative/models/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -41,12 +41,12 @@ func MongoDB() {
 
 	log.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
-	CategoryModel = models.InitCategory(DB)
-	ViewModel = models.InitView(DB)
-	UserModel = models.InitUser(DB)
-	ReactionModel = models.InitReaction(DB)
-	CommentModel = models.InitComment(DB)
-	TagModel = models.InitTag(DB)
-	ContentModel = models.InitContent(DB)
-	PostModel = models.InitPost(DB)
+	CategoryModel = db.InitCategory(DB)
+	ViewModel = db.InitView(DB)
+	UserModel = db.InitUser(DB)
+	ReactionModel = db.InitReaction(DB)
+	CommentModel = db.InitComment(DB)
+	TagModel = db.InitTag(DB)
+	ContentModel = db.InitContent(DB)
+	PostModel = db.InitPost(DB)
 }

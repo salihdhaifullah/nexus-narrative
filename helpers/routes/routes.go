@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 
-	"github.com/salihdhaifullah/golang-web-app-setup/controllers/auth"
+	"github.com/salihdhaifullah/nexus-narrative/controllers/auth"
 )
 
 func HandelRoutes() http.HandlerFunc {

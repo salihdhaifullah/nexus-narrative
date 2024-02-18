@@ -8,9 +8,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers/initializers"
-	"github.com/salihdhaifullah/golang-web-app-setup/models/dto"
+	"github.com/salihdhaifullah/nexus-narrative/helpers"
+	"github.com/salihdhaifullah/nexus-narrative/helpers/initializers"
+	"github.com/salihdhaifullah/nexus-narrative/models/dto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -58,7 +58,7 @@ func SingUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 
-  
+
 	// hash password
 	hash := helpers.HashPassword(data.Password)
 
@@ -100,7 +100,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
     user := User{}
 
 	err = initializers.DB.Collection("users").FindOne(context.Background(), bson.M{"email": data.Email}).Decode(&user)
-	
+
     if err != nil {
 	    if err == mongo.ErrNoDocuments {
 		helpers.BadRequest(fmt.Sprintf("User With This Email \"%s\" is Not Exists Try SingUp", data.Email), w)

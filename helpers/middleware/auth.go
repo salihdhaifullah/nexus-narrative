@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/salihdhaifullah/golang-web-app-setup/helpers"
+	"github.com/salihdhaifullah/nexus-narrative/helpers"
 )
 
 func Authorized(next func(w http.ResponseWriter, r *http.Request)) http.Handler {
