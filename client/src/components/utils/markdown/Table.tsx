@@ -3,7 +3,7 @@ import { AiOutlineTable } from "react-icons/ai"
 import NumberFiled from "../NumberFiled";
 import { setRange, useTextarea } from "./util";
 import Button from "../Button";
-import useOnClickOutside from "@/hooks/useOnClickOutside";
+import useOnClickOutside from "../../../hooks/useOnClickOutside";
 
 const makeTable = (rows: number, cols: number) => {
     let result = "";

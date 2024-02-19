@@ -1,38 +1,48 @@
-import { useState } from 'react';
-import TextFiled from '@/components/utils/TextFiled';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import TextFiled from '../../components/utils/TextFiled';
 import { MdEmail } from 'react-icons/md';
-import PasswordEye from '@/components/utils/PasswordEye';
+import PasswordEye from '../../components/utils/PasswordEye';
 import { RiLockPasswordFill } from "react-icons/ri";
-import Button from '@/components/utils/Button';
-import { Form, Link, useActionData, useNavigation } from 'react-router-dom';
+import Button from '../../components/utils/Button';
+import { Link } from 'react-router-dom';
+import { useHeadDispatch } from '../../context/head';
+import useFetchApi from '../../hooks/useFetchApi';
 
-export const meta = () => {
-    return [
-        { title: 'Sign Up for a Blog Account | NexusNarrative' },
-        { name: "description", content: 'Create a new blog account to start sharing your thoughts, experiences, and expertise. Join our blogging community at NexusNarrative.' }
-    ];
+const Head = () => {
+    return {
+        title: 'Sign Up for a Blog Account | NexusNarrative',
+        meta: [
+            { name: "description", content: 'Create a new blog account to start sharing your thoughts, experiences, and expertise. Join our blogging community at NexusNarrative.' }
+        ]
+    };
 };
 
-export async function action({ request }: ActionFunctionArgs) {
-    const formData = await request.formData();
-    const email = String(formData.get("email"));
-    const password = String(formData.get("password"));
-    const firstName = String(formData.get("firstName"));
-    const lastName = String(formData.get("lastName"));
-
-    const data = { email, password, firstName, lastName };
-
-    const res = SingUpSchema.validate(data)
-
-    if (res.isError) return customResponse({ validationError: res.errors, status: 400 });
-
-    return await singUp(data);
+interface IData {
+    email: string;
+    firstName: string;
+    lastName: string;
+    password: string;
 }
 
 const SingUp = () => {
     const [passwordType, setPasswordType] = useState("password")
-    const data = useActionData<typeof action>();
-    const navigation = useNavigation();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const HeadDispatch = useHeadDispatch()
+
+    const [payload, call] = useFetchApi<unknown, IData>("POST", "auth/sing-up")
+
+    const HandelSubmit = useCallback((e: FormEvent) => {
+        e.preventDefault()
+        call({ password, email, firstName, lastName })
+    }, [call, email, firstName, lastName, password])
+
+    useEffect(() => {
+        HeadDispatch({ payload: Head() })
+    }, [HeadDispatch])
 
     return (
         <section className='w-full h-full mt-20 flex justify-center items-center'>
@@ -43,18 +53,14 @@ const SingUp = () => {
                 </div>
 
                 <h1 className='text-secondary text-4xl'> Sing Up </h1>
-                {!data?.error ? null : (
-                    <p>
-                        {data.error}
-                    </p>
-                )}
-                <Form className='flex flex-col' method="post">
+                <form className='flex flex-col' onSubmit={(e) => HandelSubmit(e)}>
                     <TextFiled
                         icon={MdEmail}
                         label="first name"
                         name="firstName"
                         required
-                        error={data?.validationError?.firstName}
+                        value={firstName}
+                        setValue={setFirstName}
                     />
 
                     <TextFiled
@@ -62,7 +68,8 @@ const SingUp = () => {
                         label="last name"
                         name="lastName"
                         required
-                        error={data?.validationError?.lastName}
+                        value={lastName}
+                        setValue={setLastName}
                     />
 
                     <TextFiled
@@ -70,7 +77,8 @@ const SingUp = () => {
                         label="email address"
                         name="email"
                         required
-                        error={data?.validationError?.email}
+                        value={email}
+                        setValue={setEmail}
                         type='email'
                     />
 
@@ -79,8 +87,9 @@ const SingUp = () => {
                         type={passwordType}
                         label="password"
                         required
+                        value={password}
+                        setValue={setPassword}
                         name="password"
-                        error={data?.validationError?.password}
                         InElement={<PasswordEye type={passwordType} setType={setPasswordType} />}
                     />
 
@@ -89,10 +98,10 @@ const SingUp = () => {
                     </div>
 
                     <div className="flex flex-col justify-center items-center w-full my-1">
-                        <Button isLoading={navigation.state === "submitting"} type="submit">submit</Button>
+                        <Button isLoading={payload.isLoading} type="submit">submit</Button>
                     </div>
 
-                </Form>
+                </form>
             </div>
         </section>
     );

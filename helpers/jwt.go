@@ -13,16 +13,14 @@ import (
 	"strings"
 )
 
-var (
-    secretKey = GetSecretKey()
-)
+var secretKey []byte
 
 type CustomClaims struct {
-    UserID int `json:"user_id"`
+    UserID string `json:"user_id"`
     ExpiresAt int64 `json:"exp"`
 }
 
-func NewToken(id int) string {
+func NewToken(id string) string {
 	claims := CustomClaims{
 		UserID: id,
 	}
@@ -43,12 +41,11 @@ func Encode(claims CustomClaims, duration time.Duration) (string, error) {
         return "", err
     }
 
-	encodedClaims := []byte{}
-
+    size := base64.StdEncoding.EncodedLen(len(claimsJSON))
+	encodedClaims := make([]byte, size)
 	base64.StdEncoding.Encode(encodedClaims, claimsJSON)
     signature := hmacSha256(encodedClaims)
 
-    // Combine encoded claims and signature with a dot separator
 	token := append(encodedClaims, '.')
 	token = append(token, signature...)
 
@@ -83,15 +80,21 @@ func Decode(token string) (*CustomClaims, error) {
 
 
 func hmacSha256(input []byte) []byte {
-    h := hmac.New(sha256.New, secretKey)
+    h := hmac.New(sha256.New, GetSecretKey())
     h.Write(input)
-	dest := []byte{}
-    base64.StdEncoding.Encode(dest, h.Sum(nil))
+
+    hash := h.Sum(nil)
+    size := base64.StdEncoding.EncodedLen(len(hash))
+	dest := make([]byte, size)
+
+    base64.StdEncoding.Encode(dest, hash)
 	return dest
 }
 
 func GetSecretKey() []byte {
-	var secretKey []byte
+    if len(secretKey) != 0 {
+        return secretKey
+    } 
 
 	if len(os.Getenv("SECRET_KEY")) > 1 {
 		secretKey = []byte(os.Getenv("SECRET_KEY"))

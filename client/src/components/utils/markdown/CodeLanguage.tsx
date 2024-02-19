@@ -2,7 +2,7 @@ import { BsFileEarmarkCode } from "react-icons/bs";
 import programmingLanguages from "./programmingLanguages";
 import { setRange, useTextarea } from "./util";
 import { useRef, useState } from "react";
-import useOnClickOutside from "@/hooks/useOnClickOutside";
+import useOnClickOutside from "../../../hooks/useOnClickOutside";
 
 const TRIPLE_BACK_TICK = "```";
 

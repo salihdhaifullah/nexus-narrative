@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MdModeComment, MdOutlineThumbDownOffAlt, MdOutlineThumbUpOffAlt } from 'react-icons/md';
-import formatDate from '@/utils/formatDate';
+import formatDate from "../../utils/formatDate"
 
 export interface IPostProps {
   backgroundImage: string;

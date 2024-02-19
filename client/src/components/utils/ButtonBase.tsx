@@ -1,5 +1,5 @@
 import { HTMLProps, ReactElement } from 'react';
-import CircleProgress from '@/components/utils/CircleProgress'
+import CircleProgress from '../../components/utils/CircleProgress'
 
 type Size = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 

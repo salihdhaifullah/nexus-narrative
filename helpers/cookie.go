@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-func SetCookie(id uint, w http.ResponseWriter) {
+func SetCookie(id string, w http.ResponseWriter) {
 	cookie := http.Cookie{
 		Name:     "token",
-		Value:    NewToken(int(id)),
+		Value:    NewToken(id),
 		Path:     "/",
 		MaxAge:   int(time.Now().Add(time.Duration(time.Now().Year())).UTC().Unix()),
 		Secure:   true,

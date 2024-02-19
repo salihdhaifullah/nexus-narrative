@@ -28,5 +28,4 @@ func GetENV() {
 		keyValue := strings.Split(item, "=\"")
 		os.Setenv(keyValue[0], strings.Split(keyValue[1], "\"")[0])
 	}
-
 }

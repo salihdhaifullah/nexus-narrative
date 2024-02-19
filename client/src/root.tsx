@@ -1,12 +1,12 @@
 import { Outlet, ScrollRestoration } from "react-router-dom";
-import Wrapper from "@/components/layout/Wrapper";
+import Wrapper from "./components/layout/Wrapper";
 import { useEffect } from "react";
 import Provider from "./context";
 
 
 export default function Layout() {
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && window.location.hostname !== "localhost") {
       navigator.serviceWorker.register('/service-worker.js')
         .then((registration) => {
           console.log('Service Worker registered with scope:', registration.scope);
@@ -16,8 +16,6 @@ export default function Layout() {
         });
     }
   }, [])
-
-
 
   return (
       <>

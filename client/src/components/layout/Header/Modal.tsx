@@ -1,10 +1,10 @@
 import { FaMoon, FaSun } from "react-icons/fa";
 import { BiLogOut, BiLogIn } from 'react-icons/bi';
-import ButtonBase from "@/components/utils/ButtonBase";
-import SearchFiled from "@/components/utils/SearchFiled";
-import { useTheme, useThemeDispatch } from "@/context/theme";
-import { useModalDispatch } from "@/context/modal";
-import { useUser } from "@/context/user";
+import ButtonBase from "../../../components/utils/ButtonBase";
+import SearchFiled from "../../../components/utils/SearchFiled";
+import { useTheme, useThemeDispatch } from "../../../context/theme";
+import { useModalDispatch } from "../../../context/modal";
+import { useUser } from "../../../context/user";
 import { Link } from "react-router-dom";
 
 const HeaderModal = () => {

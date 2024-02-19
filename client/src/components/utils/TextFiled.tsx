@@ -8,6 +8,8 @@ interface TextFiledProps extends HTMLProps<HTMLInputElement> {
     icon?: IconType
     InElement?: ReactNode
     small?: boolean
+    value: string;
+    setValue: (x: string) => void
 }
 
 
@@ -26,6 +28,7 @@ const TextFiled = forwardRef(({ label, error, name, icon: Icons, InElement, smal
 
     const handelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsValue(e.target.value.length > 0)
+        inputProps.setValue(e.target.value)
         setIsFocus(true)
         setIsError(false)
     }
@@ -45,6 +48,7 @@ const TextFiled = forwardRef(({ label, error, name, icon: Icons, InElement, smal
                     onChange={handelChange}
                     className={`${small ? "p-1" : "p-2"} ${InElement ? "pr-8" : ""} pl-8 w-60 text-secondary bg-normal border h-fit rounded-sm focus:border-none focus:outline-solid focus:outline-2 ${error ? "focus:border-red-600 focus:hover:border-red-800 focus:dark:border-red-400 focus:dark:hover:border-red-500 focus:outline-red-600 dark:focus:outline-red-400" : "focus:dark:border-gray-300 focus:dark:hover:border-white focus:border-gray-700 focus:hover:border-gray-900 focus:outline-secondary"}`}
                     id={Id}
+                    value={inputProps.value}
                     onFocus={() => setIsFocus(true)}
                     onBlur={() => setIsFocus(false)}
                     name={name}
@@ -54,7 +58,5 @@ const TextFiled = forwardRef(({ label, error, name, icon: Icons, InElement, smal
         </div>
     )
 })
-
-TextFiled.displayName = "TextFiled";
 
 export default TextFiled;

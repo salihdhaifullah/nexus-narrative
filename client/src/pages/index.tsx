@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa"
-import mountains from "public/hero.jpg"
 
 export const meta = () => {
   return [
@@ -15,7 +14,7 @@ export default function Index() {
       <div className='absolute h-screen w-full -z-10 bg-black'>
         <img
           alt="Mountains"
-          src={mountains}
+          src="/hero.jpg"
           sizes="100vw"
           className='object-cover opacity-40'
         />
