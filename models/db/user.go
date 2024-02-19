@@ -1,11 +1,6 @@
 package db
 
 import (
-	"errors"
-	"fmt"
-	"strings"
-
-	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,6 +9,7 @@ import (
 
 
 type User struct {
+	DBModel
 	ID           primitive.ObjectID   `bson:"_id" validate:"required,mongodb"`
 	Email        string               `bson:"email" validate:"required,email"`
 	LastName     string               `bson:"last_name" validate:"required,min=2,max=75"`
@@ -30,19 +26,7 @@ type User struct {
 	Contents     []primitive.ObjectID `bson:"contents" validate:"dive,mongodb"`
 }
 
-func (user User) Validation(collection *mongo.Collection) error {
-	v := validator.New(validator.WithRequiredStructEnabled())
 
-	if err := v.Struct(user); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("field '%s': %s", err.Field(), err.Tag()))
-		}
-		return errors.New(strings.Join(validationErrors, "\n"))
-	}
-
-	return nil
-}
 
 func InitUser(db *mongo.Database) *mongo.Collection {
     collection := db.Collection("user")

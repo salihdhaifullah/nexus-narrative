@@ -10,6 +10,7 @@ import (
 
 
 type Post struct {
+	DBModel
 	ID                 primitive.ObjectID   `bson:"_id"`
 	Title              string               `bson:"title"`
 	Slug               string               `bson:"slug"`

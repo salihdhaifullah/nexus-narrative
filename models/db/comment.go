@@ -8,6 +8,7 @@ import (
 
 
 type Comment struct {
+	DBModel
 	ID        primitive.ObjectID `bson:"_id"`
 	CreatedAt primitive.DateTime `bson:"created_at"`
 	Content   string             `bson:"content"`

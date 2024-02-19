@@ -12,6 +12,7 @@ import (
 
 
 type Reaction struct {
+	DBModel
 	ID     primitive.ObjectID `bson:"_id"`
 	PostID primitive.ObjectID `bson:"post_id"`
 	UserID primitive.ObjectID `bson:"user_id"`

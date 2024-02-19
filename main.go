@@ -8,6 +8,7 @@ import (
 	"github.com/salihdhaifullah/nexus-narrative/helpers/routes"
 )
 
+// TODO: setup dependency injection
 func init() {
 	initializers.GetENV()
 }
@@ -24,6 +25,6 @@ func main() {
 	clientRoute := router.PathPrefix("/").Subrouter()
 	clientRoute.Use(middleware.Cache)
 	clientRoute.Methods("GET").Handler(client.HandelClient())
-	
+
   initializers.Listen(router)
 }

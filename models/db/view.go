@@ -7,11 +7,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
-
-
-
 type View struct {
+    DBModel
 	ID        primitive.ObjectID `bson:"_id"`
 	IPAddress string             `bson:"ip_address"`
 	PostID    primitive.ObjectID `bson:"post_id"`

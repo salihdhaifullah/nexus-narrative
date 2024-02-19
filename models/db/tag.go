@@ -9,6 +9,7 @@ import (
 
 
 type Tag struct {
+	DBModel
 	ID    primitive.ObjectID   `bson:"_id"`
 	Name  string               `bson:"name"`
 	Posts []primitive.ObjectID `bson:"posts"`
