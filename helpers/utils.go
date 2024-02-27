@@ -2,7 +2,9 @@ package helpers
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
+	"time"
 )
 
 func InitCode() string {
@@ -18,12 +20,15 @@ func GenerateSlug(seed string, checkIsFound func(slug string) bool) string {
 		return slug
 	}
 
-	for i := 1; ; i++ {
-		slug = fmt.Sprintf("%s-%d", baseSlug, i)
-		if !checkIsFound(slug) {
-			return slug
-		}
+	time := time.Now().Unix()
+	slug = fmt.Sprintf("%s-%d", baseSlug, time)
+
+	if !checkIsFound(slug) {
+		return slug
 	}
+
+	log.Fatal("unable to generate unique slug in timely manner")
+	return ""
 }
 
 func cleanSlug(seed string) string {

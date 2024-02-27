@@ -108,3 +108,59 @@ func TestIsValidURLList(t *testing.T) {
 		t.Errorf("Expected list of URLs %s to be valid, but it was invalid", validURLs)
 	}
 }
+
+func TestIsVaildCode(t *testing.T) {
+	validCodes := []string{
+		"286142",
+		"272175",
+		"998862",
+		"080002",
+		"072100",
+		"000862",
+	}
+
+	unValidCodes := []string{
+		"2.8142",
+		"2.78142",
+		"$8862",
+		"$08862",
+		"f87932",
+		"f879327",
+
+		"2.8142c",
+		"2.7814u",
+		"1886i",
+		"90978862",
+		"9097881",
+		"uasigg",
+		"aaaaaaa",
+		"aaaaaa",
+	}
+
+	for _, code := range validCodes {
+		if !IsVaildCode(code) {
+			t.Errorf("Expected code %s to be valid, but it was invalid", code)
+		}
+	}
+
+	for _, code := range unValidCodes {
+		if IsVaildCode(code) {
+			t.Errorf("Expected code %s to be invalid, but it was valid", code)
+		}
+	}
+}
+
+type COdeSchame struct {
+	Code   string `json:"code" validate:"required,number,len=6"`
+}
+
+func IsVaildCode(code string) bool {
+	val := COdeSchame{
+		Code: code,
+	}
+
+	if err := v.Struct(val); err != nil {
+		return false
+	}
+	return true
+}

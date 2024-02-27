@@ -1,14 +1,17 @@
 package image_processor
 
 import (
+	"bytes"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
-	"image/png"
 	"log"
 	"math/rand"
-	"os"
 	"time"
+
+	"github.com/nickalie/go-webpbin"
+	"github.com/salihdhaifullah/nexus-narrative/helpers"
 )
 
 const (
@@ -20,7 +23,7 @@ const (
 
 var random = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-func CreateImage() *image.RGBA {
+func CreateAvatar() string {
 
 	img := image.NewRGBA(image.Rect(0, 0, ImageSize, ImageSize))
 
@@ -38,7 +41,15 @@ func CreateImage() *image.RGBA {
 		}
 	}
 
-	return img
+	buf := bytes.Buffer{}
+	err := webpbin.Encode(&buf, img)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	url := helpers.UploadFile(buf.Bytes(), fmt.Sprintf("%d.webp", time.Now().Unix()))
+
+	return url
 }
 
 func getRandomColor() color.RGBA {
@@ -48,18 +59,6 @@ func getRandomColor() color.RGBA {
 func drawRandomRectangle(img *image.RGBA, shapeColor color.RGBA, x, y, width, height int) {
 	rect := image.Rect(x, y, x+width, y+height)
 	draw.Draw(img, rect, &image.Uniform{shapeColor}, image.Point{}, draw.Src)
-}
-
-func saveImage(img *image.RGBA, filename string) {
-	f, err := os.Create(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	if err := png.Encode(f, img); err != nil {
-		log.Fatal(err)
-	}
 }
 
 func generateSymmetricPattern(length int) [][]bool {
