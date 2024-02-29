@@ -5,10 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-
-
 type Comment struct {
-	DBModel
 	ID        primitive.ObjectID `bson:"_id"`
 	CreatedAt primitive.DateTime `bson:"created_at"`
 	Content   string             `bson:"content"`
@@ -17,8 +14,6 @@ type Comment struct {
 }
 
 func InitComment(db *mongo.Database) *mongo.Collection {
-    collection := db.Collection("comment")
-    return collection
+	collection := db.Collection("comment")
+	return collection
 }
-
-

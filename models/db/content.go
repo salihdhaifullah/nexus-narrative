@@ -6,7 +6,6 @@ import (
 )
 
 type Content struct {
-	DBModel
 	ID       primitive.ObjectID `bson:"_id" validate:"required,mongodb"`
 	Markdown string             `bson:"markdown" validate:"required"`
 	AuthorId primitive.ObjectID `bson:"authorId" validate:"required,mongodb"`

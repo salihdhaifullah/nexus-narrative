@@ -7,22 +7,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
 type Category struct {
-	DBModel
-	ID    primitive.ObjectID  `bson:"_id,omitempty"`
+	ID    primitive.ObjectID   `bson:"_id,omitempty"`
 	Name  string               `bson:"name" validate:"required,min=2,max=50"`
 	Posts []primitive.ObjectID `bson:"posts"`
 }
 
 func InitCategory(db *mongo.Database) *mongo.Collection {
-    collection := db.Collection("category")
+	collection := db.Collection("category")
 
-    indexModel := mongo.IndexModel{
-        Keys:    bson.D{{Key: "name", Value: 1}},
-        Options: options.Index().SetUnique(true),
-    }
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: "name", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
 
-    createIndex(collection, indexModel)
-    return collection
+	createIndex(collection, indexModel)
+	return collection
 }

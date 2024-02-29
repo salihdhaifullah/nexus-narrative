@@ -7,10 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
-
 type Post struct {
-	DBModel
 	ID                 primitive.ObjectID   `bson:"_id"`
 	Title              string               `bson:"title"`
 	Slug               string               `bson:"slug"`
@@ -26,22 +23,20 @@ type Post struct {
 }
 
 func InitPost(db *mongo.Database) *mongo.Collection {
-    collection := db.Collection("post")
+	collection := db.Collection("post")
 
-    indexModel := mongo.IndexModel{
-        Keys:    bson.D{{Key: "slug", Value: 1}},
-        Options: options.Index().SetUnique(true),
-    }
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: "slug", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
 
-    createIndex(collection, indexModel)
+	createIndex(collection, indexModel)
 
-    indexModel = mongo.IndexModel{
-        Keys:    bson.D{{Key: "title", Value: 1}},
-        Options: options.Index(),
-    }
+	indexModel = mongo.IndexModel{
+		Keys:    bson.D{{Key: "title", Value: 1}},
+		Options: options.Index(),
+	}
 
-    createIndex(collection, indexModel)
-    return collection
+	createIndex(collection, indexModel)
+	return collection
 }
-
-

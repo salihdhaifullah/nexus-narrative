@@ -8,7 +8,6 @@ import (
 )
 
 type View struct {
-    DBModel
 	ID        primitive.ObjectID `bson:"_id"`
 	IPAddress string             `bson:"ip_address"`
 	PostID    primitive.ObjectID `bson:"post_id"`
@@ -16,16 +15,16 @@ type View struct {
 }
 
 func InitView(db *mongo.Database) *mongo.Collection {
-    collection := db.Collection("view")
+	collection := db.Collection("view")
 
-    indexModel := mongo.IndexModel{
-        Keys:    bson.D{
-            {Key: "ip_address", Value: 1},
-            {Key: "post_id", Value: 1},
-        },
-        Options: options.Index().SetUnique(true),
-    }
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "ip_address", Value: 1},
+			{Key: "post_id", Value: 1},
+		},
+		Options: options.Index().SetUnique(true),
+	}
 
-    createIndex(collection, indexModel)
-    return collection
+	createIndex(collection, indexModel)
+	return collection
 }

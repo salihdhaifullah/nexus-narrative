@@ -5,17 +5,20 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/salihdhaifullah/nexus-narrative/controllers/auth"
 	"github.com/salihdhaifullah/nexus-narrative/controllers/client"
 	"github.com/salihdhaifullah/nexus-narrative/helpers"
 	"github.com/salihdhaifullah/nexus-narrative/helpers/image_processor"
 	"github.com/salihdhaifullah/nexus-narrative/helpers/initializers"
 	"github.com/salihdhaifullah/nexus-narrative/helpers/middleware"
-	"github.com/salihdhaifullah/nexus-narrative/helpers/routes"
 )
 
 // TODO: setup dependency injection
+var IsDev = false
+
 func init() {
 	initializers.GetENV()
+	IsDev = os.Getenv("ENV") == "DEV"
 }
 
 func testUpload() []string {
@@ -30,7 +33,7 @@ func testUpload() []string {
 	}
 
 	list := []string{}
-
+	// TODO: use goroutines
 	for i := 0; i < len(images); i++ {
 		list = append(list, helpers.UploadFile(images[i].Data, images[i].Name))
 	}
@@ -46,7 +49,7 @@ func main() {
 	router.Use(middleware.Gzip)
 
 	api := router.PathPrefix("/api").Subrouter()
-	api.PathPrefix("/auth/").HandlerFunc(routes.HandelRoutes())
+	api.PathPrefix("/auth/").HandlerFunc(auth.Handel())
 
 	clientRoute := router.PathPrefix("/").Subrouter()
 	clientRoute.Use(middleware.Cache)

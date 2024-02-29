@@ -11,23 +11,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-
 func createIndex(collection *mongo.Collection, indexModel mongo.IndexModel) {
-    _, err := collection.Indexes().CreateOne(context.Background(), indexModel)
-    if err != nil {
-        if mongoErr, ok := err.(mongo.CommandError); ok && mongoErr.Code == 85 {
-            log.Println("Index already exists")
-        } else {
-            log.Fatal(err)
-        }
-    } else {
-        log.Println("Index created successfully")
-    }
+	_, err := collection.Indexes().CreateOne(context.Background(), indexModel)
+	if err != nil {
+		if mongoErr, ok := err.(mongo.CommandError); ok && mongoErr.Code == 85 {
+			log.Println("Index already exists")
+		} else {
+			log.Fatal(err)
+		}
+	} else {
+		log.Println("Index created successfully")
+	}
 }
 
-
-type DBModel struct {}
-func (model DBModel) Validation() error {
+func ValidationDB(model interface{}) error {
 	v := validator.New(validator.WithRequiredStructEnabled())
 
 	if err := v.Struct(model); err != nil {

@@ -8,11 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
-
-
 type Reaction struct {
-	DBModel
 	ID     primitive.ObjectID `bson:"_id"`
 	PostID primitive.ObjectID `bson:"post_id"`
 	UserID primitive.ObjectID `bson:"user_id"`
@@ -20,14 +16,13 @@ type Reaction struct {
 }
 
 func InitReaction(db *mongo.Database) *mongo.Collection {
-    collection := db.Collection("reaction")
+	collection := db.Collection("reaction")
 
-    indexModel := mongo.IndexModel{
-        Keys:    bson.D{{Key: "type", Value: 1}},
-        Options: options.Index(),
-    }
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: "type", Value: 1}},
+		Options: options.Index(),
+	}
 
-    createIndex(collection, indexModel)
-    return collection
+	createIndex(collection, indexModel)
+	return collection
 }
-

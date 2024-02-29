@@ -7,9 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
 type User struct {
-	DBModel
 	ID           primitive.ObjectID   `bson:"_id" validate:"required,mongodb"`
 	Email        string               `bson:"email" validate:"required,email"`
 	LastName     string               `bson:"last_name" validate:"required,min=2,max=75"`
@@ -26,16 +24,14 @@ type User struct {
 	Contents     []primitive.ObjectID `bson:"contents" validate:"dive,mongodb"`
 }
 
-
-
 func InitUser(db *mongo.Database) *mongo.Collection {
-    collection := db.Collection("user")
+	collection := db.Collection("user")
 
-    indexModel := mongo.IndexModel{
-        Keys:    bson.D{{Key: "email", Value: 1}},
-        Options: options.Index().SetUnique(true),
-    }
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
 
-    createIndex(collection, indexModel)
-    return collection
+	createIndex(collection, indexModel)
+	return collection
 }

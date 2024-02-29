@@ -43,7 +43,7 @@ func InsertUser(dto dto.SingUp) db.User {
 		AuthorId: userID,
 	}
 
-	err := content.Validation()
+	err := db.ValidationDB(content)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +59,12 @@ func InsertUser(dto dto.SingUp) db.User {
 		Blog:         blogName,
 	}
 
-	err = user.Validation()
+	err = db.ValidationDB(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = initializers.UserModel.InsertOne(context.Background(), user)
 	if err != nil {
 		log.Fatal(err)
 	}
