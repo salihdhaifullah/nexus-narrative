@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/salihdhaifullah/nexus-narrative/helpers"
 	"github.com/salihdhaifullah/nexus-narrative/helpers/image_processor"
@@ -55,6 +56,7 @@ func InsertUser(dto dto.SingUp) db.User {
 		FirstName:    dto.FirstName,
 		LastName:     dto.LastName,
 		PasswordHash: passwordHash,
+		JoinedAt:     time.Now(),
 		AvatarUrl:    avatarUrl,
 		Blog:         blogName,
 	}
@@ -69,5 +71,21 @@ func InsertUser(dto dto.SingUp) db.User {
 		log.Fatal(err)
 	}
 
+	log.Println(user.AvatarUrl)
+
 	return user
+}
+
+func CheckIsUserFoundByEmail(email string) bool {
+	err := initializers.UserModel.FindOne(context.Background(), bson.M{"email": email}).Err()
+	isFound := true
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			isFound = false
+		} else {
+			log.Fatal(err)
+		}
+	}
+
+	return isFound
 }

@@ -2,18 +2,19 @@ package helpers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
-type Massage struct {
-	Massage string `json:"massage"`
+type Response struct {
+	IsOk    bool        `json:"isOK"`
+	Message string      `json:"errors"`
+	Data    interface{} `json:"data"`
 }
 
-func BadRequest(val interface{}, massage string, w http.ResponseWriter) {
-	res := Res{
-		Massage: massage,
-		Data:    val,
+func BadRequest(w http.ResponseWriter, message string) {
+	res := Response{
+		Message: message,
+		IsOk:    false,
 	}
 
 	w.WriteHeader(http.StatusBadRequest)
@@ -22,16 +23,14 @@ func BadRequest(val interface{}, massage string, w http.ResponseWriter) {
 	w.Write(bytes)
 }
 
-func NotFound(massage string, w http.ResponseWriter) {
+func NotFound(w http.ResponseWriter, message string) {
+	res := Response{
+		Message: message,
+		IsOk:    false,
+	}
+
 	w.WriteHeader(http.StatusNotFound)
 	w.Header().Set("Content-Type", "application/json")
-	bytes, _ := json.Marshal(Massage{Massage: massage})
-	w.Write(bytes)
-}
-
-func MethodNotAllowed(w http.ResponseWriter, method string) {
-	w.WriteHeader(http.StatusMethodNotAllowed)
-	w.Header().Set("Content-Type", "application/json")
-	bytes, _ := json.Marshal(Massage{Massage: fmt.Sprintf("This %s Method Is Not Allowed", method)})
+	bytes, _ := json.Marshal(res)
 	w.Write(bytes)
 }

@@ -5,12 +5,10 @@ import (
 	"net/http"
 )
 
-
 type Res struct {
-	Massage string `json:"massage"`
-	Data interface{} `json:"data"`
+	Massage string      `json:"massage"`
+	Data    interface{} `json:"data"`
 }
-
 
 func Ok(val interface{}, massage string, w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
@@ -18,11 +16,10 @@ func Ok(val interface{}, massage string, w http.ResponseWriter) {
 
 	res := Res{
 		Massage: massage,
-		Data: val,
+		Data:    val,
 	}
 
-	bytes, _ := json.Marshal(res)
-	w.Write(bytes)
+	write(res, w)
 }
 
 func Created(val interface{}, massage string, w http.ResponseWriter) {
@@ -31,9 +28,18 @@ func Created(val interface{}, massage string, w http.ResponseWriter) {
 
 	res := Res{
 		Massage: massage,
-		Data: val,
+		Data:    val,
 	}
 
-	bytes, _ := json.Marshal(res)
-	w.Write(bytes)
+	write(res, w)
+}
+
+// TODO: merge the errors with the status into one util
+func write(val interface{}, w http.ResponseWriter) {
+	encoder := json.NewEncoder(w)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(val); err != nil {
+		http.Error(w, "Error encoding JSON response", http.StatusInternalServerError)
+		return
+	}
 }

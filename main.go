@@ -16,11 +16,6 @@ import (
 // TODO: setup dependency injection
 var IsDev = false
 
-func init() {
-	initializers.GetENV()
-	IsDev = os.Getenv("ENV") == "DEV"
-}
-
 func testUpload() []string {
 	bytes, err := os.ReadFile("./client/public/404.jpg")
 	if err != nil {
@@ -42,8 +37,10 @@ func testUpload() []string {
 }
 
 func main() {
-	go initializers.MongoDB()
-	go helpers.InitClient()
+	initializers.GetENV()
+	IsDev = os.Getenv("ENV") == "DEV"
+	initializers.MongoDB()
+	helpers.InitClient()
 
 	router := mux.NewRouter()
 	router.Use(middleware.Gzip)

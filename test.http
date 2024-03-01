@@ -2,8 +2,8 @@ POST http://localhost:8080/api/auth/sing-up HTTP/1.1
 content-type: application/json
 
 {
-    "firstName": "",
-    "lastName": "salih@gmail.com",
-    "password": "",
-    "email": "scsh@gmail.com" 
+    "firstName": "sc",
+    "lastName": "osvasvca",
+    "password": "scasvsavavs@gmail.com",
+    "email": "hescdavsddsdcso@mail.com" 
 }

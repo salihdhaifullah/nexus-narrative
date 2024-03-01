@@ -29,7 +29,7 @@ func SingUp(w http.ResponseWriter, r *http.Request) {
 	bytes, err := io.ReadAll(r.Body)
 
 	if r.Body == nil || err != nil {
-		helpers.BadRequest(nil, "No Data Found In Request", w)
+		helpers.BadRequest(w, "No Data Found In Request")
 		return
 	}
 
@@ -37,31 +37,22 @@ func SingUp(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(bytes, &SingUpDto)
 	if err != nil {
-		helpers.BadRequest(nil, "Invalid Type Of Request Data", w)
+		helpers.BadRequest(w, "Invalid Type Of Request Data")
 		return
 	}
 
-	errs := dto.ValidationDTO(SingUpDto)
-	if len(errs) != 0 {
-		helpers.BadRequest(errs, "err", w)
+	errStr := dto.ValidationDTO(SingUpDto)
+	if errStr != nil {
+		helpers.BadRequest(w, *errStr)
 		return
 	}
 
-	err = initializers.UserModel.FindOne(context.Background(), bson.M{"email": SingUpDto.Email}).Err()
-	isFound := true
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			isFound = false
-		} else {
-			log.Fatal(err)
-		}
-	}
-
-	if isFound {
-		helpers.BadRequest(nil, "User With This Email is Already Exists Try Login", w)
+	if repository.CheckIsUserFoundByEmail(SingUpDto.Email) {
+		helpers.BadRequest(w, "User With This Email is Already Exists Try Login")
 		return
 	}
 
+	// just create new session
 	user := repository.InsertUser(SingUpDto)
 
 	helpers.SetCookie(user.ID.String(), w)
@@ -72,7 +63,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	bytes, err := io.ReadAll(r.Body)
 
 	if r.Body == nil || err != nil {
-		helpers.BadRequest(nil, "No Data Found In Request", w)
+		helpers.BadRequest(w, "No Data Found In Request")
 		return
 	}
 
@@ -81,7 +72,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(bytes, &data)
 
 	if err != nil {
-		helpers.BadRequest(nil, "Invalid Type Of Request Data", w)
+		helpers.BadRequest(w, "Invalid Type Of Request Data")
 		return
 	}
 
@@ -91,7 +82,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			helpers.BadRequest(nil, fmt.Sprintf("User With This Email \"%s\" is Not Exists Try SingUp", data.Email), w)
+			helpers.BadRequest(w, fmt.Sprintf("User With This Email \"%s\" is Not Exists Try SingUp", data.Email))
 			return
 		} else {
 			log.Fatal(err)
@@ -101,7 +92,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err = helpers.ComparePassword(user.Password, data.Password)
 
 	if err != nil {
-		helpers.BadRequest(nil, "Password Or Email Is Wrong Try Again", w)
+		helpers.BadRequest(w, "Password Or Email Is Wrong Try Again")
 		return
 	}
 

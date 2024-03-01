@@ -6,10 +6,10 @@ import (
 )
 
 type Content struct {
-	ID       primitive.ObjectID `bson:"_id" validate:"required,mongodb"`
-	Markdown string             `bson:"markdown" validate:"required"`
-	AuthorId primitive.ObjectID `bson:"authorId" validate:"required,mongodb"`
+	ID       primitive.ObjectID `bson:"_id" validate:"required"`
+	AuthorId primitive.ObjectID `bson:"authorId" validate:"required"`
 	Images   []string           `bson:"images" validate:"dive,required,http_url"`
+	Markdown string             `bson:"markdown"`
 }
 
 func InitContent(db *mongo.Database) *mongo.Collection {
